@@ -57,42 +57,54 @@ body{overflow:hidden}
 .tab-pane{display:none}
 .tab-pane.on{display:block}
 
-/* GALLERY */
-.pane-hdr{padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+/* PANE HEADER */
+.pane-hdr{padding:16px 20px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:0.5px solid var(--border)}
 .pane-title{font-size:17px;font-weight:600}
 .add-btn{background:var(--accent);color:#fff;border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:6px 16px 100px}
+
+/* LIST VIEW (맛집 기본) */
+.list-table{width:100%;border-collapse:collapse}
+.list-table th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.list-table td{padding:12px;font-size:13px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+.list-table tr:hover td{background:var(--bg2)}
+.list-name{font-weight:500;color:var(--accent);cursor:pointer;text-decoration:none}
+.list-name:hover{text-decoration:underline}
+.list-stars{color:var(--accent);font-size:12px;white-space:nowrap}
+.list-wrap{padding:0 0 100px}
+
+/* GALLERY GRID */
+.gallery-wrap{padding:16px 20px 100px}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:600px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
 .gcard{background:var(--card);border-radius:12px;overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:transform .12s}
 .gcard:active{transform:scale(.96)}
 .gcard-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg3);display:block}
-.gcard-ph{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:30px}
-.gcard-body{padding:9px 10px}
-.gcard-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.gcard-sub{font-size:11px;color:var(--text3);margin-bottom:3px}
-.gcard-score{font-size:11px;color:var(--accent)}
-.gcard-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
-.gtag{font-size:10px;padding:2px 6px;border-radius:20px;background:var(--bg3);color:var(--text2)}
+.gcard-ph{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px}
+.gcard-body{padding:8px 10px}
+.gcard-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.gcard-sub{font-size:11px;color:var(--text3)}
+.gcard-score{font-size:11px;color:var(--accent);margin-top:2px}
 
 /* EMPTY */
-.empty{text-align:center;padding:60px 20px;grid-column:1/-1;color:var(--text3)}
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
 .empty-icon{font-size:44px;margin-bottom:10px}
 .empty-txt{font-size:14px;color:var(--text2);margin-bottom:4px}
-.empty-sub{font-size:12px}
 
-/* DETAIL */
+/* DETAIL VIEW */
 .dview{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .dview.on{display:block}
 .dview-hdr{padding:50px 14px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);z-index:10}
-.back-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:26px;padding:2px 4px;line-height:1}
+.back-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:26px;padding:2px 6px;line-height:1}
 .dview-title{font-size:15px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.edit-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--text2);cursor:pointer}
-.dhero{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg3);display:block}
+.edit-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 14px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap}
+.edit-btn:hover{background:var(--bg3)}
+.dhero{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg3);display:block;cursor:pointer}
 .dph{width:100%;aspect-ratio:16/9;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:52px}
 .dbody{padding:18px 16px 60px}
 .dtitle{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:14px}
 .dprops{background:var(--bg2);border-radius:12px;border:0.5px solid var(--border);padding:14px;margin-bottom:18px;display:flex;flex-direction:column;gap:10px}
 .dprop{display:flex;gap:10px;font-size:13px}
-.dprop-k{color:var(--text3);width:64px;flex-shrink:0;font-size:12px}
+.dprop-k{color:var(--text3);width:70px;flex-shrink:0;font-size:12px}
 .dprop-v{color:var(--text);flex:1;line-height:1.5}
 .dsec{margin-bottom:18px}
 .dsec-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
@@ -102,7 +114,7 @@ body{overflow:hidden}
 .dtags{display:flex;gap:6px;flex-wrap:wrap}
 .dtag{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--bg3);color:var(--text2)}
 
-/* FORM */
+/* FORM VIEW */
 .fview{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .fview.on{display:block}
 .fview-hdr{padding:50px 14px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);z-index:10}
@@ -111,26 +123,26 @@ body{overflow:hidden}
 .fbody{padding:18px 16px 100px}
 .fg{margin-bottom:18px}
 .flabel{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;display:flex;align-items:center;gap:6px}
-.finput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;appearance:none;-webkit-appearance:none}
+.finput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none}
 .finput:focus{border-color:var(--accent)}
 .ftarea{resize:none;min-height:90px;line-height:1.6}
 .fselect{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none}
 
 /* STAR INPUT */
 .star-row{display:flex;gap:6px;align-items:center}
-.sstar{font-size:30px;cursor:pointer;transition:transform .1s;user-select:none;-webkit-user-select:none}
+.sstar{font-size:30px;cursor:pointer;user-select:none;-webkit-user-select:none;transition:transform .1s}
 .sstar:active{transform:scale(.85)}
-.star-score{font-size:14px;color:var(--accent);font-weight:600;min-width:28px}
+.star-score{font-size:14px;color:var(--accent);font-weight:600;min-width:32px}
 
 /* IMG UPLOAD */
 .img-drop{border:1.5px dashed var(--border2);border-radius:12px;padding:22px;text-align:center;cursor:pointer;color:var(--text3);transition:all .15s}
 .img-drop:active{border-color:var(--accent);color:var(--accent)}
 .img-drop-icon{font-size:28px;margin-bottom:6px}
-.img-drop-txt{font-size:13px}
-.img-previews{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.img-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+@media(max-width:600px){.img-previews{grid-template-columns:repeat(3,1fr)}}
 .ipreview{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden}
 .ipreview img{width:100%;height:100%;object-fit:cover;display:block}
-.ipreview-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.ipreview-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
 /* LIGHTBOX */
 .lbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;align-items:center;justify-content:center;cursor:zoom-out}
@@ -142,10 +154,10 @@ body{overflow:hidden}
 .toast.on{opacity:1}
 
 /* LOADING */
-.loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:12px}
-.loading-spinner{width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+.loading{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:12px}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-txt{font-size:13px;color:var(--text2)}
+.loading-txt{font-size:13px;color:#fff;background:rgba(0,0,0,.7);padding:8px 16px;border-radius:20px}
 
 input[type=file]{display:none}
 ::-webkit-scrollbar{width:0;height:0}
@@ -173,51 +185,72 @@ input[type=file]{display:none}
       <button class="hdr-btn" onclick="toggleTheme()" id="theme-btn">☀️</button>
     </div>
   </div>
-
   <div class="tabs">
     <button class="tab on" id="tab-matzip" onclick="goTab('matzip')">
-      <span class="tab-icon">🍜</span>
-      <span>맛집</span>
+      <span class="tab-icon">🍜</span><span>맛집</span>
     </button>
     <button class="tab" id="tab-date" onclick="goTab('date')">
-      <span class="tab-icon">📍</span>
-      <span>데이트</span>
+      <span class="tab-icon">📍</span><span>데이트</span>
     </button>
     <button class="tab" id="tab-movie" onclick="goTab('movie')">
-      <span class="tab-icon">🎬</span>
-      <span>영화</span>
+      <span class="tab-icon">🎬</span><span>영화</span>
     </button>
   </div>
-
   <div class="content">
+    <!-- 맛집: 리스트형 -->
     <div class="tab-pane on" id="pane-matzip">
       <div class="pane-hdr">
         <div class="pane-title">맛집 기록</div>
         <button class="add-btn" onclick="openForm('matzip')">+ 추가</button>
       </div>
-      <div class="grid" id="grid-matzip"></div>
+      <div class="list-wrap">
+        <table class="list-table" id="list-matzip">
+          <thead><tr>
+            <th>가게명</th><th>장소</th><th>공슐랭</th><th>하슐랭</th><th>메뉴</th>
+          </tr></thead>
+          <tbody id="tbody-matzip"></tbody>
+        </table>
+      </div>
     </div>
+    <!-- 데이트: 갤러리형 -->
     <div class="tab-pane" id="pane-date">
       <div class="pane-hdr">
         <div class="pane-title">데이트 기록</div>
         <button class="add-btn" onclick="openForm('date')">+ 추가</button>
       </div>
-      <div class="grid" id="grid-date"></div>
+      <div class="gallery-wrap">
+        <div class="gallery-grid" id="grid-date"></div>
+      </div>
     </div>
+    <!-- 영화: 갤러리형 -->
     <div class="tab-pane" id="pane-movie">
       <div class="pane-hdr">
         <div class="pane-title">영화 기록</div>
         <button class="add-btn" onclick="openForm('movie')">+ 추가</button>
       </div>
-      <div class="grid" id="grid-movie"></div>
+      <div class="gallery-wrap">
+        <div class="gallery-grid" id="grid-movie"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- DETAIL VIEW -->
-<div class="dview" id="dview">
+<!-- 맛집 상세 갤러리 (리스트에서 가게명 클릭시) -->
+<div class="dview" id="dview-matzip-gallery">
   <div class="dview-hdr">
-    <button class="back-btn" onclick="closeDetail()">‹</button>
+    <button class="back-btn" onclick="closeView('dview-matzip-gallery')">‹</button>
+    <div class="dview-title" id="matzip-gallery-title">맛집 상세</div>
+    <button class="add-btn" style="font-size:12px;padding:5px 12px" onclick="openForm('matzip-detail',null,currentMatzipName)">+ 추가</button>
+  </div>
+  <div class="gallery-wrap">
+    <div class="gallery-grid" id="grid-matzip-detail"></div>
+  </div>
+</div>
+
+<!-- 상세 블로그 뷰 -->
+<div class="dview" id="dview-detail">
+  <div class="dview-hdr">
+    <button class="back-btn" id="detail-back-btn" onclick="closeDetailView()">‹</button>
     <div class="dview-title" id="dview-title"></div>
     <button class="edit-btn" onclick="editCurrent()">편집</button>
   </div>
@@ -239,13 +272,10 @@ input[type=file]{display:none}
   <img id="lbox-img" src="" alt="">
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
-
 <input type="file" id="file-input" accept="image/*" multiple onchange="onFiles(event)">
 
 <script>
-// ===================== CONFIG =====================
 const PW = '1009';
 const SHEET_ID = '1zmvSHTIKPIvuTdgyi4UnHDxqyuhBI_7IAyckAkxqXA8';
 const API_KEY = 'AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
@@ -253,14 +283,15 @@ const CLIENT_ID = '616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleuser
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const START = new Date('2021-10-09');
 
-const SHEET_NAMES = { matzip: '맛집 기본', date: '데이트_기본', movie: '영화' };
-const SHEET_DETAIL = { matzip: '맛집 상세', date: '데이트_상세' };
-// 시트 탭 이름: 맛집 기본, 맛집 상세, 데이트_기본, 데이트_상세, 영화
+const SHEETS = {
+  matzip: '맛집 기본', matzipDetail: '맛집 상세',
+  date: '데이트_기본', dateDetail: '데이트_상세', movie: '영화'
+};
 
-// ===================== STATE =====================
-let db = { matzip:[], date:[], movie:[] };
+let db = { matzip:[], matzipDetail:[], date:[], dateDetail:[], movie:[] };
 let curType = 'matzip';
 let curDetail = null;
+let curDetailType = null;
 let editId = null;
 let imgs = [];
 let isLight = false;
@@ -268,6 +299,7 @@ let tokenClient = null;
 let gapiLoaded = false;
 let gisLoaded = false;
 let authed = false;
+let currentMatzipName = '';
 
 // ===================== LOCK =====================
 function tryLogin() {
@@ -276,8 +308,7 @@ function tryLogin() {
     document.getElementById('lock-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
     document.getElementById('app').style.flexDirection = 'column';
-    initDday();
-    initGapi();
+    initDday(); initGapi();
   } else {
     document.getElementById('lock-err').textContent = '비밀번호가 틀렸어요 💔';
     document.getElementById('lock-pw').value = '';
@@ -285,20 +316,17 @@ function tryLogin() {
   }
 }
 
-// ===================== DDAY =====================
 function initDday() {
   const diff = Math.floor((new Date() - START) / 86400000);
   document.getElementById('dday').textContent = 'D+' + diff.toLocaleString();
 }
 
-// ===================== THEME =====================
 function toggleTheme() {
   isLight = !isLight;
   document.body.classList.toggle('light', isLight);
   document.getElementById('theme-btn').textContent = isLight ? '🌙' : '☀️';
 }
 
-// ===================== TABS =====================
 function goTab(t) {
   curType = t;
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('on'));
@@ -316,7 +344,6 @@ function initGapi() {
     gapiLoaded = true; maybeLoad();
   }); };
   document.body.appendChild(s1);
-
   const s2 = document.createElement('script');
   s2.src = 'https://accounts.google.com/gsi/client';
   s2.onload = () => {
@@ -331,7 +358,6 @@ function initGapi() {
 
 function maybeLoad() {
   if (!gapiLoaded || !gisLoaded) return;
-  // 토큰 있으면 바로 로드, 없으면 로그인
   if (gapi.client.getToken()) { authed = true; loadAll(); }
   else { tokenClient.requestAccessToken({ prompt: 'consent' }); }
 }
@@ -340,51 +366,32 @@ function maybeLoad() {
 async function loadAll() {
   showLoading(true);
   try {
-    await loadSheet('matzip', SHEET_NAMES.matzip);
-    await loadSheet('date', SHEET_NAMES.date);
-    await loadSheet('movie', SHEET_NAMES.movie);
-    await loadDetailSheet('matzip', SHEET_DETAIL.matzip);
-    await loadDetailSheet('date', SHEET_DETAIL.date);
+    await Promise.all([
+      loadSheet('matzip', SHEETS.matzip),
+      loadSheet('matzipDetail', SHEETS.matzipDetail),
+      loadSheet('date', SHEETS.date),
+      loadSheet('dateDetail', SHEETS.dateDetail),
+      loadSheet('movie', SHEETS.movie),
+    ]);
     renderAll();
-  } catch(e) { toast('데이터 로드 실패: ' + e.message); }
+  } catch(e) { toast('로드 실패: ' + e.message); }
   showLoading(false);
 }
 
-async function loadSheet(type, sheetName) {
+async function loadSheet(key, sheetName) {
   try {
     const res = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: sheetName });
     const rows = res.result.values || [];
-    if (!rows.length) return;
+    if (rows.length < 1) return;
     const headers = rows[0];
-    db[type] = rows.slice(1).map((row, i) => {
-      const obj = { id: 'r' + i };
+    db[key] = rows.slice(1).map((row, i) => {
+      const obj = { _rowIndex: i + 2 };
       headers.forEach((h, j) => obj[h] = row[j] || '');
       return obj;
-    });
-  } catch(e) { console.log('Sheet load error:', sheetName, e); }
+    }).filter(obj => Object.keys(obj).some(k => k !== '_rowIndex' && obj[k]));
+  } catch(e) { console.log('load error:', sheetName, e); }
 }
 
-async function loadDetailSheet(type, sheetName) {
-  try {
-    const res = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: sheetName });
-    const rows = res.result.values || [];
-    if (!rows.length) return;
-    const headers = rows[0];
-    const details = rows.slice(1).map(row => {
-      const obj = {};
-      headers.forEach((h, j) => obj[h] = row[j] || '');
-      return obj;
-    });
-    // 기본 데이터에 상세 데이터 병합 (가게명/장소 기준)
-    const keyField = type === 'matzip' ? '가게명' : '장소';
-    db[type].forEach(item => {
-      const detail = details.find(d => d[keyField] === item[keyField]);
-      if (detail) Object.assign(item, detail);
-    });
-  } catch(e) { console.log('Detail load error:', sheetName, e); }
-}
-
-// ===================== SHEET WRITE =====================
 async function appendRow(sheetName, values) {
   await gapi.client.sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID, range: sheetName, valueInputOption: 'USER_ENTERED',
@@ -392,155 +399,236 @@ async function appendRow(sheetName, values) {
   });
 }
 
-// ===================== RENDER =====================
-function renderAll() { ['matzip','date','movie'].forEach(renderGrid); }
+async function updateRow(sheetName, rowIndex, values) {
+  const range = sheetName + '!' + rowIndex + ':' + rowIndex;
+  await gapi.client.sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID, range, valueInputOption: 'USER_ENTERED',
+    resource: { values: [values] }
+  });
+}
 
-function renderGrid(type) {
-  const grid = document.getElementById('grid-' + type);
-  const items = db[type];
-  if (!items.length) {
-    const icons = { matzip:'🍜', date:'📍', movie:'🎬' };
-    const txts = { matzip:'맛집을 추가해보세요!', date:'데이트를 기록해보세요!', movie:'영화를 기록해보세요!' };
-    grid.innerHTML = `<div class="empty"><div class="empty-icon">${icons[type]}</div><div class="empty-txt">${txts[type]}</div><div class="empty-sub">+ 추가 버튼을 눌러주세요</div></div>`;
+// ===================== RENDER =====================
+function renderAll() {
+  renderMatzipList();
+  renderGallery('date');
+  renderGallery('movie');
+}
+
+function renderMatzipList() {
+  const tbody = document.getElementById('tbody-matzip');
+  if (!db.matzip.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">
+      <div style="font-size:36px;margin-bottom:8px">🍜</div>맛집을 추가해보세요!
+    </td></tr>`;
     return;
   }
-  grid.innerHTML = items.map(item => cardHTML(type, item)).join('');
+  tbody.innerHTML = db.matzip.map(item => `
+    <tr>
+      <td><span class="list-name" onclick="openMatzipGallery('${esc(item.가게명)}')">${esc(item.가게명)}</span></td>
+      <td style="color:var(--text2)">${esc(item.장소)}</td>
+      <td class="list-stars">${starStr(item.공슐랭)}</td>
+      <td class="list-stars">${starStr(item.하슐랭)}</td>
+      <td style="color:var(--text2)">${esc(item.메뉴)}</td>
+    </tr>`).join('');
 }
 
-function cardHTML(type, item) {
-  const imgEl = item.대표이미지
-    ? `<img class="gcard-img" src="${item.대표이미지}" alt="" loading="lazy">`
-    : `<div class="gcard-ph">${type==='matzip'?'🍽️':type==='date'?'📸':'🎬'}</div>`;
-
-  if (type === 'matzip') {
-    const avg = item.공슐랭 && item.하슐랭 ? ((+item.공슐랭 + +item.하슐랭)/2).toFixed(1) : item.공슐랭 || '';
-    const tags = item.해시태그 ? item.해시태그.split(',').slice(0,2).map(t=>`<span class="gtag">#${t.trim()}</span>`).join('') : '';
-    return `<div class="gcard" onclick="openDetail('matzip','${item.id}')">
-      ${imgEl}<div class="gcard-body">
-      <div class="gcard-name">${item.가게명||''}</div>
-      <div class="gcard-sub">${item.장소||''}</div>
-      ${avg?`<div class="gcard-score">★ ${avg}</div>`:''}
-      ${tags?`<div class="gcard-tags">${tags}</div>`:''}
-      </div></div>`;
-  }
-  if (type === 'date') {
-    return `<div class="gcard" onclick="openDetail('date','${item.id}')">
-      ${imgEl}<div class="gcard-body">
-      <div class="gcard-name">${item.장소||''}</div>
-      <div class="gcard-sub">${item.날짜||''} · ${item.구분||''}</div>
-      ${item.한줄평?`<div class="gcard-sub" style="margin-top:2px">${item.한줄평}</div>`:''}
-      </div></div>`;
-  }
-  if (type === 'movie') {
-    const avg = item.공슐랭 && item.하슐랭 ? ((+item.공슐랭 + +item.하슐랭)/2).toFixed(1) : item.공슐랭 || '';
-    return `<div class="gcard" onclick="openDetail('movie','${item.id}')">
-      ${imgEl}<div class="gcard-body">
-      <div class="gcard-name">${item.영화명||''}</div>
-      <div class="gcard-sub">${item.날짜||''}</div>
-      ${avg?`<div class="gcard-score">★ ${avg}</div>`:''}
-      ${item.한줄평?`<div class="gcard-sub" style="margin-top:2px">${item.한줄평}</div>`:''}
-      </div></div>`;
-  }
+function starStr(score) {
+  if (!score) return '-';
+  const n = parseFloat(score);
+  const full = Math.floor(n);
+  const half = n % 1 >= 0.5 ? 1 : 0;
+  const empty = 5 - full - half;
+  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty) + ` ${n}`;
 }
 
-// ===================== DETAIL =====================
-function openDetail(type, id) {
-  const item = db[type].find(r => r.id === id);
+function renderGallery(type) {
+  const grid = document.getElementById('grid-' + type);
+  const items = type === 'date' ? db.date : db.movie;
+  const icons = { date:'📸', movie:'🎬' };
+  const txts = { date:'데이트를 기록해보세요!', movie:'영화를 기록해보세요!' };
+  if (!items.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <div class="empty-icon">${icons[type]}</div>
+      <div class="empty-txt">${txts[type]}</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = items.map(item => {
+    const name = type === 'date' ? item.장소 : item.영화명;
+    const sub = type === 'date' ? (item.날짜 + (item.구분 ? ' · ' + item.구분 : '')) : item.날짜;
+    const imgSrc = item.대표이미지 || '';
+    const imgEl = imgSrc
+      ? `<img class="gcard-img" src="${imgSrc}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : '';
+    const ph = `<div class="gcard-ph" ${imgSrc ? 'style="display:none"' : ''}>${icons[type]}</div>`;
+    return `<div class="gcard" onclick="openDetail('${type}','${esc(name)}')">
+      ${imgEl}${ph}
+      <div class="gcard-body">
+        <div class="gcard-name">${esc(name)}</div>
+        <div class="gcard-sub">${esc(sub)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMatzipGallery(name) {
+  const items = db.matzipDetail.filter(i => i.가게명 === name);
+  const grid = document.getElementById('grid-matzip-detail');
+  if (!items.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <div class="empty-icon">🍽️</div>
+      <div class="empty-txt">상세 기록을 추가해보세요!</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = items.map(item => {
+    const imgSrc = item.대표이미지 || '';
+    const imgEl = imgSrc
+      ? `<img class="gcard-img" src="${imgSrc}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : '';
+    const ph = `<div class="gcard-ph" ${imgSrc ? 'style="display:none"' : ''}>🍽️</div>`;
+    return `<div class="gcard" onclick="openDetailBlog('matzip-detail','${esc(item.가게명)}','${esc(item.날짜||'')}')">
+      ${imgEl}${ph}
+      <div class="gcard-body">
+        <div class="gcard-name">${esc(item.가게명)}</div>
+        <div class="gcard-sub">${esc(item.날짜||'')} ${item.가격 ? '· '+esc(item.가격) : ''}</div>
+        ${item.해시태그 ? `<div class="gcard-sub" style="margin-top:2px">${item.해시태그.split(',').map(t=>'#'+t.trim()).join(' ')}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===================== NAVIGATION =====================
+function openMatzipGallery(name) {
+  currentMatzipName = name;
+  document.getElementById('matzip-gallery-title').textContent = name;
+  renderMatzipGallery(name);
+  document.getElementById('dview-matzip-gallery').classList.add('on');
+}
+
+function openDetail(type, name) {
+  const items = type === 'date' ? db.date : db.movie;
+  const item = items.find(i => (type === 'date' ? i.장소 : i.영화명) === name);
   if (!item) return;
-  curDetail = { type, id };
-  const name = type==='matzip' ? item.가게명 : type==='date' ? item.장소 : item.영화명;
+  curDetail = item;
+  curDetailType = type;
+  showDetailBlog(type, item);
+}
+
+function openDetailBlog(type, name, date) {
+  const item = db.matzipDetail.find(i => i.가게명 === name && (i.날짜||'') === date) || db.matzipDetail.find(i => i.가게명 === name);
+  if (!item) return;
+  curDetail = item;
+  curDetailType = type;
+  showDetailBlog(type, item);
+}
+
+function showDetailBlog(type, item) {
+  const name = type === 'matzip-detail' ? item.가게명 : type === 'date' ? item.장소 : item.영화명;
   document.getElementById('dview-title').textContent = name || '';
 
-  const imgEl = item.대표이미지
-    ? `<img class="dhero" src="${item.대표이미지}" alt="" onclick="openLbox('${item.대표이미지}')">`
-    : `<div class="dph">${type==='matzip'?'🍽️':type==='date'?'📸':'🎬'}</div>`;
+  const imgSrc = item.대표이미지 || '';
+  const imgEl = imgSrc
+    ? `<img class="dhero" src="${imgSrc}" alt="" onclick="openLbox('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+    : '';
+  const ph = `<div class="dph" ${imgSrc ? 'style="display:none"' : ''}>${type==='movie'?'🎬':'📸'}</div>`;
 
-  let html = imgEl + `<div class="dbody"><div class="dtitle">${name||''}</div>`;
+  let html = imgEl + ph + `<div class="dbody"><div class="dtitle">${esc(name)}</div><div class="dprops">`;
 
-  // 공통 props
-  html += `<div class="dprops">`;
-  if (type==='matzip') {
-    if (item.장소) html += prop('위치', item.장소);
+  if (type === 'matzip-detail') {
     if (item.날짜) html += prop('날짜', item.날짜);
     if (item.가격) html += prop('가격', item.가격);
-    if (item.메뉴) html += prop('메뉴', item.메뉴);
-    if (item.공슐랭) html += prop('공슐랭', '★ ' + item.공슐랭, true);
-    if (item.하슐랭) html += prop('하슐랭', '★ ' + item.하슐랭, true);
+    if (item.해시태그) html += prop('태그', item.해시태그.split(',').map(t=>'#'+t.trim()).join(' '));
+    if (item.메뉴상세) html += prop('메뉴', item.메뉴상세);
   }
-  if (type==='date') {
+  if (type === 'date') {
     if (item.날짜) html += prop('날짜', item.날짜);
     if (item.구분) html += prop('구분', item.구분);
     if (item.한줄평) html += prop('한줄평', item.한줄평);
   }
-  if (type==='movie') {
+  if (type === 'movie') {
     if (item.날짜) html += prop('날짜', item.날짜);
     if (item.공슐랭) html += prop('공슐랭', '★ ' + item.공슐랭, true);
     if (item.하슐랭) html += prop('하슐랭', '★ ' + item.하슐랭, true);
     if (item.한줄평) html += prop('한줄평', item.한줄평);
   }
+
   html += `</div>`;
 
-  // 섹션
-  if (type==='matzip') {
-    if (item.해시태그) html += sec('태그', `<div class="dtags">${item.해시태그.split(',').map(t=>`<span class="dtag">#${t.trim()}</span>`).join('')}</div>`);
-    if (item.메뉴상세) html += sec('코스 메뉴', `<div class="dsec-txt">${item.메뉴상세.replace(/\n/g,'<br>')}</div>`);
-    if (item.메모) html += sec('메모', `<div class="dsec-txt">${item.메모.replace(/\n/g,'<br>')}</div>`);
-    if (item.비고) html += sec('비고', `<div class="dsec-txt">${item.비고}</div>`);
+  if (type === 'date') {
+    if (item.했던것) html += sec('했던 것', item.했던것);
+    if (item.못한것) html += sec('못 한 것', item.못한것);
+    if (item.다음에갈곳) html += sec('다음에 갈 곳', item.다음에갈곳);
   }
-  if (type==='date') {
-    if (item.했던것) html += sec('했던 것', `<div class="dsec-txt">${item.했던것.replace(/\n/g,'<br>')}</div>`);
-    if (item.못한것) html += sec('못 한 것', `<div class="dsec-txt">${item.못한것.replace(/\n/g,'<br>')}</div>`);
-    if (item.다음에갈곳) html += sec('다음에 갈 곳', `<div class="dsec-txt">${item.다음에갈곳}</div>`);
-    if (item.비고) html += sec('비고', `<div class="dsec-txt">${item.비고}</div>`);
+  if (type === 'matzip-detail') {
+    if (item.메모) html += sec('메모', item.메모);
   }
 
   // 사진 갤러리
   const photos = [];
   for (let i=1;i<=15;i++) if (item['사진'+i]) photos.push(item['사진'+i]);
   if (photos.length) {
-    html += sec('사진', `<div class="photo-grid">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" loading="lazy">`).join('')}</div>`);
+    html += `<div class="dsec"><div class="dsec-title">사진</div>
+      <div class="photo-grid">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" loading="lazy" onerror="this.style.display='none'">`).join('')}
+    </div></div>`;
   }
 
   html += `</div>`;
   document.getElementById('dview-body').innerHTML = html;
-  document.getElementById('dview').classList.add('on');
+  document.getElementById('dview-detail').classList.add('on');
 }
 
 function prop(k, v, accent=false) {
-  return `<div class="dprop"><span class="dprop-k">${k}</span><span class="dprop-v"${accent?' style="color:var(--accent)"':''}>${v}</span></div>`;
+  return `<div class="dprop"><span class="dprop-k">${k}</span><span class="dprop-v"${accent?' style="color:var(--accent)"':''}>${esc(v)}</span></div>`;
 }
 function sec(title, content) {
-  return `<div class="dsec"><div class="dsec-title">${title}</div>${content}</div>`;
+  return `<div class="dsec"><div class="dsec-title">${title}</div><div class="dsec-txt">${esc(content).replace(/\n/g,'<br>')}</div></div>`;
 }
 
-function closeDetail() { document.getElementById('dview').classList.remove('on'); curDetail=null; }
-function editCurrent() { if (!curDetail) return; closeDetail(); openForm(curDetail.type, curDetail.id); }
+function closeView(id) { document.getElementById(id).classList.remove('on'); }
+function closeDetailView() {
+  document.getElementById('dview-detail').classList.remove('on');
+}
+function editCurrent() {
+  if (!curDetail || !curDetailType) return;
+  openForm(curDetailType, curDetail);
+}
 function openLbox(src) { document.getElementById('lbox-img').src=src; document.getElementById('lbox').classList.add('on'); }
 
 // ===================== FORM =====================
-function openForm(type, id=null) {
-  curType=type; editId=id; imgs=[];
-  const item = id ? db[type].find(r=>r.id===id) : null;
-  const titles = {matzip: id?'맛집 편집':'맛집 추가', date: id?'데이트 편집':'데이트 추가', movie: id?'영화 편집':'영화 추가'};
-  document.getElementById('fview-title').textContent = titles[type];
+function openForm(type, item=null) {
+  curDetailType = type;
+  editId = item ? item._rowIndex : null;
+  imgs = [];
+  const titles = {
+    matzip: item ? '맛집 편집' : '맛집 추가',
+    'matzip-detail': item ? '상세 편집' : '상세 추가',
+    date: item ? '데이트 편집' : '데이트 추가',
+    movie: item ? '영화 편집' : '영화 추가'
+  };
+  document.getElementById('fview-title').textContent = titles[type] || '새 기록';
 
   let html = '';
-  if (type==='matzip') {
-    html += fi('가게명','text','가게명 입력',item?.가게명);
-    html += fi('장소','text','위치 입력',item?.장소);
-    html += fi('날짜','date','',item?.날짜);
-    html += fi('가격','text','예: ₩50,000',item?.가격);
-    html += fi('메뉴','text','대표 메뉴',item?.메뉴);
+  if (type === 'matzip') {
+    html += fi('가게명','text','가게명',item?.가게명);
+    html += fi('장소','text','위치',item?.장소);
     html += fstar('공슐랭','공슐랭',item?.공슐랭);
     html += fstar('하슐랭','하슐랭',item?.하슐랭);
-    html += fi('해시태그','text','예: 한식, 코스',item?.해시태그);
-    html += fta('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
-    html += fta('메모','메모',item?.메모);
+    html += fi('메뉴','text','대표 메뉴',item?.메뉴);
     html += fi('비고','text','비고',item?.비고);
   }
-  if (type==='date') {
-    html += fi('장소','text','장소 입력',item?.장소);
-    html += fi('날짜','date','',item?.날짜);
+  if (type === 'matzip-detail') {
+    html += fi('가게명','text','가게명',item?.가게명 || currentMatzipName);
+    html += fi('날짜','date','날짜',item?.날짜);
+    html += fi('가격','text','가격 (예: ₩50,000)',item?.가격);
+    html += fi('해시태그','text','해시태그 (예: 한식, 코스)',item?.해시태그);
+    html += fta('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
+    html += fta('메모','메모',item?.메모);
+    html += fimgs();
+  }
+  if (type === 'date') {
+    html += fi('장소','text','장소',item?.장소);
+    html += fi('날짜','date','날짜',item?.날짜);
     html += `<div class="fg"><label class="flabel">구분</label>
       <select class="fselect" id="f-구분">
         <option value="당일" ${item?.구분==='당일'?'selected':''}>당일 데이트</option>
@@ -550,28 +638,20 @@ function openForm(type, id=null) {
     html += fta('했던것','했던 것',item?.했던것);
     html += fta('못한것','못 한 것 / 아쉬운 점',item?.못한것);
     html += fi('다음에갈곳','text','다음에 갈 곳',item?.다음에갈곳);
-    html += fi('비고','text','비고',item?.비고);
+    html += fimgs();
   }
-  if (type==='movie') {
+  if (type === 'movie') {
     html += fi('영화명','text','영화 제목',item?.영화명);
-    html += fi('날짜','date','',item?.날짜);
+    html += fi('날짜','date','날짜',item?.날짜);
     html += fstar('공슐랭','공슐랭',item?.공슐랭);
     html += fstar('하슐랭','하슐랭',item?.하슐랭);
     html += fi('한줄평','text','한줄평',item?.한줄평);
+    html += fimgs();
   }
-
-  // 이미지 업로드
-  html += `<div class="fg"><label class="flabel">사진 (최대 15장)</label>
-    <div class="img-drop" onclick="document.getElementById('file-input').click()">
-      <div class="img-drop-icon">📷</div>
-      <div class="img-drop-txt">탭해서 사진 선택</div>
-    </div>
-    <div class="img-previews" id="img-previews"></div>
-  </div>`;
 
   document.getElementById('fbody').innerHTML = html;
 
-  // 기존 이미지
+  // 기존 이미지 복원
   if (item) {
     const existing = [];
     if (item.대표이미지) existing.push(item.대표이미지);
@@ -580,7 +660,6 @@ function openForm(type, id=null) {
     renderPreviews();
   }
 
-  // 별점 복원
   if (item?.공슐랭) setStars('공슐랭', +item.공슐랭);
   if (item?.하슐랭) setStars('하슐랭', +item.하슐랭);
 
@@ -589,7 +668,7 @@ function openForm(type, id=null) {
 
 function fi(key, type, ph, val='') {
   return `<div class="fg"><label class="flabel">${ph||key}</label>
-    <input class="finput" id="f-${key}" type="${type}" placeholder="${ph}" value="${val||''}"></div>`;
+    <input class="finput" id="f-${key}" type="${type}" placeholder="${ph}" value="${esc(val||'')}"></div>`;
 }
 function fta(key, ph, val='') {
   return `<div class="fg"><label class="flabel">${ph}</label>
@@ -597,13 +676,21 @@ function fta(key, ph, val='') {
 }
 function fstar(key, label, val) {
   const score = val ? +val : 0;
-  return `<div class="fg"><label class="flabel">${label} <span id="sv-${key}" style="color:var(--accent);font-size:13px">${score > 0 ? score : '-'}</span>점</label>
+  return `<div class="fg"><label class="flabel">${label} <span id="sv-${key}" style="color:var(--accent)">${score > 0 ? score : '-'}</span>점</label>
     <div class="star-row" id="sr-${key}">
-      ${[1,2,3,4,5].map(i=>`<span class="sstar" data-key="${key}" data-i="${i}" onclick="starClick(event,'${key}',${i})">☆</span>`).join('')}
+      ${[1,2,3,4,5].map(i=>`<span class="sstar" onclick="starClick(event,'${key}',${i})">☆</span>`).join('')}
     </div></div>`;
 }
+function fimgs() {
+  return `<div class="fg"><label class="flabel">사진 (최대 15장)</label>
+    <div class="img-drop" onclick="document.getElementById('file-input').click()">
+      <div class="img-drop-icon">📷</div>
+      <div style="font-size:13px">탭해서 사진 선택</div>
+    </div>
+    <div class="img-previews" id="img-previews"></div>
+  </div>`;
+}
 
-// 별점 클릭 (0.5단위)
 function starClick(e, key, i) {
   const el = e.target;
   const rect = el.getBoundingClientRect();
@@ -613,18 +700,19 @@ function starClick(e, key, i) {
 }
 function setStars(key, score) {
   const stars = document.querySelectorAll(`#sr-${key} .sstar`);
+  if (!stars.length) return;
   stars.forEach((s, idx) => {
     const pos = idx + 1;
     s.textContent = score >= pos ? '★' : score >= pos - 0.5 ? '½' : '☆';
   });
-  document.getElementById('sv-'+key).textContent = score;
+  const el = document.getElementById('sv-'+key);
+  if (el) el.textContent = score;
 }
 function getStarVal(key) {
   const el = document.getElementById('sv-'+key);
   return el ? el.textContent : '0';
 }
 
-// 이미지
 function onFiles(e) {
   const files = Array.from(e.target.files);
   const remaining = 15 - imgs.length;
@@ -645,15 +733,16 @@ function renderPreviews() {
     </div>`).join('');
 }
 function removeImg(i) { imgs.splice(i,1); renderPreviews(); }
-
 function val(id) { const el=document.getElementById(id); return el ? el.value.trim() : ''; }
 
-async function uploadImgToDrive(base64) {
+// ===================== DRIVE UPLOAD =====================
+async function uploadImg(base64) {
+  if (!base64.startsWith('data:')) return base64;
   try {
     const blob = await fetch(base64).then(r => r.blob());
-    const metadata = { name: 'matzip_' + Date.now() + '.jpg', mimeType: 'image/jpeg' };
+    const meta = { name: 'matzip_' + Date.now() + '.jpg', mimeType: 'image/jpeg' };
     const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
     form.append('file', blob);
     const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
       method: 'POST',
@@ -670,67 +759,78 @@ async function uploadImgToDrive(base64) {
   } catch(e) { console.error('이미지 업로드 실패:', e); return ''; }
 }
 
+// ===================== SAVE =====================
 async function saveRecord() {
   if (!authed) { toast('로그인이 필요해요'); return; }
   showLoading(true);
   try {
-    const type = curType;
-    const uploadedImgs = [];
+    const type = curDetailType;
+
+    // 이미지 업로드
+    const uploaded = [];
     for (const img of imgs) {
-      if (img.startsWith('data:')) {
-        const url = await uploadImgToDrive(img);
-        uploadedImgs.push(url);
-      } else {
-        uploadedImgs.push(img);
-      }
+      const url = await uploadImg(img);
+      if (url) uploaded.push(url);
     }
-    if (type==='matzip') {
+
+    if (type === 'matzip') {
       const row = [val('f-가게명'),val('f-장소'),getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-메뉴'),val('f-비고')];
-      await appendRow(SHEET_NAMES.matzip, row);
-      const detailRow = [val('f-가게명'),uploadedImgs[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...uploadedImgs.slice(1,16),val('f-메모')];
-      await appendRow(SHEET_DETAIL.matzip, detailRow);
+      if (editId) await updateRow(SHEETS.matzip, editId, row);
+      else await appendRow(SHEETS.matzip, row);
     }
-    if (type==='date') {
-      const row = [val('f-장소'),val('f-날짜'),uploadedImgs[0]||'',val('f-한줄평'),val('f-비고'),val('f-구분')];
-      await appendRow(SHEET_NAMES.date, row);
-      const detailRow = [val('f-장소'),val('f-날짜'),'1일차',val('f-했던것'),val('f-못한것'),...uploadedImgs.slice(0,15),val('f-다음에갈곳')];
-      await appendRow(SHEET_DETAIL.date, detailRow);
+    if (type === 'matzip-detail') {
+      const row = [val('f-가게명'),uploaded[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...uploaded.slice(1,16),val('f-메모')];
+      if (editId) await updateRow(SHEETS.matzipDetail, editId, row);
+      else await appendRow(SHEETS.matzipDetail, row);
     }
-    if (type==='movie') {
-      const row = [val('f-영화명'),val('f-날짜'),uploadedImgs[0]||'',getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-한줄평')];
-      await appendRow(SHEET_NAMES.movie, row);
+    if (type === 'date') {
+      const row = [val('f-장소'),val('f-날짜'),uploaded[0]||'',val('f-한줄평'),'',val('f-구분')];
+      if (editId) await updateRow(SHEETS.date, editId, row);
+      else await appendRow(SHEETS.date, row);
+      const detailRow = [val('f-장소'),val('f-날짜'),'',val('f-했던것'),val('f-못한것'),...uploaded.slice(0,15),val('f-다음에갈곳')];
+      if (!editId) await appendRow(SHEETS.dateDetail, detailRow);
     }
+    if (type === 'movie') {
+      const row = [val('f-영화명'),val('f-날짜'),uploaded[0]||'',getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-한줄평')];
+      if (editId) await updateRow(SHEETS.movie, editId, row);
+      else await appendRow(SHEETS.movie, row);
+    }
+
     toast('저장됐어요 ✓');
     closeForm();
     await loadAll();
-  } catch(e) { toast('저장 실패: ' + e.message); }
+  } catch(e) { toast('저장 실패: ' + e.message); console.error(e); }
   showLoading(false);
 }
 
-function closeForm() { document.getElementById('fview').classList.remove('on'); editId=null; imgs=[]; }
+function closeForm() {
+  document.getElementById('fview').classList.remove('on');
+  editId = null; imgs = [];
+}
 
-// ===================== UI UTILS =====================
+// ===================== UTILS =====================
 function showLoading(show) {
   let el = document.getElementById('loading');
   if (show) {
     if (!el) {
       el = document.createElement('div');
-      el.id = 'loading';
-      el.className = 'loading';
-      el.innerHTML = '<div class="loading-spinner"></div><div class="loading-txt">불러오는 중...</div>';
+      el.id = 'loading'; el.className = 'loading';
+      el.innerHTML = '<div class="loading-spinner"></div><div class="loading-txt">처리 중...</div>';
       document.body.appendChild(el);
     }
     el.style.display = 'flex';
-  } else {
-    if (el) el.style.display = 'none';
-  }
+  } else { if (el) el.style.display = 'none'; }
 }
 
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('on');
+  el.textContent = msg; el.classList.add('on');
   setTimeout(() => el.classList.remove('on'), 2500);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
