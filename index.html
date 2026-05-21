@@ -206,12 +206,14 @@ input[type=file]{display:none}
 </div>
 
 <!-- GOOGLE AUTH -->
-<div id="google-auth-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:900;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px">
-  <div style="font-size:52px">🔗</div>
-  <div style="font-size:22px;font-weight:700">Google 계정 연결</div>
-  <div style="font-size:13px;color:var(--text2);text-align:center">데이터를 불러오려면<br>Google 로그인이 필요해요</div>
-  <button onclick="doGoogleAuth()" style="background:var(--accent);color:#fff;border:none;border-radius:14px;padding:14px 48px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px">Google 로그인</button>
-  <div id="google-auth-hint" style="font-size:12px;color:var(--text3)"></div>
+<div id="google-auth-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:900;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px">
+  <div style="font-size:56px">🔗</div>
+  <div style="font-size:22px;font-weight:700;letter-spacing:-.5px">Google 계정 연결</div>
+  <div style="font-size:14px;color:var(--text2);text-align:center;line-height:1.6">데이터를 불러오려면<br>Google 로그인이 필요해요</div>
+  <button id="google-login-btn" onclick="doGoogleAuth()" style="background:var(--accent);color:#fff;border:none;border-radius:16px;padding:16px 0;font-size:16px;font-weight:700;cursor:pointer;width:240px;margin-top:4px;-webkit-tap-highlight-color:transparent">
+    🔑 Google 로그인
+  </button>
+  <div id="google-auth-hint" style="font-size:12px;color:var(--text3);min-height:18px"></div>
 </div>
 
 <!-- APP -->
@@ -338,7 +340,30 @@ let curDetailType = null;
 let editRowIndex = null;
 let imgs = [];
 let isLight = false;
-let tokenClient, gapiLoaded=false, gisLoaded=false, authed=false;
+let tokenClient, gapiLoaded=false, gisLoaded=false, authed=false, appUnlocked=false;
+
+// Google 스크립트 미리 로드 (페이지 열자마자)
+(function(){
+  const s1 = document.createElement('script');
+  s1.src = 'https://apis.google.com/js/api.js';
+  s1.onload = () => gapi.load('client', async () => {
+    await gapi.client.init({ apiKey: API_KEY, discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4'] });
+    gapiLoaded = true; maybeLoad();
+  });
+  document.body.appendChild(s1);
+  const s2 = document.createElement('script');
+  s2.src = 'https://accounts.google.com/gsi/client';
+  s2.onload = () => {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID, scope: SCOPES,
+      callback: r => { if(!r.error){ authed=true; hideGoogleAuth(); loadAll(); } }
+    });
+    gisLoaded = true; maybeLoad();
+    const hint = document.getElementById('google-auth-hint');
+    if (hint && hint.textContent === '로딩 중...') hint.textContent = '';
+  };
+  document.body.appendChild(s2);
+})();
 
 // LOCK
 function tryLogin() {
@@ -346,7 +371,8 @@ function tryLogin() {
     document.getElementById('lock-screen').style.display = 'none';
     const app = document.getElementById('app');
     app.style.display = 'flex'; app.style.flexDirection = 'column';
-    initDday(); initGapi();
+    appUnlocked = true;
+    initDday(); maybeLoad();
   } else {
     document.getElementById('lock-err').textContent = '비밀번호가 틀렸어요 💔';
     document.getElementById('lock-pw').value = '';
@@ -370,44 +396,32 @@ function goTab(t) {
 }
 
 // GAPI
-function initGapi() {
-  const s1 = document.createElement('script');
-  s1.src = 'https://apis.google.com/js/api.js';
-  s1.onload = () => gapi.load('client', async () => {
-    await gapi.client.init({ apiKey: API_KEY, discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4'] });
-    gapiLoaded = true; maybeLoad();
-  });
-  document.body.appendChild(s1);
-  const s2 = document.createElement('script');
-  s2.src = 'https://accounts.google.com/gsi/client';
-  s2.onload = () => {
-    tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID, scope: SCOPES,
-      callback: r => { if(!r.error){ authed=true; hideGoogleAuth(); loadAll(); } }
-    });
-    gisLoaded = true; maybeLoad();
-  };
-  document.body.appendChild(s2);
-}
 function maybeLoad() {
-  if (!gapiLoaded||!gisLoaded) return;
-  if (gapi.client.getToken()) { authed=true; loadAll(); }
+  if (!appUnlocked) return;
+  if (!gapiLoaded || !gisLoaded) {
+    showGoogleAuth();
+    const hint = document.getElementById('google-auth-hint');
+    if (hint) hint.textContent = '로딩 중...';
+    return;
+  }
+  const hint = document.getElementById('google-auth-hint');
+  if (hint) hint.textContent = '';
+  if (gapi.client.getToken()) { authed=true; hideGoogleAuth(); loadAll(); }
   else showGoogleAuth();
 }
 function showGoogleAuth() {
-  const el = document.getElementById('google-auth-screen');
-  el.style.display = 'flex';
+  document.getElementById('google-auth-screen').style.display = 'flex';
 }
 function hideGoogleAuth() {
   document.getElementById('google-auth-screen').style.display = 'none';
 }
 function doGoogleAuth() {
   if (!tokenClient) {
-    document.getElementById('google-auth-hint').textContent = '로딩 중... 잠시 후 다시 눌러주세요';
+    document.getElementById('google-auth-hint').textContent = '준비 중... 잠시 후 다시 눌러주세요';
     return;
   }
-  document.getElementById('google-auth-hint').textContent = '로그인 창이 열립니다...';
-  tokenClient.requestAccessToken({prompt:''});
+  document.getElementById('google-auth-hint').textContent = '';
+  tokenClient.requestAccessToken({prompt: 'consent'});
 }
 
 // SHEET OPS
