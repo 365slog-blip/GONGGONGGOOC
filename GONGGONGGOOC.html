@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>우리의 기록 💑</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;--bg4:#282828;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#505050;
+  --border:#2a2a2a;--border2:#383838;
+  --accent:#ff6b6b;--card:#161616;
+}
+.light{
+  --bg:#fafaf8;--bg2:#f5f4f0;--bg3:#eeedea;--bg4:#e5e4e0;
+  --text:#1a1a1a;--text2:#666;--text3:#aaa;
+  --border:#e0dedd;--border2:#ccc;--card:#fff;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px}
+body{overflow:hidden}
+
+/* LOCK */
+#lock-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;gap:14px;padding:40px}
+.lock-heart{font-size:52px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.lock-title{font-size:28px;font-weight:700;letter-spacing:-.5px}
+.lock-sub{font-size:13px;color:var(--text2)}
+.lock-input{background:var(--bg3);border:0.5px solid var(--border2);border-radius:14px;padding:14px 20px;font-size:18px;color:var(--text);width:220px;text-align:center;letter-spacing:6px;outline:none;font-family:inherit;margin-top:8px}
+.lock-input:focus{border-color:var(--accent)}
+.lock-btn{background:var(--accent);color:#fff;border:none;border-radius:14px;padding:14px 48px;font-size:15px;font-weight:600;cursor:pointer;width:220px}
+.lock-err{color:var(--accent);font-size:13px;height:16px;text-align:center}
+
+/* APP */
+#app{height:100%;display:none;flex-direction:column}
+
+/* HEADER */
+.hdr{padding:50px 18px 14px;background:var(--bg);border-bottom:0.5px solid var(--border);flex-shrink:0;position:relative;text-align:center}
+.dday-label{font-size:11px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.dday-num{font-size:38px;font-weight:800;letter-spacing:-1.5px;color:var(--accent);line-height:1}
+.dday-since{font-size:11px;color:var(--text3);margin-top:3px}
+.hdr-btns{position:absolute;top:50px;right:14px;display:flex;gap:4px}
+.hdr-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;font-size:17px;color:var(--text2)}
+
+/* TABS */
+.tabs{display:flex;background:var(--bg2);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:10px 4px 8px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;position:relative}
+.tab.on{color:var(--accent)}
+.tab.on::after{content:'';position:absolute;bottom:0;left:25%;right:25%;height:2px;background:var(--accent);border-radius:2px}
+.tab-icon{font-size:20px}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.tab-pane{display:none}
+.tab-pane.on{display:block}
+
+/* GALLERY */
+.pane-hdr{padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.pane-title{font-size:17px;font-weight:600}
+.add-btn{background:var(--accent);color:#fff;border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:6px 16px 100px}
+.gcard{background:var(--card);border-radius:12px;overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:transform .12s}
+.gcard:active{transform:scale(.96)}
+.gcard-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg3);display:block}
+.gcard-ph{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:30px}
+.gcard-body{padding:9px 10px}
+.gcard-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.gcard-sub{font-size:11px;color:var(--text3);margin-bottom:3px}
+.gcard-score{font-size:11px;color:var(--accent)}
+.gcard-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.gtag{font-size:10px;padding:2px 6px;border-radius:20px;background:var(--bg3);color:var(--text2)}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;grid-column:1/-1;color:var(--text3)}
+.empty-icon{font-size:44px;margin-bottom:10px}
+.empty-txt{font-size:14px;color:var(--text2);margin-bottom:4px}
+.empty-sub{font-size:12px}
+
+/* DETAIL */
+.dview{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.dview.on{display:block}
+.dview-hdr{padding:50px 14px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);z-index:10}
+.back-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:26px;padding:2px 4px;line-height:1}
+.dview-title{font-size:15px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.edit-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--text2);cursor:pointer}
+.dhero{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg3);display:block}
+.dph{width:100%;aspect-ratio:16/9;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:52px}
+.dbody{padding:18px 16px 60px}
+.dtitle{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:14px}
+.dprops{background:var(--bg2);border-radius:12px;border:0.5px solid var(--border);padding:14px;margin-bottom:18px;display:flex;flex-direction:column;gap:10px}
+.dprop{display:flex;gap:10px;font-size:13px}
+.dprop-k{color:var(--text3);width:64px;flex-shrink:0;font-size:12px}
+.dprop-v{color:var(--text);flex:1;line-height:1.5}
+.dsec{margin-bottom:18px}
+.dsec-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.dsec-txt{font-size:15px;line-height:1.75;color:var(--text)}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;border-radius:8px;overflow:hidden}
+.photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:pointer}
+.dtags{display:flex;gap:6px;flex-wrap:wrap}
+.dtag{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--bg3);color:var(--text2)}
+
+/* FORM */
+.fview{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.fview.on{display:block}
+.fview-hdr{padding:50px 14px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);z-index:10}
+.fview-title{font-size:15px;font-weight:600;flex:1}
+.fsave-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer}
+.fbody{padding:18px 16px 100px}
+.fg{margin-bottom:18px}
+.flabel{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.finput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;appearance:none;-webkit-appearance:none}
+.finput:focus{border-color:var(--accent)}
+.ftarea{resize:none;min-height:90px;line-height:1.6}
+.fselect{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none}
+
+/* STAR INPUT */
+.star-row{display:flex;gap:6px;align-items:center}
+.sstar{font-size:30px;cursor:pointer;transition:transform .1s;user-select:none;-webkit-user-select:none}
+.sstar:active{transform:scale(.85)}
+.star-score{font-size:14px;color:var(--accent);font-weight:600;min-width:28px}
+
+/* IMG UPLOAD */
+.img-drop{border:1.5px dashed var(--border2);border-radius:12px;padding:22px;text-align:center;cursor:pointer;color:var(--text3);transition:all .15s}
+.img-drop:active{border-color:var(--accent);color:var(--accent)}
+.img-drop-icon{font-size:28px;margin-bottom:6px}
+.img-drop-txt{font-size:13px}
+.img-previews{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.ipreview{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden}
+.ipreview img{width:100%;height:100%;object-fit:cover;display:block}
+.ipreview-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+
+/* LIGHTBOX */
+.lbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;align-items:center;justify-content:center;cursor:zoom-out}
+.lbox.on{display:flex}
+.lbox img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:6px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.on{opacity:1}
+
+/* LOADING */
+.loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:12px}
+.loading-spinner{width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:13px;color:var(--text2)}
+
+input[type=file]{display:none}
+::-webkit-scrollbar{width:0;height:0}
+</style>
+</head>
+<body>
+
+<!-- LOCK -->
+<div id="lock-screen">
+  <div class="lock-heart">💑</div>
+  <div class="lock-title">우리의 기록</div>
+  <div class="lock-sub">소중한 순간들을 담아요</div>
+  <input class="lock-input" type="password" id="lock-pw" placeholder="••••" maxlength="10" onkeydown="if(event.key==='Enter')tryLogin()">
+  <div class="lock-err" id="lock-err"></div>
+  <button class="lock-btn" onclick="tryLogin()">입장하기</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="dday-label">함께한 지</div>
+    <div class="dday-num" id="dday">D+0</div>
+    <div class="dday-since">2021.10.09 ~</div>
+    <div class="hdr-btns">
+      <button class="hdr-btn" onclick="toggleTheme()" id="theme-btn">☀️</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" id="tab-matzip" onclick="goTab('matzip')">
+      <span class="tab-icon">🍜</span>
+      <span>맛집</span>
+    </button>
+    <button class="tab" id="tab-date" onclick="goTab('date')">
+      <span class="tab-icon">📍</span>
+      <span>데이트</span>
+    </button>
+    <button class="tab" id="tab-movie" onclick="goTab('movie')">
+      <span class="tab-icon">🎬</span>
+      <span>영화</span>
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="tab-pane on" id="pane-matzip">
+      <div class="pane-hdr">
+        <div class="pane-title">맛집 기록</div>
+        <button class="add-btn" onclick="openForm('matzip')">+ 추가</button>
+      </div>
+      <div class="grid" id="grid-matzip"></div>
+    </div>
+    <div class="tab-pane" id="pane-date">
+      <div class="pane-hdr">
+        <div class="pane-title">데이트 기록</div>
+        <button class="add-btn" onclick="openForm('date')">+ 추가</button>
+      </div>
+      <div class="grid" id="grid-date"></div>
+    </div>
+    <div class="tab-pane" id="pane-movie">
+      <div class="pane-hdr">
+        <div class="pane-title">영화 기록</div>
+        <button class="add-btn" onclick="openForm('movie')">+ 추가</button>
+      </div>
+      <div class="grid" id="grid-movie"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div class="dview" id="dview">
+  <div class="dview-hdr">
+    <button class="back-btn" onclick="closeDetail()">‹</button>
+    <div class="dview-title" id="dview-title"></div>
+    <button class="edit-btn" onclick="editCurrent()">편집</button>
+  </div>
+  <div id="dview-body"></div>
+</div>
+
+<!-- FORM VIEW -->
+<div class="fview" id="fview">
+  <div class="fview-hdr">
+    <button class="back-btn" onclick="closeForm()">‹</button>
+    <div class="fview-title" id="fview-title">새 기록</div>
+    <button class="fsave-btn" onclick="saveRecord()">저장</button>
+  </div>
+  <div class="fbody" id="fbody"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lbox" id="lbox" onclick="this.classList.remove('on')">
+  <img id="lbox-img" src="" alt="">
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<input type="file" id="file-input" accept="image/*" multiple onchange="onFiles(event)">
+
+<script>
+// ===================== CONFIG =====================
+const PW = '1009';
+const SHEET_ID = '1zmvSHTIKPIvuTdgyi4UnHDxqyuhBI_7IAyckAkxqXA8';
+const API_KEY = 'AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
+const CLIENT_ID = '616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+const START = new Date('2021-10-09');
+
+const SHEET_NAMES = { matzip: '맛집 기본', date: '데이트_기본', movie: '영화' };
+const SHEET_DETAIL = { matzip: '맛집 상세', date: '데이트_상세' };
+
+// ===================== STATE =====================
+let db = { matzip:[], date:[], movie:[] };
+let curType = 'matzip';
+let curDetail = null;
+let editId = null;
+let imgs = [];
+let isLight = false;
+let tokenClient = null;
+let gapiLoaded = false;
+let gisLoaded = false;
+let authed = false;
+
+// ===================== LOCK =====================
+function tryLogin() {
+  const v = document.getElementById('lock-pw').value;
+  if (v === PW) {
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('app').style.flexDirection = 'column';
+    initDday();
+    initGapi();
+  } else {
+    document.getElementById('lock-err').textContent = '비밀번호가 틀렸어요 💔';
+    document.getElementById('lock-pw').value = '';
+    setTimeout(() => document.getElementById('lock-err').textContent = '', 2000);
+  }
+}
+
+// ===================== DDAY =====================
+function initDday() {
+  const diff = Math.floor((new Date() - START) / 86400000);
+  document.getElementById('dday').textContent = 'D+' + diff.toLocaleString();
+}
+
+// ===================== THEME =====================
+function toggleTheme() {
+  isLight = !isLight;
+  document.body.classList.toggle('light', isLight);
+  document.getElementById('theme-btn').textContent = isLight ? '🌙' : '☀️';
+}
+
+// ===================== TABS =====================
+function goTab(t) {
+  curType = t;
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('on'));
+  document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('on'));
+  document.getElementById('tab-'+t).classList.add('on');
+  document.getElementById('pane-'+t).classList.add('on');
+}
+
+// ===================== GAPI =====================
+function initGapi() {
+  const s1 = document.createElement('script');
+  s1.src = 'https://apis.google.com/js/api.js';
+  s1.onload = () => { gapi.load('client', async () => {
+    await gapi.client.init({ apiKey: API_KEY, discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'] });
+    gapiLoaded = true; maybeLoad();
+  }); };
+  document.body.appendChild(s1);
+
+  const s2 = document.createElement('script');
+  s2.src = 'https://accounts.google.com/gsi/client';
+  s2.onload = () => {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID, scope: SCOPES,
+      callback: (resp) => { if (resp.error) return; authed = true; loadAll(); }
+    });
+    gisLoaded = true; maybeLoad();
+  };
+  document.body.appendChild(s2);
+}
+
+function maybeLoad() {
+  if (!gapiLoaded || !gisLoaded) return;
+  // 토큰 있으면 바로 로드, 없으면 로그인
+  if (gapi.client.getToken()) { authed = true; loadAll(); }
+  else { tokenClient.requestAccessToken({ prompt: 'consent' }); }
+}
+
+// ===================== SHEET READ =====================
+async function loadAll() {
+  showLoading(true);
+  try {
+    await loadSheet('matzip', SHEET_NAMES.matzip);
+    await loadSheet('date', SHEET_NAMES.date);
+    await loadSheet('movie', SHEET_NAMES.movie);
+    await loadDetailSheet('matzip', SHEET_DETAIL.matzip);
+    await loadDetailSheet('date', SHEET_DETAIL.date);
+    renderAll();
+  } catch(e) { toast('데이터 로드 실패: ' + e.message); }
+  showLoading(false);
+}
+
+async function loadSheet(type, sheetName) {
+  try {
+    const res = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: sheetName });
+    const rows = res.result.values || [];
+    if (!rows.length) return;
+    const headers = rows[0];
+    db[type] = rows.slice(1).map((row, i) => {
+      const obj = { id: 'r' + i };
+      headers.forEach((h, j) => obj[h] = row[j] || '');
+      return obj;
+    });
+  } catch(e) { console.log('Sheet load error:', sheetName, e); }
+}
+
+async function loadDetailSheet(type, sheetName) {
+  try {
+    const res = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: sheetName });
+    const rows = res.result.values || [];
+    if (!rows.length) return;
+    const headers = rows[0];
+    const details = rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, j) => obj[h] = row[j] || '');
+      return obj;
+    });
+    // 기본 데이터에 상세 데이터 병합 (가게명/장소 기준)
+    const keyField = type === 'matzip' ? '가게명' : '장소';
+    db[type].forEach(item => {
+      const detail = details.find(d => d[keyField] === item[keyField]);
+      if (detail) Object.assign(item, detail);
+    });
+  } catch(e) { console.log('Detail load error:', sheetName, e); }
+}
+
+// ===================== SHEET WRITE =====================
+async function appendRow(sheetName, values) {
+  await gapi.client.sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID, range: sheetName, valueInputOption: 'USER_ENTERED',
+    resource: { values: [values] }
+  });
+}
+
+// ===================== RENDER =====================
+function renderAll() { ['matzip','date','movie'].forEach(renderGrid); }
+
+function renderGrid(type) {
+  const grid = document.getElementById('grid-' + type);
+  const items = db[type];
+  if (!items.length) {
+    const icons = { matzip:'🍜', date:'📍', movie:'🎬' };
+    const txts = { matzip:'맛집을 추가해보세요!', date:'데이트를 기록해보세요!', movie:'영화를 기록해보세요!' };
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">${icons[type]}</div><div class="empty-txt">${txts[type]}</div><div class="empty-sub">+ 추가 버튼을 눌러주세요</div></div>`;
+    return;
+  }
+  grid.innerHTML = items.map(item => cardHTML(type, item)).join('');
+}
+
+function cardHTML(type, item) {
+  const imgEl = item.대표이미지
+    ? `<img class="gcard-img" src="${item.대표이미지}" alt="" loading="lazy">`
+    : `<div class="gcard-ph">${type==='matzip'?'🍽️':type==='date'?'📸':'🎬'}</div>`;
+
+  if (type === 'matzip') {
+    const avg = item.별점나 && item.별점남친 ? ((+item.별점나 + +item.별점남친)/2).toFixed(1) : item.별점나 || '';
+    const tags = item.해시태그 ? item.해시태그.split(',').slice(0,2).map(t=>`<span class="gtag">#${t.trim()}</span>`).join('') : '';
+    return `<div class="gcard" onclick="openDetail('matzip','${item.id}')">
+      ${imgEl}<div class="gcard-body">
+      <div class="gcard-name">${item.가게명||''}</div>
+      <div class="gcard-sub">${item.장소||''}</div>
+      ${avg?`<div class="gcard-score">★ ${avg}</div>`:''}
+      ${tags?`<div class="gcard-tags">${tags}</div>`:''}
+      </div></div>`;
+  }
+  if (type === 'date') {
+    return `<div class="gcard" onclick="openDetail('date','${item.id}')">
+      ${imgEl}<div class="gcard-body">
+      <div class="gcard-name">${item.장소||''}</div>
+      <div class="gcard-sub">${item.날짜||''} · ${item.구분||''}</div>
+      ${item.한줄평?`<div class="gcard-sub" style="margin-top:2px">${item.한줄평}</div>`:''}
+      </div></div>`;
+  }
+  if (type === 'movie') {
+    const avg = item.별점나 && item.별점남친 ? ((+item.별점나 + +item.별점남친)/2).toFixed(1) : item.별점나 || '';
+    return `<div class="gcard" onclick="openDetail('movie','${item.id}')">
+      ${imgEl}<div class="gcard-body">
+      <div class="gcard-name">${item.영화명||''}</div>
+      <div class="gcard-sub">${item.날짜||''}</div>
+      ${avg?`<div class="gcard-score">★ ${avg}</div>`:''}
+      ${item.한줄평?`<div class="gcard-sub" style="margin-top:2px">${item.한줄평}</div>`:''}
+      </div></div>`;
+  }
+}
+
+// ===================== DETAIL =====================
+function openDetail(type, id) {
+  const item = db[type].find(r => r.id === id);
+  if (!item) return;
+  curDetail = { type, id };
+  const name = type==='matzip' ? item.가게명 : type==='date' ? item.장소 : item.영화명;
+  document.getElementById('dview-title').textContent = name || '';
+
+  const imgEl = item.대표이미지
+    ? `<img class="dhero" src="${item.대표이미지}" alt="" onclick="openLbox('${item.대표이미지}')">`
+    : `<div class="dph">${type==='matzip'?'🍽️':type==='date'?'📸':'🎬'}</div>`;
+
+  let html = imgEl + `<div class="dbody"><div class="dtitle">${name||''}</div>`;
+
+  // 공통 props
+  html += `<div class="dprops">`;
+  if (type==='matzip') {
+    if (item.장소) html += prop('위치', item.장소);
+    if (item.날짜) html += prop('날짜', item.날짜);
+    if (item.가격) html += prop('가격', item.가격);
+    if (item.메뉴) html += prop('메뉴', item.메뉴);
+    if (item.별점나) html += prop('내 별점', '★ ' + item.별점나, true);
+    if (item.별점남친) html += prop('남친 별점', '★ ' + item.별점남친, true);
+  }
+  if (type==='date') {
+    if (item.날짜) html += prop('날짜', item.날짜);
+    if (item.구분) html += prop('구분', item.구분);
+    if (item.한줄평) html += prop('한줄평', item.한줄평);
+  }
+  if (type==='movie') {
+    if (item.날짜) html += prop('날짜', item.날짜);
+    if (item.별점나) html += prop('내 별점', '★ ' + item.별점나, true);
+    if (item.별점남친) html += prop('남친 별점', '★ ' + item.별점남친, true);
+    if (item.한줄평) html += prop('한줄평', item.한줄평);
+  }
+  html += `</div>`;
+
+  // 섹션
+  if (type==='matzip') {
+    if (item.해시태그) html += sec('태그', `<div class="dtags">${item.해시태그.split(',').map(t=>`<span class="dtag">#${t.trim()}</span>`).join('')}</div>`);
+    if (item.메뉴상세) html += sec('코스 메뉴', `<div class="dsec-txt">${item.메뉴상세.replace(/\n/g,'<br>')}</div>`);
+    if (item.메모) html += sec('메모', `<div class="dsec-txt">${item.메모.replace(/\n/g,'<br>')}</div>`);
+    if (item.비고) html += sec('비고', `<div class="dsec-txt">${item.비고}</div>`);
+  }
+  if (type==='date') {
+    if (item.했던것) html += sec('했던 것', `<div class="dsec-txt">${item.했던것.replace(/\n/g,'<br>')}</div>`);
+    if (item.못한것) html += sec('못 한 것', `<div class="dsec-txt">${item.못한것.replace(/\n/g,'<br>')}</div>`);
+    if (item.다음에갈곳) html += sec('다음에 갈 곳', `<div class="dsec-txt">${item.다음에갈곳}</div>`);
+    if (item.비고) html += sec('비고', `<div class="dsec-txt">${item.비고}</div>`);
+  }
+
+  // 사진 갤러리
+  const photos = [];
+  for (let i=1;i<=15;i++) if (item['사진'+i]) photos.push(item['사진'+i]);
+  if (photos.length) {
+    html += sec('사진', `<div class="photo-grid">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" loading="lazy">`).join('')}</div>`);
+  }
+
+  html += `</div>`;
+  document.getElementById('dview-body').innerHTML = html;
+  document.getElementById('dview').classList.add('on');
+}
+
+function prop(k, v, accent=false) {
+  return `<div class="dprop"><span class="dprop-k">${k}</span><span class="dprop-v"${accent?' style="color:var(--accent)"':''}>${v}</span></div>`;
+}
+function sec(title, content) {
+  return `<div class="dsec"><div class="dsec-title">${title}</div>${content}</div>`;
+}
+
+function closeDetail() { document.getElementById('dview').classList.remove('on'); curDetail=null; }
+function editCurrent() { if (!curDetail) return; closeDetail(); openForm(curDetail.type, curDetail.id); }
+function openLbox(src) { document.getElementById('lbox-img').src=src; document.getElementById('lbox').classList.add('on'); }
+
+// ===================== FORM =====================
+function openForm(type, id=null) {
+  curType=type; editId=id; imgs=[];
+  const item = id ? db[type].find(r=>r.id===id) : null;
+  const titles = {matzip: id?'맛집 편집':'맛집 추가', date: id?'데이트 편집':'데이트 추가', movie: id?'영화 편집':'영화 추가'};
+  document.getElementById('fview-title').textContent = titles[type];
+
+  let html = '';
+  if (type==='matzip') {
+    html += fi('가게명','text','가게명 입력',item?.가게명);
+    html += fi('장소','text','위치 입력',item?.장소);
+    html += fi('날짜','date','',item?.날짜);
+    html += fi('가격','text','예: ₩50,000',item?.가격);
+    html += fi('메뉴','text','대표 메뉴',item?.메뉴);
+    html += fstar('별점나','내 별점',item?.별점나);
+    html += fstar('별점남친','남친 별점',item?.별점남친);
+    html += fi('해시태그','text','예: 한식, 코스',item?.해시태그);
+    html += fta('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
+    html += fta('메모','메모',item?.메모);
+    html += fi('비고','text','비고',item?.비고);
+  }
+  if (type==='date') {
+    html += fi('장소','text','장소 입력',item?.장소);
+    html += fi('날짜','date','',item?.날짜);
+    html += `<div class="fg"><label class="flabel">구분</label>
+      <select class="fselect" id="f-구분">
+        <option value="당일" ${item?.구분==='당일'?'selected':''}>당일 데이트</option>
+        <option value="여행" ${item?.구분==='여행'?'selected':''}>여행</option>
+      </select></div>`;
+    html += fi('한줄평','text','한줄평',item?.한줄평);
+    html += fta('했던것','했던 것',item?.했던것);
+    html += fta('못한것','못 한 것 / 아쉬운 점',item?.못한것);
+    html += fi('다음에갈곳','text','다음에 갈 곳',item?.다음에갈곳);
+    html += fi('비고','text','비고',item?.비고);
+  }
+  if (type==='movie') {
+    html += fi('영화명','text','영화 제목',item?.영화명);
+    html += fi('날짜','date','',item?.날짜);
+    html += fstar('별점나','내 별점',item?.별점나);
+    html += fstar('별점남친','남친 별점',item?.별점남친);
+    html += fi('한줄평','text','한줄평',item?.한줄평);
+  }
+
+  // 이미지 업로드
+  html += `<div class="fg"><label class="flabel">사진 (최대 15장)</label>
+    <div class="img-drop" onclick="document.getElementById('file-input').click()">
+      <div class="img-drop-icon">📷</div>
+      <div class="img-drop-txt">탭해서 사진 선택</div>
+    </div>
+    <div class="img-previews" id="img-previews"></div>
+  </div>`;
+
+  document.getElementById('fbody').innerHTML = html;
+
+  // 기존 이미지
+  if (item) {
+    const existing = [];
+    if (item.대표이미지) existing.push(item.대표이미지);
+    for (let i=1;i<=15;i++) if (item['사진'+i] && !existing.includes(item['사진'+i])) existing.push(item['사진'+i]);
+    imgs = existing;
+    renderPreviews();
+  }
+
+  // 별점 복원
+  if (item?.별점나) setStars('별점나', +item.별점나);
+  if (item?.별점남친) setStars('별점남친', +item.별점남친);
+
+  document.getElementById('fview').classList.add('on');
+}
+
+function fi(key, type, ph, val='') {
+  return `<div class="fg"><label class="flabel">${ph||key}</label>
+    <input class="finput" id="f-${key}" type="${type}" placeholder="${ph}" value="${val||''}"></div>`;
+}
+function fta(key, ph, val='') {
+  return `<div class="fg"><label class="flabel">${ph}</label>
+    <textarea class="finput ftarea" id="f-${key}" placeholder="${ph}">${val||''}</textarea></div>`;
+}
+function fstar(key, label, val) {
+  const score = val ? +val : 0;
+  return `<div class="fg"><label class="flabel">${label} <span id="sv-${key}" style="color:var(--accent);font-size:13px">${score > 0 ? score : '-'}</span>점</label>
+    <div class="star-row" id="sr-${key}">
+      ${[1,2,3,4,5].map(i=>`<span class="sstar" data-key="${key}" data-i="${i}" onclick="starClick(event,'${key}',${i})">☆</span>`).join('')}
+    </div></div>`;
+}
+
+// 별점 클릭 (0.5단위)
+function starClick(e, key, i) {
+  const el = e.target;
+  const rect = el.getBoundingClientRect();
+  const isLeft = e.clientX < rect.left + rect.width / 2;
+  const score = isLeft ? i - 0.5 : i;
+  setStars(key, score);
+}
+function setStars(key, score) {
+  const stars = document.querySelectorAll(`#sr-${key} .sstar`);
+  stars.forEach((s, idx) => {
+    const pos = idx + 1;
+    s.textContent = score >= pos ? '★' : score >= pos - 0.5 ? '½' : '☆';
+  });
+  document.getElementById('sv-'+key).textContent = score;
+}
+function getStarVal(key) {
+  const el = document.getElementById('sv-'+key);
+  return el ? el.textContent : '0';
+}
+
+// 이미지
+function onFiles(e) {
+  const files = Array.from(e.target.files);
+  const remaining = 15 - imgs.length;
+  files.slice(0, remaining).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = ev => { imgs.push(ev.target.result); renderPreviews(); };
+    reader.readAsDataURL(f);
+  });
+  e.target.value = '';
+}
+function renderPreviews() {
+  const wrap = document.getElementById('img-previews');
+  if (!wrap) return;
+  wrap.innerHTML = imgs.map((src, i) => `
+    <div class="ipreview">
+      <img src="${src}" alt="">
+      <button class="ipreview-del" onclick="removeImg(${i})">×</button>
+    </div>`).join('');
+}
+function removeImg(i) { imgs.splice(i,1); renderPreviews(); }
+
+function val(id) { const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+
+async function saveRecord() {
+  if (!authed) { toast('로그인이 필요해요'); return; }
+  showLoading(true);
+  try {
+    const type = curType;
+    if (type==='matzip') {
+      const row = [val('f-가게명'),val('f-장소'),getStarVal('별점나'),getStarVal('별점남친'),val('f-메뉴'),val('f-비고')];
+      await appendRow(SHEET_NAMES.matzip, row);
+      const detailRow = [val('f-가게명'),imgs[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...imgs.slice(1,16),val('f-메모')];
+      await appendRow(SHEET_DETAIL.matzip, detailRow);
+    }
+    if (type==='date') {
+      const row = [val('f-장소'),val('f-날짜'),imgs[0]||'',val('f-한줄평'),val('f-비고'),val('f-구분')];
+      await appendRow(SHEET_NAMES.date, row);
+      const detailRow = [val('f-장소'),val('f-날짜'),'1일차',val('f-했던것'),val('f-못한것'),...imgs.slice(0,15),val('f-다음에갈곳')];
+      await appendRow(SHEET_DETAIL.date, detailRow);
+    }
+    if (type==='movie') {
+      const row = [val('f-영화명'),val('f-날짜'),imgs[0]||'',getStarVal('별점나'),getStarVal('별점남친'),val('f-한줄평')];
+      await appendRow(SHEET_NAMES.movie, row);
+    }
+    toast('저장됐어요 ✓');
+    closeForm();
+    await loadAll();
+  } catch(e) { toast('저장 실패: ' + e.message); }
+  showLoading(false);
+}
+
+function closeForm() { document.getElementById('fview').classList.remove('on'); editId=null; imgs=[]; }
+
+// ===================== UI UTILS =====================
+function showLoading(show) {
+  let el = document.getElementById('loading');
+  if (show) {
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'loading';
+      el.className = 'loading';
+      el.innerHTML = '<div class="loading-spinner"></div><div class="loading-txt">불러오는 중...</div>';
+      document.body.appendChild(el);
+    }
+    el.style.display = 'flex';
+  } else {
+    if (el) el.style.display = 'none';
+  }
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 2500);
+}
+</script>
+</body>
+</html>
