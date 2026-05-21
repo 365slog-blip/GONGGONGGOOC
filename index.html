@@ -205,6 +205,15 @@ input[type=file]{display:none}
   <button class="lock-btn" onclick="tryLogin()">입장하기</button>
 </div>
 
+<!-- GOOGLE AUTH -->
+<div id="google-auth-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:900;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px">
+  <div style="font-size:52px">🔗</div>
+  <div style="font-size:22px;font-weight:700">Google 계정 연결</div>
+  <div style="font-size:13px;color:var(--text2);text-align:center">데이터를 불러오려면<br>Google 로그인이 필요해요</div>
+  <button onclick="doGoogleAuth()" style="background:var(--accent);color:#fff;border:none;border-radius:14px;padding:14px 48px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px">Google 로그인</button>
+  <div id="google-auth-hint" style="font-size:12px;color:var(--text3)"></div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="hdr">
@@ -374,7 +383,7 @@ function initGapi() {
   s2.onload = () => {
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID, scope: SCOPES,
-      callback: r => { if(!r.error){ authed=true; loadAll(); } }
+      callback: r => { if(!r.error){ authed=true; hideGoogleAuth(); loadAll(); } }
     });
     gisLoaded = true; maybeLoad();
   };
@@ -383,7 +392,18 @@ function initGapi() {
 function maybeLoad() {
   if (!gapiLoaded||!gisLoaded) return;
   if (gapi.client.getToken()) { authed=true; loadAll(); }
-  else tokenClient.requestAccessToken({prompt:'consent'});
+  else showGoogleAuth();
+}
+function showGoogleAuth() {
+  const el = document.getElementById('google-auth-screen');
+  el.style.display = 'flex';
+}
+function hideGoogleAuth() {
+  document.getElementById('google-auth-screen').style.display = 'none';
+}
+function doGoogleAuth() {
+  document.getElementById('google-auth-hint').textContent = '로그인 창이 열립니다...';
+  tokenClient.requestAccessToken({prompt:'consent'});
 }
 
 // SHEET OPS
