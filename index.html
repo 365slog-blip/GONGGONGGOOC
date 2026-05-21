@@ -464,8 +464,8 @@ function openDetail(type, id) {
     if (item.날짜) html += prop('날짜', item.날짜);
     if (item.가격) html += prop('가격', item.가격);
     if (item.메뉴) html += prop('메뉴', item.메뉴);
-    if (item.공슐랭) html += prop('내 별점', '★ ' + item.공슐랭, true);
-    if (item.하슐랭) html += prop('남친 별점', '★ ' + item.하슐랭, true);
+    if (item.공슐랭) html += prop('공슐랭', '★ ' + item.공슐랭, true);
+    if (item.하슐랭) html += prop('하슐랭', '★ ' + item.하슐랭, true);
   }
   if (type==='date') {
     if (item.날짜) html += prop('날짜', item.날짜);
@@ -474,8 +474,8 @@ function openDetail(type, id) {
   }
   if (type==='movie') {
     if (item.날짜) html += prop('날짜', item.날짜);
-    if (item.공슐랭) html += prop('내 별점', '★ ' + item.공슐랭, true);
-    if (item.하슐랭) html += prop('남친 별점', '★ ' + item.하슐랭, true);
+    if (item.공슐랭) html += prop('공슐랭', '★ ' + item.공슐랭, true);
+    if (item.하슐랭) html += prop('하슐랭', '★ ' + item.하슐랭, true);
     if (item.한줄평) html += prop('한줄평', item.한줄평);
   }
   html += `</div>`;
@@ -531,8 +531,8 @@ function openForm(type, id=null) {
     html += fi('날짜','date','',item?.날짜);
     html += fi('가격','text','예: ₩50,000',item?.가격);
     html += fi('메뉴','text','대표 메뉴',item?.메뉴);
-    html += fstar('공슐랭','내 별점',item?.공슐랭);
-    html += fstar('하슐랭','남친 별점',item?.하슐랭);
+    html += fstar('공슐랭','공슐랭',item?.공슐랭);
+    html += fstar('하슐랭','하슐랭',item?.하슐랭);
     html += fi('해시태그','text','예: 한식, 코스',item?.해시태그);
     html += fta('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
     html += fta('메모','메모',item?.메모);
@@ -555,8 +555,8 @@ function openForm(type, id=null) {
   if (type==='movie') {
     html += fi('영화명','text','영화 제목',item?.영화명);
     html += fi('날짜','date','',item?.날짜);
-    html += fstar('공슐랭','내 별점',item?.공슐랭);
-    html += fstar('하슐랭','남친 별점',item?.하슐랭);
+    html += fstar('공슐랭','공슐랭',item?.공슐랭);
+    html += fstar('하슐랭','하슐랭',item?.하슐랭);
     html += fi('한줄평','text','한줄평',item?.한줄평);
   }
 
@@ -648,25 +648,56 @@ function removeImg(i) { imgs.splice(i,1); renderPreviews(); }
 
 function val(id) { const el=document.getElementById(id); return el ? el.value.trim() : ''; }
 
+async function uploadImgToDrive(base64) {
+  try {
+    const blob = await fetch(base64).then(r => r.blob());
+    const metadata = { name: 'matzip_' + Date.now() + '.jpg', mimeType: 'image/jpeg' };
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('file', blob);
+    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + gapi.client.getToken().access_token },
+      body: form
+    });
+    const data = await res.json();
+    await fetch('https://www.googleapis.com/drive/v3/files/' + data.id + '/permissions', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + gapi.client.getToken().access_token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: 'reader', type: 'anyone' })
+    });
+    return 'https://drive.google.com/uc?export=view&id=' + data.id;
+  } catch(e) { console.error('이미지 업로드 실패:', e); return ''; }
+}
+
 async function saveRecord() {
   if (!authed) { toast('로그인이 필요해요'); return; }
   showLoading(true);
   try {
     const type = curType;
+    const uploadedImgs = [];
+    for (const img of imgs) {
+      if (img.startsWith('data:')) {
+        const url = await uploadImgToDrive(img);
+        uploadedImgs.push(url);
+      } else {
+        uploadedImgs.push(img);
+      }
+    }
     if (type==='matzip') {
       const row = [val('f-가게명'),val('f-장소'),getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-메뉴'),val('f-비고')];
       await appendRow(SHEET_NAMES.matzip, row);
-      const detailRow = [val('f-가게명'),imgs[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...imgs.slice(1,16),val('f-메모')];
+      const detailRow = [val('f-가게명'),uploadedImgs[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...uploadedImgs.slice(1,16),val('f-메모')];
       await appendRow(SHEET_DETAIL.matzip, detailRow);
     }
     if (type==='date') {
-      const row = [val('f-장소'),val('f-날짜'),imgs[0]||'',val('f-한줄평'),val('f-비고'),val('f-구분')];
+      const row = [val('f-장소'),val('f-날짜'),uploadedImgs[0]||'',val('f-한줄평'),val('f-비고'),val('f-구분')];
       await appendRow(SHEET_NAMES.date, row);
-      const detailRow = [val('f-장소'),val('f-날짜'),'1일차',val('f-했던것'),val('f-못한것'),...imgs.slice(0,15),val('f-다음에갈곳')];
+      const detailRow = [val('f-장소'),val('f-날짜'),'1일차',val('f-했던것'),val('f-못한것'),...uploadedImgs.slice(0,15),val('f-다음에갈곳')];
       await appendRow(SHEET_DETAIL.date, detailRow);
     }
     if (type==='movie') {
-      const row = [val('f-영화명'),val('f-날짜'),imgs[0]||'',getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-한줄평')];
+      const row = [val('f-영화명'),val('f-날짜'),uploadedImgs[0]||'',getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-한줄평')];
       await appendRow(SHEET_NAMES.movie, row);
     }
     toast('저장됐어요 ✓');
