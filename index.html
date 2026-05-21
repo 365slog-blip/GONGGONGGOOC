@@ -13,7 +13,7 @@
   --bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;--bg4:#282828;
   --text:#f0f0f0;--text2:#a0a0a0;--text3:#505050;
   --border:#2a2a2a;--border2:#383838;
-  --accent:#ff6b6b;--card:#161616;
+  --accent:#ff6b6b;--gold:#f5c842;--card:#161616;
 }
 .light{
   --bg:#fafaf8;--bg2:#f5f4f0;--bg3:#eeedea;--bg4:#e5e4e0;
@@ -42,15 +42,16 @@ body{overflow:hidden}
 .dday-label{font-size:11px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
 .dday-num{font-size:38px;font-weight:800;letter-spacing:-1.5px;color:var(--accent);line-height:1}
 .dday-since{font-size:11px;color:var(--text3);margin-top:3px}
-.hdr-btns{position:absolute;top:50px;right:14px;display:flex;gap:4px}
+.hdr-btns{position:absolute;top:50px;right:14px}
 .hdr-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;font-size:17px;color:var(--text2)}
 
 /* TABS */
-.tabs{display:flex;background:var(--bg2);border-bottom:0.5px solid var(--border);flex-shrink:0}
-.tab{flex:1;padding:10px 4px 8px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;position:relative}
+.tabs{display:flex;background:var(--bg2);border-bottom:0.5px solid var(--border);flex-shrink:0;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:70px;padding:10px 4px 8px;border:none;background:none;cursor:pointer;font-size:11px;color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;position:relative;white-space:nowrap}
 .tab.on{color:var(--accent)}
-.tab.on::after{content:'';position:absolute;bottom:0;left:25%;right:25%;height:2px;background:var(--accent);border-radius:2px}
-.tab-icon{font-size:20px}
+.tab.on::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--accent);border-radius:2px}
+.tab-icon{font-size:18px}
 
 /* CONTENT */
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -58,91 +59,120 @@ body{overflow:hidden}
 .tab-pane.on{display:block}
 
 /* PANE HEADER */
-.pane-hdr{padding:16px 20px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:0.5px solid var(--border)}
-.pane-title{font-size:17px;font-weight:600}
-.add-btn{background:var(--accent);color:#fff;border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer}
+.pane-hdr{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:0.5px solid var(--border)}
+.pane-title{font-size:16px;font-weight:600}
+.add-btn{background:var(--accent);color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer}
 
-/* LIST VIEW (맛집 기본) */
+/* RANKING */
+.ranking-wrap{padding:12px 16px;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.ranking-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.ranking-list{display:flex;flex-direction:column;gap:6px}
+.rank-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--bg);border:0.5px solid var(--border)}
+.rank-item.rank-1{border-color:var(--gold);background:rgba(245,200,66,.06)}
+.rank-item.rank-2{border-color:#c0c0c0;background:rgba(192,192,192,.04)}
+.rank-item.rank-3{border-color:#cd7f32;background:rgba(205,127,50,.04)}
+.rank-num{font-size:16px;font-weight:800;width:24px;text-align:center}
+.rank-1 .rank-num{color:var(--gold)}
+.rank-2 .rank-num{color:#c0c0c0}
+.rank-3 .rank-num{color:#cd7f32}
+.rank-name{flex:1;font-size:13px;font-weight:500}
+.rank-score{font-size:12px;color:var(--accent);font-weight:600}
+.rank-loc{font-size:11px;color:var(--text3)}
+
+/* LIST TABLE */
+.list-wrap{padding-bottom:100px}
 .list-table{width:100%;border-collapse:collapse}
-.list-table th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid var(--border);background:var(--bg2)}
-.list-table td{padding:12px;font-size:13px;border-bottom:0.5px solid var(--border);vertical-align:middle}
-.list-table tr:hover td{background:var(--bg2)}
-.list-name{font-weight:500;color:var(--accent);cursor:pointer;text-decoration:none}
+.list-table th{padding:10px 10px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid var(--border);background:var(--bg2);white-space:nowrap}
+.list-table td{padding:10px;font-size:13px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+.list-row{cursor:default}
+.list-row:hover td{background:var(--bg2)}
+.list-row.highlight td{background:rgba(245,200,66,.05)}
+.list-row.highlight td:first-child{border-left:3px solid var(--gold)}
+.list-name{font-weight:500;color:var(--accent);cursor:pointer}
 .list-name:hover{text-decoration:underline}
 .list-stars{color:var(--accent);font-size:12px;white-space:nowrap}
-.list-wrap{padding:0 0 100px}
+.list-avg{font-weight:700;color:var(--gold)}
+.row-actions{display:flex;gap:4px}
+.row-btn{border:none;background:none;cursor:pointer;padding:4px 6px;border-radius:6px;font-size:11px;color:var(--text3)}
+.row-btn:hover{background:var(--bg3);color:var(--text)}
+.row-btn.del:hover{color:var(--accent)}
 
-/* GALLERY GRID */
-.gallery-wrap{padding:16px 20px 100px}
-.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+/* INLINE EDIT */
+.inline-input{background:var(--bg3);border:0.5px solid var(--accent);border-radius:6px;padding:4px 6px;font-size:12px;color:var(--text);font-family:inherit;outline:none;width:100%;min-width:60px}
+.inline-save{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;white-space:nowrap}
+.inline-cancel{background:var(--bg3);color:var(--text2);border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer}
+
+/* GALLERY */
+.gallery-wrap{padding:12px 16px 100px}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 @media(max-width:600px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
-.gcard{background:var(--card);border-radius:12px;overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:transform .12s}
+.gcard{background:var(--card);border-radius:10px;overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:transform .12s}
 .gcard:active{transform:scale(.96)}
 .gcard-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg3);display:block}
-.gcard-ph{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px}
-.gcard-body{padding:8px 10px}
+.gcard-ph{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:26px}
+.gcard-body{padding:8px}
 .gcard-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.gcard-sub{font-size:11px;color:var(--text3)}
+.gcard-sub{font-size:10px;color:var(--text3)}
 .gcard-score{font-size:11px;color:var(--accent);margin-top:2px}
 
 /* EMPTY */
-.empty{text-align:center;padding:60px 20px;color:var(--text3)}
-.empty-icon{font-size:44px;margin-bottom:10px}
-.empty-txt{font-size:14px;color:var(--text2);margin-bottom:4px}
+.empty{text-align:center;padding:60px 20px;grid-column:1/-1;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:8px}
+.empty-txt{font-size:14px;color:var(--text2)}
 
 /* DETAIL VIEW */
 .dview{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .dview.on{display:block}
 .dview-hdr{padding:50px 14px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);z-index:10}
 .back-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:26px;padding:2px 6px;line-height:1}
-.dview-title{font-size:15px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.edit-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 14px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap}
-.edit-btn:hover{background:var(--bg3)}
-.dhero{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg3);display:block;cursor:pointer}
+.dview-title{font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.edit-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap}
+.edit-btn:hover{background:var(--bg3);color:var(--text)}
+.dhero{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;cursor:pointer}
 .dph{width:100%;aspect-ratio:16/9;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:52px}
-.dbody{padding:18px 16px 60px}
-.dtitle{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:14px}
-.dprops{background:var(--bg2);border-radius:12px;border:0.5px solid var(--border);padding:14px;margin-bottom:18px;display:flex;flex-direction:column;gap:10px}
+.dbody{padding:16px 16px 60px}
+.dtitle{font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:12px}
+.dprops{background:var(--bg2);border-radius:12px;border:0.5px solid var(--border);padding:12px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px}
 .dprop{display:flex;gap:10px;font-size:13px}
-.dprop-k{color:var(--text3);width:70px;flex-shrink:0;font-size:12px}
+.dprop-k{color:var(--text3);width:65px;flex-shrink:0;font-size:11px;padding-top:1px}
 .dprop-v{color:var(--text);flex:1;line-height:1.5}
-.dsec{margin-bottom:18px}
-.dsec-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-.dsec-txt{font-size:15px;line-height:1.75;color:var(--text)}
+.dsec{margin-bottom:16px}
+.dsec-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.dsec-txt{font-size:14px;line-height:1.75;color:var(--text)}
 .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;border-radius:8px;overflow:hidden}
 .photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:pointer}
 .dtags{display:flex;gap:6px;flex-wrap:wrap}
-.dtag{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--bg3);color:var(--text2)}
+.dtag{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--bg3);color:var(--text2)}
 
 /* FORM VIEW */
 .fview{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .fview.on{display:block}
 .fview-hdr{padding:50px 14px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);border-bottom:0.5px solid var(--border);z-index:10}
 .fview-title{font-size:15px;font-weight:600;flex:1}
-.fsave-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer}
-.fbody{padding:18px 16px 100px}
-.fg{margin-bottom:18px}
-.flabel{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;display:flex;align-items:center;gap:6px}
-.finput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none}
+.fsave-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer}
+.fbody{padding:16px 16px 100px}
+.fg{margin-bottom:16px}
+.flabel{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;display:block}
+.finput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:15px;color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none}
 .finput:focus{border-color:var(--accent)}
-.ftarea{resize:none;min-height:90px;line-height:1.6}
-.fselect{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none}
+.ftarea{resize:none;min-height:80px;line-height:1.6}
+.fselect{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:15px;color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none}
 
-/* STAR INPUT */
-.star-row{display:flex;gap:6px;align-items:center}
-.sstar{font-size:30px;cursor:pointer;user-select:none;-webkit-user-select:none;transition:transform .1s}
-.sstar:active{transform:scale(.85)}
-.star-score{font-size:14px;color:var(--accent);font-weight:600;min-width:32px}
+/* STAR DISPLAY (숫자입력→별표시) */
+.star-input-wrap{display:flex;align-items:center;gap:10px}
+.star-display{font-size:22px;letter-spacing:2px;color:var(--accent);min-width:110px}
+.star-num-input{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:15px;color:var(--text);font-family:inherit;outline:none;width:70px;text-align:center;-webkit-appearance:none}
+.star-num-input:focus{border-color:var(--accent)}
+.star-hint{font-size:11px;color:var(--text3);margin-top:4px}
 
-/* IMG UPLOAD */
-.img-drop{border:1.5px dashed var(--border2);border-radius:12px;padding:22px;text-align:center;cursor:pointer;color:var(--text3);transition:all .15s}
-.img-drop:active{border-color:var(--accent);color:var(--accent)}
-.img-drop-icon{font-size:28px;margin-bottom:6px}
-.img-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+/* IMG */
+.img-drop{border:1.5px dashed var(--border2);border-radius:10px;padding:20px;text-align:center;cursor:pointer;color:var(--text3)}
+.img-drop:active{border-color:var(--accent)}
+.img-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
 @media(max-width:600px){.img-previews{grid-template-columns:repeat(3,1fr)}}
-.ipreview{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden}
+.ipreview{position:relative;aspect-ratio:1;border-radius:7px;overflow:hidden}
 .ipreview img{width:100%;height:100%;object-fit:cover;display:block}
-.ipreview-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ipreview-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
 /* LIGHTBOX */
 .lbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;align-items:center;justify-content:center;cursor:zoom-out}
@@ -150,14 +180,14 @@ body{overflow:hidden}
 .lbox img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:6px}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:9px 18px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.on{opacity:1}
 
 /* LOADING */
-.loading{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:12px}
-.loading-spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+.loading{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:400;flex-direction:column;gap:10px}
+.loading-spinner{width:34px;height:34px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-txt{font-size:13px;color:#fff;background:rgba(0,0,0,.7);padding:8px 16px;border-radius:20px}
+.loading-txt{font-size:12px;color:#fff;background:rgba(0,0,0,.7);padding:6px 14px;border-radius:20px}
 
 input[type=file]{display:none}
 ::-webkit-scrollbar{width:0;height:0}
@@ -189,6 +219,9 @@ input[type=file]{display:none}
     <button class="tab on" id="tab-matzip" onclick="goTab('matzip')">
       <span class="tab-icon">🍜</span><span>맛집</span>
     </button>
+    <button class="tab" id="tab-gourmet" onclick="goTab('gourmet')">
+      <span class="tab-icon">✨</span><span>고-급</span>
+    </button>
     <button class="tab" id="tab-date" onclick="goTab('date')">
       <span class="tab-icon">📍</span><span>데이트</span>
     </button>
@@ -196,23 +229,40 @@ input[type=file]{display:none}
       <span class="tab-icon">🎬</span><span>영화</span>
     </button>
   </div>
+
   <div class="content">
-    <!-- 맛집: 리스트형 -->
+    <!-- 맛집: 랭킹 + 리스트 -->
     <div class="tab-pane on" id="pane-matzip">
       <div class="pane-hdr">
         <div class="pane-title">맛집 기록</div>
         <button class="add-btn" onclick="openForm('matzip')">+ 추가</button>
       </div>
+      <div class="ranking-wrap" id="ranking-wrap">
+        <div class="ranking-title">🏆 TOP 랭킹</div>
+        <div class="ranking-list" id="ranking-list"></div>
+      </div>
       <div class="list-wrap">
-        <table class="list-table" id="list-matzip">
+        <table class="list-table">
           <thead><tr>
-            <th>가게명</th><th>장소</th><th>공슐랭</th><th>하슐랭</th><th>메뉴</th>
+            <th>가게명</th><th>장소</th><th>공슐랭</th><th>하슐랭</th><th>평균</th><th>메뉴</th><th></th>
           </tr></thead>
           <tbody id="tbody-matzip"></tbody>
         </table>
       </div>
     </div>
-    <!-- 데이트: 갤러리형 -->
+
+    <!-- 고-급: 갤러리 -->
+    <div class="tab-pane" id="pane-gourmet">
+      <div class="pane-hdr">
+        <div class="pane-title">고-급 기록</div>
+        <button class="add-btn" onclick="openForm('gourmet')">+ 추가</button>
+      </div>
+      <div class="gallery-wrap">
+        <div class="gallery-grid" id="grid-gourmet"></div>
+      </div>
+    </div>
+
+    <!-- 데이트: 갤러리 -->
     <div class="tab-pane" id="pane-date">
       <div class="pane-hdr">
         <div class="pane-title">데이트 기록</div>
@@ -222,7 +272,8 @@ input[type=file]{display:none}
         <div class="gallery-grid" id="grid-date"></div>
       </div>
     </div>
-    <!-- 영화: 갤러리형 -->
+
+    <!-- 영화: 갤러리 -->
     <div class="tab-pane" id="pane-movie">
       <div class="pane-hdr">
         <div class="pane-title">영화 기록</div>
@@ -235,22 +286,10 @@ input[type=file]{display:none}
   </div>
 </div>
 
-<!-- 맛집 상세 갤러리 (리스트에서 가게명 클릭시) -->
-<div class="dview" id="dview-matzip-gallery">
-  <div class="dview-hdr">
-    <button class="back-btn" onclick="closeView('dview-matzip-gallery')">‹</button>
-    <div class="dview-title" id="matzip-gallery-title">맛집 상세</div>
-    <button class="add-btn" style="font-size:12px;padding:5px 12px" onclick="openForm('matzip-detail',null,currentMatzipName)">+ 추가</button>
-  </div>
-  <div class="gallery-wrap">
-    <div class="gallery-grid" id="grid-matzip-detail"></div>
-  </div>
-</div>
-
-<!-- 상세 블로그 뷰 -->
+<!-- DETAIL VIEW -->
 <div class="dview" id="dview-detail">
   <div class="dview-hdr">
-    <button class="back-btn" id="detail-back-btn" onclick="closeDetailView()">‹</button>
+    <button class="back-btn" onclick="closeDetail()">‹</button>
     <div class="dview-title" id="dview-title"></div>
     <button class="edit-btn" onclick="editCurrent()">편집</button>
   </div>
@@ -271,7 +310,6 @@ input[type=file]{display:none}
 <div class="lbox" id="lbox" onclick="this.classList.remove('on')">
   <img id="lbox-img" src="" alt="">
 </div>
-
 <div class="toast" id="toast"></div>
 <input type="file" id="file-input" accept="image/*" multiple onchange="onFiles(event)">
 
@@ -282,32 +320,23 @@ const API_KEY = 'AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
 const CLIENT_ID = '616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const START = new Date('2021-10-09');
+const SHEETS = { matzip:'맛집 기본', gourmet:'맛집 상세', date:'데이트_기본', dateDetail:'데이트_상세', movie:'영화' };
 
-const SHEETS = {
-  matzip: '맛집 기본', matzipDetail: '맛집 상세',
-  date: '데이트_기본', dateDetail: '데이트_상세', movie: '영화'
-};
-
-let db = { matzip:[], matzipDetail:[], date:[], dateDetail:[], movie:[] };
+let db = { matzip:[], gourmet:[], date:[], dateDetail:[], movie:[] };
 let curType = 'matzip';
 let curDetail = null;
 let curDetailType = null;
-let editId = null;
+let editRowIndex = null;
 let imgs = [];
 let isLight = false;
-let tokenClient = null;
-let gapiLoaded = false;
-let gisLoaded = false;
-let authed = false;
-let currentMatzipName = '';
+let tokenClient, gapiLoaded=false, gisLoaded=false, authed=false;
 
-// ===================== LOCK =====================
+// LOCK
 function tryLogin() {
-  const v = document.getElementById('lock-pw').value;
-  if (v === PW) {
+  if (document.getElementById('lock-pw').value === PW) {
     document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('app').style.flexDirection = 'column';
+    const app = document.getElementById('app');
+    app.style.display = 'flex'; app.style.flexDirection = 'column';
     initDday(); initGapi();
   } else {
     document.getElementById('lock-err').textContent = '비밀번호가 틀렸어요 💔';
@@ -315,522 +344,542 @@ function tryLogin() {
     setTimeout(() => document.getElementById('lock-err').textContent = '', 2000);
   }
 }
-
 function initDday() {
-  const diff = Math.floor((new Date() - START) / 86400000);
-  document.getElementById('dday').textContent = 'D+' + diff.toLocaleString();
+  document.getElementById('dday').textContent = 'D+' + Math.floor((new Date()-START)/86400000).toLocaleString();
 }
-
 function toggleTheme() {
   isLight = !isLight;
   document.body.classList.toggle('light', isLight);
   document.getElementById('theme-btn').textContent = isLight ? '🌙' : '☀️';
 }
-
 function goTab(t) {
   curType = t;
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('on'));
-  document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.tab-pane').forEach(el=>el.classList.remove('on'));
   document.getElementById('tab-'+t).classList.add('on');
   document.getElementById('pane-'+t).classList.add('on');
 }
 
-// ===================== GAPI =====================
+// GAPI
 function initGapi() {
   const s1 = document.createElement('script');
   s1.src = 'https://apis.google.com/js/api.js';
-  s1.onload = () => { gapi.load('client', async () => {
-    await gapi.client.init({ apiKey: API_KEY, discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'] });
+  s1.onload = () => gapi.load('client', async () => {
+    await gapi.client.init({ apiKey: API_KEY, discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4'] });
     gapiLoaded = true; maybeLoad();
-  }); };
+  });
   document.body.appendChild(s1);
   const s2 = document.createElement('script');
   s2.src = 'https://accounts.google.com/gsi/client';
   s2.onload = () => {
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID, scope: SCOPES,
-      callback: (resp) => { if (resp.error) return; authed = true; loadAll(); }
+      callback: r => { if(!r.error){ authed=true; loadAll(); } }
     });
     gisLoaded = true; maybeLoad();
   };
   document.body.appendChild(s2);
 }
-
 function maybeLoad() {
-  if (!gapiLoaded || !gisLoaded) return;
-  if (gapi.client.getToken()) { authed = true; loadAll(); }
-  else { tokenClient.requestAccessToken({ prompt: 'consent' }); }
+  if (!gapiLoaded||!gisLoaded) return;
+  if (gapi.client.getToken()) { authed=true; loadAll(); }
+  else tokenClient.requestAccessToken({prompt:'consent'});
 }
 
-// ===================== SHEET READ =====================
+// SHEET OPS
 async function loadAll() {
   showLoading(true);
   try {
-    await Promise.all([
-      loadSheet('matzip', SHEETS.matzip),
-      loadSheet('matzipDetail', SHEETS.matzipDetail),
-      loadSheet('date', SHEETS.date),
-      loadSheet('dateDetail', SHEETS.dateDetail),
-      loadSheet('movie', SHEETS.movie),
-    ]);
+    await Promise.all(Object.entries(SHEETS).map(([k,v]) => loadSheet(k,v)));
+    // 데이트 상세 merge
+    db['dateDetail'] = db['dateDetail'] || [];
     renderAll();
-  } catch(e) { toast('로드 실패: ' + e.message); }
+  } catch(e) { toast('로드 실패: '+e.message); }
   showLoading(false);
 }
-
-async function loadSheet(key, sheetName) {
+async function loadSheet(key, name) {
   try {
-    const res = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range: sheetName });
-    const rows = res.result.values || [];
-    if (rows.length < 1) return;
-    const headers = rows[0];
-    db[key] = rows.slice(1).map((row, i) => {
-      const obj = { _rowIndex: i + 2 };
-      headers.forEach((h, j) => obj[h] = row[j] || '');
-      return obj;
-    }).filter(obj => Object.keys(obj).some(k => k !== '_rowIndex' && obj[k]));
-  } catch(e) { console.log('load error:', sheetName, e); }
+    const res = await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID, range:name});
+    const rows = res.result.values||[];
+    if (!rows.length) return;
+    const hdrs = rows[0];
+    db[key] = rows.slice(1).map((row,i) => {
+      const o = {_row:i+2};
+      hdrs.forEach((h,j) => o[h]=row[j]||'');
+      return o;
+    }).filter(o => Object.keys(o).some(k=>k!=='_row'&&o[k]));
+  } catch(e) { console.log('load err:',name,e); }
 }
-
-async function appendRow(sheetName, values) {
+async function appendRow(name, vals) {
   await gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId: SHEET_ID, range: sheetName, valueInputOption: 'USER_ENTERED',
-    resource: { values: [values] }
+    spreadsheetId:SHEET_ID, range:name, valueInputOption:'USER_ENTERED',
+    resource:{values:[vals]}
   });
 }
-
-async function updateRow(sheetName, rowIndex, values) {
-  const range = sheetName + '!' + rowIndex + ':' + rowIndex;
+async function updateRow(name, row, vals) {
   await gapi.client.sheets.spreadsheets.values.update({
-    spreadsheetId: SHEET_ID, range, valueInputOption: 'USER_ENTERED',
-    resource: { values: [values] }
+    spreadsheetId:SHEET_ID, range:`${name}!A${row}:Z${row}`, valueInputOption:'USER_ENTERED',
+    resource:{values:[vals]}
   });
 }
+async function deleteRow(name, row) {
+  const sid = await getSheetId(name);
+  await gapi.client.sheets.spreadsheets.batchUpdate({
+    spreadsheetId:SHEET_ID,
+    resource:{requests:[{deleteDimension:{range:{sheetId:sid,dimension:'ROWS',startIndex:row-1,endIndex:row}}}]}
+  });
+}
+async function getSheetId(name) {
+  const res = await gapi.client.sheets.spreadsheets.get({spreadsheetId:SHEET_ID});
+  const sheet = res.result.sheets.find(s=>s.properties.title===name);
+  return sheet ? sheet.properties.sheetId : 0;
+}
 
-// ===================== RENDER =====================
+// RENDER
 function renderAll() {
   renderMatzipList();
+  renderGallery('gourmet');
   renderGallery('date');
   renderGallery('movie');
 }
 
+function avg(a,b) {
+  const na=parseFloat(a)||0, nb=parseFloat(b)||0;
+  if(!na&&!nb) return 0;
+  if(!na) return nb;
+  if(!nb) return na;
+  return (na+nb)/2;
+}
+
 function renderMatzipList() {
+  // 랭킹
+  const sorted = [...db.matzip].map(i=>({...i,_avg:avg(i.공슐랭,i.하슐랭)})).sort((a,b)=>b._avg-a._avg);
+  const top3 = sorted.slice(0,3).filter(i=>i._avg>0);
+  const rList = document.getElementById('ranking-list');
+  if (!top3.length) {
+    document.getElementById('ranking-wrap').style.display='none';
+  } else {
+    document.getElementById('ranking-wrap').style.display='block';
+    rList.innerHTML = top3.map((item,i) => `
+      <div class="rank-item rank-${i+1}">
+        <div class="rank-num">${['🥇','🥈','🥉'][i]}</div>
+        <div class="rank-name">${esc(item.가게명)}</div>
+        <div class="rank-loc">${esc(item.장소)}</div>
+        <div class="rank-score">★ ${item._avg.toFixed(1)}</div>
+      </div>`).join('');
+  }
+
+  // 테이블
   const tbody = document.getElementById('tbody-matzip');
   if (!db.matzip.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">
-      <div style="font-size:36px;margin-bottom:8px">🍜</div>맛집을 추가해보세요!
-    </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3)">
+      <div style="font-size:36px;margin-bottom:8px">🍜</div>맛집을 추가해보세요!</td></tr>`;
     return;
   }
-  tbody.innerHTML = db.matzip.map(item => `
-    <tr>
-      <td><span class="list-name" onclick="openMatzipGallery('${esc(item.가게명)}')">${esc(item.가게명)}</span></td>
-      <td style="color:var(--text2)">${esc(item.장소)}</td>
+  const maxAvg = Math.max(...db.matzip.map(i=>avg(i.공슐랭,i.하슐랭)));
+  tbody.innerHTML = db.matzip.map(item => {
+    const a = avg(item.공슐랭,item.하슐랭);
+    const isTop = a>0 && a===maxAvg;
+    return `<tr class="list-row ${isTop?'highlight':''}" id="row-${item._row}">
+      <td><span class="list-name" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</span>${isTop?'&nbsp;⭐':''}</td>
+      <td style="color:var(--text2);font-size:12px">${esc(item.장소)}</td>
       <td class="list-stars">${starStr(item.공슐랭)}</td>
       <td class="list-stars">${starStr(item.하슐랭)}</td>
-      <td style="color:var(--text2)">${esc(item.메뉴)}</td>
-    </tr>`).join('');
+      <td class="list-avg">${a>0?a.toFixed(1):'-'}</td>
+      <td style="color:var(--text2);font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.메뉴)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="row-btn" onclick="inlineEdit(${item._row})">✏️</button>
+          <button class="row-btn del" onclick="confirmDelete('matzip',${item._row})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
 function starStr(score) {
-  if (!score) return '-';
+  if (!score || score==='-') return '-';
   const n = parseFloat(score);
-  const full = Math.floor(n);
-  const half = n % 1 >= 0.5 ? 1 : 0;
-  const empty = 5 - full - half;
-  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty) + ` ${n}`;
+  if (isNaN(n)) return '-';
+  const full=Math.floor(n), half=n%1>=0.5?1:0, empty=5-full-half;
+  return '★'.repeat(full)+(half?'½':'')+'☆'.repeat(empty)+` ${n}`;
 }
 
 function renderGallery(type) {
-  const grid = document.getElementById('grid-' + type);
-  const items = type === 'date' ? db.date : db.movie;
-  const icons = { date:'📸', movie:'🎬' };
-  const txts = { date:'데이트를 기록해보세요!', movie:'영화를 기록해보세요!' };
+  const grid = document.getElementById('grid-'+type);
+  const items = db[type];
+  const icons = {gourmet:'🍽️',date:'📸',movie:'🎬'};
+  const txts = {gourmet:'고급 식당을 추가해보세요!',date:'데이트를 기록해보세요!',movie:'영화를 기록해보세요!'};
   if (!items.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
-      <div class="empty-icon">${icons[type]}</div>
-      <div class="empty-txt">${txts[type]}</div>
-    </div>`;
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">${icons[type]}</div><div class="empty-txt">${txts[type]}</div></div>`;
     return;
   }
   grid.innerHTML = items.map(item => {
-    const name = type === 'date' ? item.장소 : item.영화명;
-    const sub = type === 'date' ? (item.날짜 + (item.구분 ? ' · ' + item.구분 : '')) : item.날짜;
-    const imgSrc = item.대표이미지 || '';
-    const imgEl = imgSrc
-      ? `<img class="gcard-img" src="${imgSrc}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-      : '';
-    const ph = `<div class="gcard-ph" ${imgSrc ? 'style="display:none"' : ''}>${icons[type]}</div>`;
-    return `<div class="gcard" onclick="openDetail('${type}','${esc(name)}')">
+    const name = type==='movie' ? item.영화명 : type==='gourmet' ? item.가게명 : item.장소;
+    const sub = type==='movie' ? item.날짜 : type==='gourmet' ? (item.날짜+(item.가격?' · '+item.가격:'')) : (item.날짜+(item.구분?' · '+item.구분:''));
+    const score = type==='movie' ? avg(item.공슐랭,item.하슐랭) : 0;
+    const imgSrc = item.대표이미지||'';
+    const imgEl = imgSrc ? `<img class="gcard-img" src="${imgSrc}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : '';
+    const ph = `<div class="gcard-ph" ${imgSrc?'style="display:none"':''}>${icons[type]}</div>`;
+    return `<div class="gcard" onclick="openDetail('${type}',${item._row})">
       ${imgEl}${ph}
       <div class="gcard-body">
         <div class="gcard-name">${esc(name)}</div>
         <div class="gcard-sub">${esc(sub)}</div>
+        ${score>0?`<div class="gcard-score">★ ${score.toFixed(1)}</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-function renderMatzipGallery(name) {
-  const items = db.matzipDetail.filter(i => i.가게명 === name);
-  const grid = document.getElementById('grid-matzip-detail');
-  if (!items.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
-      <div class="empty-icon">🍽️</div>
-      <div class="empty-txt">상세 기록을 추가해보세요!</div>
-    </div>`;
+// INLINE EDIT (맛집 리스트)
+function inlineEdit(rowIndex) {
+  const item = db.matzip.find(i=>i._row===rowIndex);
+  if (!item) return;
+  const tr = document.getElementById('row-'+rowIndex);
+  if (!tr) return;
+  tr.innerHTML = `
+    <td><input class="inline-input" id="ie-가게명" value="${esc(item.가게명)}" style="width:90px"></td>
+    <td><input class="inline-input" id="ie-장소" value="${esc(item.장소)}" style="width:70px"></td>
+    <td><input class="inline-input" id="ie-공슐랭" value="${item.공슐랭}" style="width:45px" type="number" min="0" max="10" step="0.5"></td>
+    <td><input class="inline-input" id="ie-하슐랭" value="${item.하슐랭}" style="width:45px" type="number" min="0" max="10" step="0.5"></td>
+    <td>-</td>
+    <td><input class="inline-input" id="ie-메뉴" value="${esc(item.메뉴)}" style="width:90px"></td>
+    <td>
+      <div class="row-actions">
+        <button class="inline-save" onclick="saveInlineEdit(${rowIndex})">저장</button>
+        <button class="inline-cancel" onclick="renderMatzipList()">취소</button>
+      </div>
+    </td>`;
+}
+
+async function saveInlineEdit(rowIndex) {
+  showLoading(true);
+  try {
+    const vals = [
+      document.getElementById('ie-가게명').value,
+      document.getElementById('ie-장소').value,
+      document.getElementById('ie-공슐랭').value,
+      document.getElementById('ie-하슐랭').value,
+      document.getElementById('ie-메뉴').value,
+      ''
+    ];
+    await updateRow(SHEETS.matzip, rowIndex, vals);
+    toast('수정됐어요 ✓');
+    await loadAll();
+  } catch(e) { toast('수정 실패: '+e.message); }
+  showLoading(false);
+}
+
+async function confirmDelete(type, rowIndex) {
+  if (!confirm('삭제할까요?')) return;
+  showLoading(true);
+  try {
+    await deleteRow(SHEETS[type], rowIndex);
+    toast('삭제됐어요');
+    await loadAll();
+  } catch(e) { toast('삭제 실패: '+e.message); }
+  showLoading(false);
+}
+
+// DETAIL
+function openMatzipDetail(name) {
+  const item = db.gourmet.find(i=>i.가게명===name);
+  const basic = db.matzip.find(i=>i.가게명===name);
+  if (!item && basic) {
+    // 상세 없으면 기본 정보 보여주고 상세 추가 유도
+    curDetail = basic; curDetailType = 'matzip-detail-new';
+    showDetail({가게명:name, _row:basic._row}, 'matzip-detail-new');
     return;
   }
-  grid.innerHTML = items.map(item => {
-    const imgSrc = item.대표이미지 || '';
-    const imgEl = imgSrc
-      ? `<img class="gcard-img" src="${imgSrc}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-      : '';
-    const ph = `<div class="gcard-ph" ${imgSrc ? 'style="display:none"' : ''}>🍽️</div>`;
-    return `<div class="gcard" onclick="openDetailBlog('matzip-detail','${esc(item.가게명)}','${esc(item.날짜||'')}')">
-      ${imgEl}${ph}
-      <div class="gcard-body">
-        <div class="gcard-name">${esc(item.가게명)}</div>
-        <div class="gcard-sub">${esc(item.날짜||'')} ${item.가격 ? '· '+esc(item.가격) : ''}</div>
-        ${item.해시태그 ? `<div class="gcard-sub" style="margin-top:2px">${item.해시태그.split(',').map(t=>'#'+t.trim()).join(' ')}</div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
+  if (item) { curDetail=item; curDetailType='gourmet'; showDetail(item,'gourmet'); }
 }
 
-// ===================== NAVIGATION =====================
-function openMatzipGallery(name) {
-  currentMatzipName = name;
-  document.getElementById('matzip-gallery-title').textContent = name;
-  renderMatzipGallery(name);
-  document.getElementById('dview-matzip-gallery').classList.add('on');
-}
-
-function openDetail(type, name) {
-  const items = type === 'date' ? db.date : db.movie;
-  const item = items.find(i => (type === 'date' ? i.장소 : i.영화명) === name);
+function openDetail(type, rowIndex) {
+  const item = db[type].find(i=>i._row===rowIndex);
   if (!item) return;
-  curDetail = item;
-  curDetailType = type;
-  showDetailBlog(type, item);
+  curDetail=item; curDetailType=type;
+  // 데이트면 상세 시트에서 사진/기록 병합
+  if (type==='date') {
+    const detail = (db['dateDetail']||[]).find(d=>d.장소===item.장소&&d.날짜===item.날짜);
+    const merged = {...item};
+    if (detail) {
+      for(let i=1;i<=15;i++) if(detail['사진'+i]) merged['사진'+i]=detail['사진'+i];
+      if(detail.데이트기록) merged.데이트기록=detail.데이트기록;
+      if(detail.대표이미지&&!merged.대표이미지) merged.대표이미지=detail.대표이미지;
+    }
+    showDetail(merged, type);
+    return;
+  }
+  showDetail(item, type);
 }
 
-function openDetailBlog(type, name, date) {
-  const item = db.matzipDetail.find(i => i.가게명 === name && (i.날짜||'') === date) || db.matzipDetail.find(i => i.가게명 === name);
-  if (!item) return;
-  curDetail = item;
-  curDetailType = type;
-  showDetailBlog(type, item);
-}
-
-function showDetailBlog(type, item) {
-  const name = type === 'matzip-detail' ? item.가게명 : type === 'date' ? item.장소 : item.영화명;
-  document.getElementById('dview-title').textContent = name || '';
-
-  const imgSrc = item.대표이미지 || '';
-  const imgEl = imgSrc
-    ? `<img class="dhero" src="${imgSrc}" alt="" onclick="openLbox('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-    : '';
-  const ph = `<div class="dph" ${imgSrc ? 'style="display:none"' : ''}>${type==='movie'?'🎬':'📸'}</div>`;
-
-  let html = imgEl + ph + `<div class="dbody"><div class="dtitle">${esc(name)}</div><div class="dprops">`;
-
-  if (type === 'matzip-detail') {
-    if (item.날짜) html += prop('날짜', item.날짜);
-    if (item.가격) html += prop('가격', item.가격);
-    if (item.해시태그) html += prop('태그', item.해시태그.split(',').map(t=>'#'+t.trim()).join(' '));
-    if (item.메뉴상세) html += prop('메뉴', item.메뉴상세);
+function showDetail(item, type) {
+  const name = type==='movie'?item.영화명:type==='date'?item.장소:item.가게명;
+  document.getElementById('dview-title').textContent = name||'';
+  const imgSrc = item.대표이미지||'';
+  const imgEl = imgSrc?`<img class="dhero" src="${imgSrc}" onclick="openLbox('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:'' ;
+  const ph = `<div class="dph" ${imgSrc?'style="display:none"':''}>${type==='movie'?'🎬':type==='date'?'📸':'🍽️'}</div>`;
+  let html = imgEl+ph+`<div class="dbody"><div class="dtitle">${esc(name)}</div><div class="dprops">`;
+  if (type==='gourmet'||type==='matzip-detail-new') {
+    if (item.날짜) html+=prop('날짜',item.날짜);
+    if (item.가격) html+=prop('가격',item.가격);
+    if (item.해시태그) html+=prop('태그',item.해시태그);
+    if (item.메뉴상세) html+=prop('메뉴',item.메뉴상세);
+    const basic = db.matzip.find(i=>i.가게명===item.가게명);
+    if (basic?.공슐랭) html+=prop('공슐랭','★ '+basic.공슐랭,true);
+    if (basic?.하슐랭) html+=prop('하슐랭','★ '+basic.하슐랭,true);
   }
-  if (type === 'date') {
-    if (item.날짜) html += prop('날짜', item.날짜);
-    if (item.구분) html += prop('구분', item.구분);
-    if (item.한줄평) html += prop('한줄평', item.한줄평);
+  if (type==='date') {
+    if (item.날짜) html+=prop('날짜',item.날짜);
+    if (item.구분) html+=prop('구분',item.구분);
+    if (item.한줄평) html+=prop('한줄평',item.한줄평);
   }
-  if (type === 'movie') {
-    if (item.날짜) html += prop('날짜', item.날짜);
-    if (item.공슐랭) html += prop('공슐랭', '★ ' + item.공슐랭, true);
-    if (item.하슐랭) html += prop('하슐랭', '★ ' + item.하슐랭, true);
-    if (item.한줄평) html += prop('한줄평', item.한줄평);
+  if (type==='date'&&item.데이트기록) html+=sec('데이트 기록',item.데이트기록);
+  if (type==='movie') {
+    if (item.날짜) html+=prop('날짜',item.날짜);
+    if (item.공슐랭) html+=prop('공슐랭','★ '+item.공슐랭,true);
+    if (item.하슐랭) html+=prop('하슐랭','★ '+item.하슐랭,true);
+    if (item.한줄평) html+=prop('한줄평',item.한줄평);
   }
+  html+=`</div>`;
+  if (type==='gourmet'&&item.메모) html+=sec('메모',item.메모);
+  if (type==='date') {
+    if (item.했던것) html+=sec('했던 것',item.했던것);
+    if (item.못한것) html+=sec('못 한 것',item.못한것);
+    if (item.다음에갈곳) html+=sec('다음에 갈 곳',item.다음에갈곳);
+  }
+  // 사진
+  const photos=[];
+  for(let i=1;i<=15;i++) if(item['사진'+i]) photos.push(item['사진'+i]);
+  if(photos.length) html+=`<div class="dsec"><div class="dsec-title">사진</div>
+    <div class="photo-grid">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" loading="lazy" onerror="this.style.display='none'">`).join('')}</div></div>`;
 
-  html += `</div>`;
-
-  if (type === 'date') {
-    if (item.했던것) html += sec('했던 것', item.했던것);
-    if (item.못한것) html += sec('못 한 것', item.못한것);
-    if (item.다음에갈곳) html += sec('다음에 갈 곳', item.다음에갈곳);
+  if (type==='matzip-detail-new') {
+    html+=`<div style="margin-top:16px"><button class="add-btn" style="width:100%;padding:12px;border-radius:10px;font-size:14px" onclick="closeDetail();openForm('gourmet',null,'${esc(item.가게명)}')">+ 상세 기록 추가하기</button></div>`;
   }
-  if (type === 'matzip-detail') {
-    if (item.메모) html += sec('메모', item.메모);
-  }
-
-  // 사진 갤러리
-  const photos = [];
-  for (let i=1;i<=15;i++) if (item['사진'+i]) photos.push(item['사진'+i]);
-  if (photos.length) {
-    html += `<div class="dsec"><div class="dsec-title">사진</div>
-      <div class="photo-grid">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" loading="lazy" onerror="this.style.display='none'">`).join('')}
-    </div></div>`;
-  }
-
-  html += `</div>`;
-  document.getElementById('dview-body').innerHTML = html;
+  html+=`</div>`;
+  document.getElementById('dview-body').innerHTML=html;
   document.getElementById('dview-detail').classList.add('on');
 }
 
-function prop(k, v, accent=false) {
+function prop(k,v,accent=false) {
   return `<div class="dprop"><span class="dprop-k">${k}</span><span class="dprop-v"${accent?' style="color:var(--accent)"':''}>${esc(v)}</span></div>`;
 }
-function sec(title, content) {
+function sec(title,content) {
   return `<div class="dsec"><div class="dsec-title">${title}</div><div class="dsec-txt">${esc(content).replace(/\n/g,'<br>')}</div></div>`;
 }
-
-function closeView(id) { document.getElementById(id).classList.remove('on'); }
-function closeDetailView() {
-  document.getElementById('dview-detail').classList.remove('on');
-}
+function closeDetail() { document.getElementById('dview-detail').classList.remove('on'); }
 function editCurrent() {
-  if (!curDetail || !curDetailType) return;
+  if (!curDetail||!curDetailType) return;
+  closeDetail();
   openForm(curDetailType, curDetail);
 }
 function openLbox(src) { document.getElementById('lbox-img').src=src; document.getElementById('lbox').classList.add('on'); }
 
-// ===================== FORM =====================
-function openForm(type, item=null) {
-  curDetailType = type;
-  editId = item ? item._rowIndex : null;
-  imgs = [];
-  const titles = {
-    matzip: item ? '맛집 편집' : '맛집 추가',
-    'matzip-detail': item ? '상세 편집' : '상세 추가',
-    date: item ? '데이트 편집' : '데이트 추가',
-    movie: item ? '영화 편집' : '영화 추가'
-  };
-  document.getElementById('fview-title').textContent = titles[type] || '새 기록';
-
-  let html = '';
-  if (type === 'matzip') {
-    html += fi('가게명','text','가게명',item?.가게명);
-    html += fi('장소','text','위치',item?.장소);
-    html += fstar('공슐랭','공슐랭',item?.공슐랭);
-    html += fstar('하슐랭','하슐랭',item?.하슐랭);
-    html += fi('메뉴','text','대표 메뉴',item?.메뉴);
-    html += fi('비고','text','비고',item?.비고);
+// FORM
+function openForm(type, item=null, prefillName='') {
+  curDetailType=type; editRowIndex=item?item._row:null; imgs=[];
+  const titles={matzip:'맛집 추가',gourmet:item?'고-급 편집':'고-급 추가',date:item?'데이트 편집':'데이트 추가',movie:item?'영화 편집':'영화 추가','matzip-detail-new':'상세 추가'};
+  document.getElementById('fview-title').textContent=titles[type]||'새 기록';
+  let html='';
+  if (type==='matzip') {
+    html+=fi('가게명','text','가게명',item?.가게명||prefillName);
+    html+=fi('장소','text','위치',item?.장소);
+    html+=fstar('공슐랭','공슐랭 (0~10)',item?.공슐랭);
+    html+=fstar('하슐랭','하슐랭 (0~10)',item?.하슐랭);
+    html+=fi('메뉴','text','대표 메뉴',item?.메뉴);
+    html+=fi('비고','text','비고',item?.비고);
   }
-  if (type === 'matzip-detail') {
-    html += fi('가게명','text','가게명',item?.가게명 || currentMatzipName);
-    html += fi('날짜','date','날짜',item?.날짜);
-    html += fi('가격','text','가격 (예: ₩50,000)',item?.가격);
-    html += fi('해시태그','text','해시태그 (예: 한식, 코스)',item?.해시태그);
-    html += fta('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
-    html += fta('메모','메모',item?.메모);
-    html += fimgs();
+  if (type==='gourmet'||type==='matzip-detail-new') {
+    html+=fi('가게명','text','가게명',item?.가게명||prefillName);
+    html+=fi('날짜','date','날짜',item?.날짜);
+    html+=fi('가격','text','가격 (예: ₩50,000)',item?.가격);
+    html+=fi('해시태그','text','해시태그 (예: 한식, 코스)',item?.해시태그);
+    html+=fta('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
+    html+=fta('메모','메모',item?.메모);
+    html+=fimgs();
   }
-  if (type === 'date') {
-    html += fi('장소','text','장소',item?.장소);
-    html += fi('날짜','date','날짜',item?.날짜);
-    html += `<div class="fg"><label class="flabel">구분</label>
+  if (type==='date') {
+    html+=fi('장소','text','장소',item?.장소);
+    html+=fi('날짜','date','날짜',item?.날짜);
+    html+=`<div class="fg"><label class="flabel">구분</label>
       <select class="fselect" id="f-구분">
         <option value="당일" ${item?.구분==='당일'?'selected':''}>당일 데이트</option>
         <option value="여행" ${item?.구분==='여행'?'selected':''}>여행</option>
       </select></div>`;
-    html += fi('한줄평','text','한줄평',item?.한줄평);
-    html += fta('했던것','했던 것',item?.했던것);
-    html += fta('못한것','못 한 것 / 아쉬운 점',item?.못한것);
-    html += fi('다음에갈곳','text','다음에 갈 곳',item?.다음에갈곳);
-    html += fimgs();
+    html+=fi('한줄평','text','한줄평',item?.한줄평);
+    html+=fta('했던것','했던 것',item?.했던것);
+    html+=fta('못한것','못 한 것',item?.못한것);
+    html+=fi('다음에갈곳','text','다음에 갈 곳',item?.다음에갈곳);
+    html+=fimgs();
   }
-  if (type === 'movie') {
-    html += fi('영화명','text','영화 제목',item?.영화명);
-    html += fi('날짜','date','날짜',item?.날짜);
-    html += fstar('공슐랭','공슐랭',item?.공슐랭);
-    html += fstar('하슐랭','하슐랭',item?.하슐랭);
-    html += fi('한줄평','text','한줄평',item?.한줄평);
-    html += fimgs();
+  if (type==='movie') {
+    html+=fi('영화명','text','영화 제목',item?.영화명);
+    html+=fi('날짜','date','날짜',item?.날짜);
+    html+=fstar('공슐랭','공슐랭 (0~10)',item?.공슐랭);
+    html+=fstar('하슐랭','하슐랭 (0~10)',item?.하슐랭);
+    html+=fi('한줄평','text','한줄평',item?.한줄평);
+    html+=fimgs();
   }
-
-  document.getElementById('fbody').innerHTML = html;
-
-  // 기존 이미지 복원
+  document.getElementById('fbody').innerHTML=html;
   if (item) {
-    const existing = [];
-    if (item.대표이미지) existing.push(item.대표이미지);
-    for (let i=1;i<=15;i++) if (item['사진'+i] && !existing.includes(item['사진'+i])) existing.push(item['사진'+i]);
-    imgs = existing;
-    renderPreviews();
+    const ex=[];
+    if(item.대표이미지) ex.push(item.대표이미지);
+    for(let i=1;i<=15;i++) if(item['사진'+i]&&!ex.includes(item['사진'+i])) ex.push(item['사진'+i]);
+    imgs=ex; renderPreviews();
+    if(item.공슐랭) updateStarDisplay('공슐랭',item.공슐랭);
+    if(item.하슐랭) updateStarDisplay('하슐랭',item.하슐랭);
   }
-
-  if (item?.공슐랭) setStars('공슐랭', +item.공슐랭);
-  if (item?.하슐랭) setStars('하슐랭', +item.하슐랭);
-
   document.getElementById('fview').classList.add('on');
 }
 
-function fi(key, type, ph, val='') {
+function fi(key,type,ph,val='') {
   return `<div class="fg"><label class="flabel">${ph||key}</label>
     <input class="finput" id="f-${key}" type="${type}" placeholder="${ph}" value="${esc(val||'')}"></div>`;
 }
-function fta(key, ph, val='') {
+function fta(key,ph,val='') {
   return `<div class="fg"><label class="flabel">${ph}</label>
     <textarea class="finput ftarea" id="f-${key}" placeholder="${ph}">${val||''}</textarea></div>`;
 }
-function fstar(key, label, val) {
-  const score = val ? +val : 0;
-  return `<div class="fg"><label class="flabel">${label} <span id="sv-${key}" style="color:var(--accent)">${score > 0 ? score : '-'}</span>점</label>
-    <div class="star-row" id="sr-${key}">
-      ${[1,2,3,4,5].map(i=>`<span class="sstar" onclick="starClick(event,'${key}',${i})">☆</span>`).join('')}
-    </div></div>`;
+function fstar(key,label,val='') {
+  return `<div class="fg"><label class="flabel">${label}</label>
+    <div class="star-input-wrap">
+      <input class="star-num-input" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" oninput="updateStarDisplay('${key}',this.value)">
+      <div class="star-display" id="sd-${key}">${val?numToStars(parseFloat(val)):'☆☆☆☆☆'}</div>
+    </div>
+    <div class="star-hint">숫자 입력 (0.5 단위, 최대 10점)</div>
+  </div>`;
 }
 function fimgs() {
   return `<div class="fg"><label class="flabel">사진 (최대 15장)</label>
     <div class="img-drop" onclick="document.getElementById('file-input').click()">
-      <div class="img-drop-icon">📷</div>
+      <div style="font-size:26px;margin-bottom:4px">📷</div>
       <div style="font-size:13px">탭해서 사진 선택</div>
     </div>
-    <div class="img-previews" id="img-previews"></div>
-  </div>`;
+    <div class="img-previews" id="img-previews"></div></div>`;
 }
-
-function starClick(e, key, i) {
-  const el = e.target;
-  const rect = el.getBoundingClientRect();
-  const isLeft = e.clientX < rect.left + rect.width / 2;
-  const score = isLeft ? i - 0.5 : i;
-  setStars(key, score);
+function numToStars(n) {
+  if (isNaN(n)||n<=0) return '☆☆☆☆☆';
+  const score = Math.min(10,Math.max(0,n));
+  const halfScore = score/2;
+  const full=Math.floor(halfScore), half=halfScore%1>=0.5?1:0, empty=5-full-half;
+  return '★'.repeat(full)+(half?'½':'')+'☆'.repeat(empty);
 }
-function setStars(key, score) {
-  const stars = document.querySelectorAll(`#sr-${key} .sstar`);
-  if (!stars.length) return;
-  stars.forEach((s, idx) => {
-    const pos = idx + 1;
-    s.textContent = score >= pos ? '★' : score >= pos - 0.5 ? '½' : '☆';
-  });
-  const el = document.getElementById('sv-'+key);
-  if (el) el.textContent = score;
+function updateStarDisplay(key,val) {
+  const el=document.getElementById('sd-'+key);
+  if(el) el.textContent=numToStars(parseFloat(val));
 }
-function getStarVal(key) {
-  const el = document.getElementById('sv-'+key);
-  return el ? el.textContent : '0';
-}
+function updateStarDisplays() {}
 
 function onFiles(e) {
-  const files = Array.from(e.target.files);
-  const remaining = 15 - imgs.length;
-  files.slice(0, remaining).forEach(f => {
-    const reader = new FileReader();
-    reader.onload = ev => { imgs.push(ev.target.result); renderPreviews(); };
-    reader.readAsDataURL(f);
+  const files=Array.from(e.target.files);
+  files.slice(0,15-imgs.length).forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{imgs.push(ev.target.result);renderPreviews();};
+    r.readAsDataURL(f);
   });
-  e.target.value = '';
+  e.target.value='';
 }
 function renderPreviews() {
-  const wrap = document.getElementById('img-previews');
-  if (!wrap) return;
-  wrap.innerHTML = imgs.map((src, i) => `
-    <div class="ipreview">
-      <img src="${src}" alt="">
-      <button class="ipreview-del" onclick="removeImg(${i})">×</button>
-    </div>`).join('');
+  const wrap=document.getElementById('img-previews');
+  if(!wrap) return;
+  wrap.innerHTML=imgs.map((src,i)=>`
+    <div class="ipreview"><img src="${src}" alt="">
+    <button class="ipreview-del" onclick="removeImg(${i})">×</button></div>`).join('');
 }
-function removeImg(i) { imgs.splice(i,1); renderPreviews(); }
-function val(id) { const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+function removeImg(i){imgs.splice(i,1);renderPreviews();}
+function val(id){const el=document.getElementById(id);return el?el.value.trim():'';}
 
-// ===================== DRIVE UPLOAD =====================
+// DRIVE UPLOAD
 async function uploadImg(base64) {
-  if (!base64.startsWith('data:')) return base64;
+  if(!base64.startsWith('data:')) return base64;
   try {
-    const blob = await fetch(base64).then(r => r.blob());
-    const meta = { name: 'matzip_' + Date.now() + '.jpg', mimeType: 'image/jpeg' };
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
-    form.append('file', blob);
-    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + gapi.client.getToken().access_token },
-      body: form
+    const blob=await fetch(base64).then(r=>r.blob());
+    const meta={name:'img_'+Date.now()+'.jpg',mimeType:'image/jpeg'};
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file',blob);
+    const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+gapi.client.getToken().access_token},
+      body:form
     });
-    const data = await res.json();
-    await fetch('https://www.googleapis.com/drive/v3/files/' + data.id + '/permissions', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + gapi.client.getToken().access_token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role: 'reader', type: 'anyone' })
+    const data=await res.json();
+    await fetch('https://www.googleapis.com/drive/v3/files/'+data.id+'/permissions',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+gapi.client.getToken().access_token,'Content-Type':'application/json'},
+      body:JSON.stringify({role:'reader',type:'anyone'})
     });
-    return 'https://drive.google.com/uc?export=view&id=' + data.id;
-  } catch(e) { console.error('이미지 업로드 실패:', e); return ''; }
+    return 'https://drive.google.com/uc?export=view&id='+data.id;
+  } catch(e){console.error('img upload fail:',e);return '';}
 }
 
-// ===================== SAVE =====================
+// SAVE
 async function saveRecord() {
-  if (!authed) { toast('로그인이 필요해요'); return; }
+  if(!authed){toast('로그인 필요');return;}
   showLoading(true);
   try {
-    const type = curDetailType;
+    const type=curDetailType;
+    const uploaded=[];
+    for(const img of imgs){
+      const url=await uploadImg(img);
+      if(url) uploaded.push(url);
+    }
+    const sheetName = (type==='gourmet'||type==='matzip-detail-new') ? SHEETS.gourmet : SHEETS[type];
 
-    // 이미지 업로드
-    const uploaded = [];
-    for (const img of imgs) {
-      const url = await uploadImg(img);
-      if (url) uploaded.push(url);
+    if(type==='matzip') {
+      const row=[val('f-가게명'),val('f-장소'),val('f-공슐랭'),val('f-하슐랭'),val('f-메뉴'),val('f-비고')];
+      if(editRowIndex) await updateRow(SHEETS.matzip,editRowIndex,row);
+      else await appendRow(SHEETS.matzip,row);
     }
-
-    if (type === 'matzip') {
-      const row = [val('f-가게명'),val('f-장소'),getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-메뉴'),val('f-비고')];
-      if (editId) await updateRow(SHEETS.matzip, editId, row);
-      else await appendRow(SHEETS.matzip, row);
+    if(type==='gourmet'||type==='matzip-detail-new') {
+      // 컬럼순서: 가게명,대표이미지,가격,날짜,해시태그,메뉴상세,사진1~15,메모
+      const photos = uploaded.slice(1);
+      while(photos.length < 15) photos.push('');
+      const row=[val('f-가게명'),uploaded[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...photos.slice(0,15),val('f-메모')];
+      if(editRowIndex) await updateRow(SHEETS.gourmet,editRowIndex,row);
+      else await appendRow(SHEETS.gourmet,row);
     }
-    if (type === 'matzip-detail') {
-      const row = [val('f-가게명'),uploaded[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...uploaded.slice(1,16),val('f-메모')];
-      if (editId) await updateRow(SHEETS.matzipDetail, editId, row);
-      else await appendRow(SHEETS.matzipDetail, row);
+    if(type==='date') {
+      // 데이트 컬럼: 장소,날짜,대표이미지,한줄평,비고,구분,했던것,못한것,다음에갈곳,사진1~14
+      const datePhotos = uploaded.slice(1);
+      while(datePhotos.length < 14) datePhotos.push('');
+      const row=[val('f-장소'),val('f-날짜'),uploaded[0]||'',val('f-한줄평'),'',val('f-구분'),val('f-했던것'),val('f-못한것'),val('f-다음에갈곳'),...datePhotos.slice(0,14)];
+      if(editRowIndex) await updateRow(SHEETS.date,editRowIndex,row);
+      else await appendRow(SHEETS.date,row);
     }
-    if (type === 'date') {
-      const row = [val('f-장소'),val('f-날짜'),uploaded[0]||'',val('f-한줄평'),'',val('f-구분')];
-      if (editId) await updateRow(SHEETS.date, editId, row);
-      else await appendRow(SHEETS.date, row);
-      const detailRow = [val('f-장소'),val('f-날짜'),'',val('f-했던것'),val('f-못한것'),...uploaded.slice(0,15),val('f-다음에갈곳')];
-      if (!editId) await appendRow(SHEETS.dateDetail, detailRow);
+    if(type==='movie') {
+      const row=[val('f-영화명'),val('f-날짜'),uploaded[0]||'',val('f-공슐랭'),val('f-하슐랭'),val('f-한줄평')];
+      if(editRowIndex) await updateRow(SHEETS.movie,editRowIndex,row);
+      else await appendRow(SHEETS.movie,row);
     }
-    if (type === 'movie') {
-      const row = [val('f-영화명'),val('f-날짜'),uploaded[0]||'',getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-한줄평')];
-      if (editId) await updateRow(SHEETS.movie, editId, row);
-      else await appendRow(SHEETS.movie, row);
-    }
-
     toast('저장됐어요 ✓');
     closeForm();
     await loadAll();
-  } catch(e) { toast('저장 실패: ' + e.message); console.error(e); }
+  } catch(e){toast('저장 실패: '+e.message);console.error(e);}
   showLoading(false);
 }
 
-function closeForm() {
-  document.getElementById('fview').classList.remove('on');
-  editId = null; imgs = [];
-}
+function closeForm(){document.getElementById('fview').classList.remove('on');editRowIndex=null;imgs=[];}
 
-// ===================== UTILS =====================
 function showLoading(show) {
-  let el = document.getElementById('loading');
-  if (show) {
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'loading'; el.className = 'loading';
-      el.innerHTML = '<div class="loading-spinner"></div><div class="loading-txt">처리 중...</div>';
-      document.body.appendChild(el);
-    }
-    el.style.display = 'flex';
-  } else { if (el) el.style.display = 'none'; }
+  let el=document.getElementById('loading');
+  if(show){
+    if(!el){el=document.createElement('div');el.id='loading';el.className='loading';
+      el.innerHTML='<div class="loading-spinner"></div><div class="loading-txt">처리 중...</div>';
+      document.body.appendChild(el);}
+    el.style.display='flex';
+  } else {if(el)el.style.display='none';}
 }
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('on');
-  setTimeout(() => el.classList.remove('on'), 2500);
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('on');
+  setTimeout(()=>el.classList.remove('on'),2500);
 }
-
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 </script>
 </body>
