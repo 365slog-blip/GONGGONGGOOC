@@ -255,6 +255,7 @@ const START = new Date('2021-10-09');
 
 const SHEET_NAMES = { matzip: '맛집 기본', date: '데이트_기본', movie: '영화' };
 const SHEET_DETAIL = { matzip: '맛집 상세', date: '데이트_상세' };
+// 시트 탭 이름: 맛집 기본, 맛집 상세, 데이트_기본, 데이트_상세, 영화
 
 // ===================== STATE =====================
 let db = { matzip:[], date:[], movie:[] };
@@ -412,7 +413,7 @@ function cardHTML(type, item) {
     : `<div class="gcard-ph">${type==='matzip'?'🍽️':type==='date'?'📸':'🎬'}</div>`;
 
   if (type === 'matzip') {
-    const avg = item.별점나 && item.별점남친 ? ((+item.별점나 + +item.별점남친)/2).toFixed(1) : item.별점나 || '';
+    const avg = item.공슐랭 && item.하슐랭 ? ((+item.공슐랭 + +item.하슐랭)/2).toFixed(1) : item.공슐랭 || '';
     const tags = item.해시태그 ? item.해시태그.split(',').slice(0,2).map(t=>`<span class="gtag">#${t.trim()}</span>`).join('') : '';
     return `<div class="gcard" onclick="openDetail('matzip','${item.id}')">
       ${imgEl}<div class="gcard-body">
@@ -431,7 +432,7 @@ function cardHTML(type, item) {
       </div></div>`;
   }
   if (type === 'movie') {
-    const avg = item.별점나 && item.별점남친 ? ((+item.별점나 + +item.별점남친)/2).toFixed(1) : item.별점나 || '';
+    const avg = item.공슐랭 && item.하슐랭 ? ((+item.공슐랭 + +item.하슐랭)/2).toFixed(1) : item.공슐랭 || '';
     return `<div class="gcard" onclick="openDetail('movie','${item.id}')">
       ${imgEl}<div class="gcard-body">
       <div class="gcard-name">${item.영화명||''}</div>
@@ -463,8 +464,8 @@ function openDetail(type, id) {
     if (item.날짜) html += prop('날짜', item.날짜);
     if (item.가격) html += prop('가격', item.가격);
     if (item.메뉴) html += prop('메뉴', item.메뉴);
-    if (item.별점나) html += prop('내 별점', '★ ' + item.별점나, true);
-    if (item.별점남친) html += prop('남친 별점', '★ ' + item.별점남친, true);
+    if (item.공슐랭) html += prop('내 별점', '★ ' + item.공슐랭, true);
+    if (item.하슐랭) html += prop('남친 별점', '★ ' + item.하슐랭, true);
   }
   if (type==='date') {
     if (item.날짜) html += prop('날짜', item.날짜);
@@ -473,8 +474,8 @@ function openDetail(type, id) {
   }
   if (type==='movie') {
     if (item.날짜) html += prop('날짜', item.날짜);
-    if (item.별점나) html += prop('내 별점', '★ ' + item.별점나, true);
-    if (item.별점남친) html += prop('남친 별점', '★ ' + item.별점남친, true);
+    if (item.공슐랭) html += prop('내 별점', '★ ' + item.공슐랭, true);
+    if (item.하슐랭) html += prop('남친 별점', '★ ' + item.하슐랭, true);
     if (item.한줄평) html += prop('한줄평', item.한줄평);
   }
   html += `</div>`;
@@ -530,8 +531,8 @@ function openForm(type, id=null) {
     html += fi('날짜','date','',item?.날짜);
     html += fi('가격','text','예: ₩50,000',item?.가격);
     html += fi('메뉴','text','대표 메뉴',item?.메뉴);
-    html += fstar('별점나','내 별점',item?.별점나);
-    html += fstar('별점남친','남친 별점',item?.별점남친);
+    html += fstar('공슐랭','내 별점',item?.공슐랭);
+    html += fstar('하슐랭','남친 별점',item?.하슐랭);
     html += fi('해시태그','text','예: 한식, 코스',item?.해시태그);
     html += fta('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
     html += fta('메모','메모',item?.메모);
@@ -554,8 +555,8 @@ function openForm(type, id=null) {
   if (type==='movie') {
     html += fi('영화명','text','영화 제목',item?.영화명);
     html += fi('날짜','date','',item?.날짜);
-    html += fstar('별점나','내 별점',item?.별점나);
-    html += fstar('별점남친','남친 별점',item?.별점남친);
+    html += fstar('공슐랭','내 별점',item?.공슐랭);
+    html += fstar('하슐랭','남친 별점',item?.하슐랭);
     html += fi('한줄평','text','한줄평',item?.한줄평);
   }
 
@@ -580,8 +581,8 @@ function openForm(type, id=null) {
   }
 
   // 별점 복원
-  if (item?.별점나) setStars('별점나', +item.별점나);
-  if (item?.별점남친) setStars('별점남친', +item.별점남친);
+  if (item?.공슐랭) setStars('공슐랭', +item.공슐랭);
+  if (item?.하슐랭) setStars('하슐랭', +item.하슐랭);
 
   document.getElementById('fview').classList.add('on');
 }
@@ -653,7 +654,7 @@ async function saveRecord() {
   try {
     const type = curType;
     if (type==='matzip') {
-      const row = [val('f-가게명'),val('f-장소'),getStarVal('별점나'),getStarVal('별점남친'),val('f-메뉴'),val('f-비고')];
+      const row = [val('f-가게명'),val('f-장소'),getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-메뉴'),val('f-비고')];
       await appendRow(SHEET_NAMES.matzip, row);
       const detailRow = [val('f-가게명'),imgs[0]||'',val('f-가격'),val('f-날짜'),val('f-해시태그'),val('f-메뉴상세'),...imgs.slice(1,16),val('f-메모')];
       await appendRow(SHEET_DETAIL.matzip, detailRow);
@@ -665,7 +666,7 @@ async function saveRecord() {
       await appendRow(SHEET_DETAIL.date, detailRow);
     }
     if (type==='movie') {
-      const row = [val('f-영화명'),val('f-날짜'),imgs[0]||'',getStarVal('별점나'),getStarVal('별점남친'),val('f-한줄평')];
+      const row = [val('f-영화명'),val('f-날짜'),imgs[0]||'',getStarVal('공슐랭'),getStarVal('하슐랭'),val('f-한줄평')];
       await appendRow(SHEET_NAMES.movie, row);
     }
     toast('저장됐어요 ✓');
