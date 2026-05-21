@@ -811,7 +811,7 @@ async function uploadImg(base64) {
       headers:{Authorization:'Bearer '+gapi.client.getToken().access_token,'Content-Type':'application/json'},
       body:JSON.stringify({role:'reader',type:'anyone'})
     });
-    return 'https://drive.google.com/uc?export=view&id='+data.id;
+    return 'https://lh3.googleusercontent.com/d/'+data.id;
   } catch(e){console.error('img upload fail:',e);return '';}
 }
 
