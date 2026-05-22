@@ -1102,3 +1102,217 @@ function showDetailPopup(item,type){
     if(basic?.하슐랭)body+=dProp('하슐랭',starsAndNum(basic.하슐랭));
   }
   if(type==='date'){
+    if(item.날짜)body+=dProp('날짜',item.날짜);
+    if(item.구분)body+=dProp('구분',item.구분);
+    if(item.일차)body+=dProp('일차',item.일차);
+    if(item.한줄평)body+=dProp('한줄평',item.한줄평);
+  }
+  if(type==='culture'){
+    if(item.날짜)body+=dProp('날짜',item.날짜);
+    if(item.별점)body+=dProp('별점',starsAndNum(item.별점));
+    if(item.한줄평)body+=dProp('한줄평',item.한줄평);
+  }
+  body+='</div>';
+  if(type==='gourmet'){
+    if(item.메뉴상세)body+=`<div class="detail-section"><div class="detail-section-title">메뉴 상세</div><div class="detail-text">${esc(item.메뉴상세)}</div></div>`;
+    if(item.메모)body+=`<div class="detail-section"><div class="detail-section-title">메모</div><div class="detail-text">${esc(item.메모)}</div></div>`;
+  }
+  if(type==='date'&&item.데이트기록)body+=`<div class="detail-section"><div class="detail-section-title">여행 기록</div><div class="detail-text">${esc(item.데이트기록)}</div></div>`;
+  // Photos
+  const photos=[];
+  for(let i=1;i<=15;i++){const u=normalizeImgUrl(item['사진'+i]);if(u)photos.push(u);}
+  if(photos.length)body+=`<div class="detail-section"><div class="detail-section-title">사진 (${photos.length}장)</div>
+    <div class="photo-scroll">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" onerror="this.style.display='none'">`).join('')}</div></div>`;
+  document.getElementById('detail-popup-body').innerHTML=body;
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function dProp(k,v){return`<div class="detail-prop"><span class="detail-prop-k">${k}</span><span class="detail-prop-v">${esc(String(v))}</span></div>`;}
+function closeDetailDirect(){document.getElementById('detail-overlay').classList.remove('open');}
+function openFormFromDetail(){closeDetailDirect();openForm('gourmet',null,curDetailItem?.가게명||'');}
+function editFromDetail(){closeDetailDirect();openForm(curDetailType,curDetailItem);}
+function deleteFromDetail(){
+  const type=curDetailType,item=curDetailItem;
+  showConfirm(async()=>{
+    showLoading(true);
+    try{await deleteSheetRow(SHEETS[type]||SHEETS.matzip,item._row);closeDetailDirect();toast('삭제됐어요');await loadAll();}
+    catch(e){toast('삭제 실패: '+e.message);}
+    showLoading(false);
+  });
+}
+function openMatzipDetail(name){
+  const gourmet=db.gourmet.find(i=>i.가게명===name);
+  const basic=db.matzip.find(i=>i.가게명===name);
+  if(gourmet){curDetailType='gourmet';curDetailItem=gourmet;showDetailPopup(gourmet,'gourmet');}
+  else if(basic){
+    curDetailType='gourmet';curDetailItem=basic;
+    document.getElementById('detail-popup-title').textContent=basic.가게명||'';
+    document.getElementById('detail-write-btn').style.display='flex';
+    document.getElementById('detail-edit-btn').style.display='none';
+    document.getElementById('detail-del-btn').style.display='none';
+    let body=`<div class="detail-hero-ph">🍽️</div><div class="detail-title">${esc(basic.가게명)}</div><div class="detail-props">`;
+    if(basic.장소)body+=dProp('장소',basic.장소);
+    if(basic.공슐랭)body+=dProp('공슐랭',starsAndNum(basic.공슐랭));
+    if(basic.하슐랭)body+=dProp('하슐랭',starsAndNum(basic.하슐랭));
+    if(basic.메뉴)body+=dProp('메뉴',basic.메뉴);
+    body+=`</div><div style="margin:16px 20px;font-size:13px;color:var(--text3)">상세 기록이 없어요. 글을 남겨보세요!</div>`;
+    document.getElementById('detail-popup-body').innerHTML=body;
+    document.getElementById('detail-overlay').classList.add('open');
+  }
+}
+
+// CONFIRM
+let _confirmCb=null;
+function showConfirm(cb){
+  _confirmCb=cb;
+  document.getElementById('confirm-overlay').classList.add('open');
+  document.getElementById('confirm-ok-btn').onclick=()=>{closeConfirm();_confirmCb&&_confirmCb();};
+}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');}
+function confirmDelete(type,rowIdx){
+  showConfirm(async()=>{
+    showLoading(true);
+    try{await deleteSheetRow(SHEETS[type],rowIdx);toast('삭제됐어요');await loadAll();}
+    catch(e){toast('삭제 실패: '+e.message);}
+    showLoading(false);
+  });
+}
+
+// FORM
+function openForm(type,item=null,prefillName=''){
+  curFormType=type;curFormItem=item;
+  heroImgData=normalizeImgUrl(item?.대표이미지)||null;photosData=[];
+  if(item){for(let i=1;i<=15;i++){const u=normalizeImgUrl(item['사진'+i]);if(u)photosData.push(u);}}
+  const titles={gourmet:item?'고오급 수정':'고오급 글쓰기',date:item?'여행 수정':'여행 글쓰기',culture:item?'문화생활 수정':'문화생활 글쓰기',photo:'사진 추가',todo:item?'투두 수정':'투두 추가'};
+  document.getElementById('form-title').textContent=titles[type]||'새 기록';
+  let html='';
+  if(type==='gourmet'){
+    html+=fg('가게명','text','가게명',item?.가게명||prefillName);
+    html+=fg('날짜','date','날짜',item?.날짜);
+    html+=fg('가격','text','가격 (예: ₩80,000)',item?.가격);
+    html+=fg('해시태그','text','해시태그 (예: 한식, 코스)',item?.해시태그);
+    html+=fga('메뉴상세','코스 메뉴 상세',item?.메뉴상세);
+    html+=fga('메모','메모',item?.메모);
+    html+=fhero()+fphotos();
+  }else if(type==='date'){
+    html+=fg('장소','text','장소명',item?.장소);
+    html+=fg('날짜','date','날짜',item?.날짜);
+    html+=fgsel('구분',['당일','여행','기념일'],item?.구분);
+    html+=fg('일차','text','일차 (예: 1일차)',item?.일차);
+    html+=fg('한줄평','text','한줄평',item?.한줄평);
+    html+=fga('데이트기록','여행 기록',item?.데이트기록);
+    html+=fhero()+fphotos();
+  }else if(type==='culture'){
+    html+=fg('영화명','text','영화/공연 제목',item?.영화명);
+    html+=fg('날짜','date','날짜',item?.날짜);
+    html+=fgstar('별점','별점 (0~10)',item?.별점);
+    html+=fg('한줄평','text','한줄평',item?.한줄평);
+    html+=fhero();
+  }else if(type==='photo'){
+    html+=fg('날짜','date','날짜',item?.날짜);
+    html+=fg('메모','text','메모',item?.메모);
+    html+=fphotos();
+  }else if(type==='todo'){
+    html+=fg('제목','text','제목',item?.제목);
+    html+=fga('메모','메모',item?.메모);
+    html+=fgsel('해시태그',['맛집','여행','데이트','문화생활','기타'],item?.해시태그);
+    html+=fg('날짜','date','날짜',item?.날짜);
+    html+=fhero();
+  }
+  html+=`<div class="form-footer"><button class="form-cancel" onclick="closeFormDirect()">취소</button><button class="form-submit" onclick="saveRecord()">저장</button></div>`;
+  document.getElementById('form-body').innerHTML=html;
+  if(item?.별점)updateStarDisplay('f-별점',item.별점);
+  renderHeroPreview();renderPhotoPreviews();
+  document.getElementById('form-overlay').classList.add('open');
+}
+function closeFormDirect(){document.getElementById('form-overlay').classList.remove('open');heroImgData=null;photosData=[];}
+function fg(key,type,ph,val=''){return`<div class="fg"><label class="flabel">${ph||key}</label><input class="finput" id="f-${key}" type="${type}" placeholder="${ph||''}" value="${esc(val||'')}"></div>`;}
+function fga(key,ph,val=''){return`<div class="fg"><label class="flabel">${ph}</label><textarea class="finput ftarea" id="f-${key}" placeholder="${ph}">${val||''}</textarea></div>`;}
+function fgsel(key,opts,val=''){return`<div class="fg"><label class="flabel">${key}</label><select class="finput" id="f-${key}">${opts.map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;}
+function fgstar(key,label,val=''){return`<div class="fg"><label class="flabel">${label}</label><div style="display:flex;align-items:center;gap:12px"><input class="finput" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" style="width:80px" oninput="updateStarDisplay('f-${key}',this.value)"><div class="star-visual" id="sd-f-${key}">${val?numToStars(parseFloat(val)):'☆☆☆☆☆'}</div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">0.5 단위 (최대 10점)</div></div>`;}
+function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview" src="${heroImgData}" alt="">`:`<div class="hero-preview-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`}</div></div>`;}
+function fphotos(){return`<div class="fg"><label class="flabel">사진 (최대 15장)</label><div class="img-drop" onclick="document.getElementById('photos-file').click()"><div class="img-drop-icon">📷</div><div class="img-drop-label">탭해서 사진 선택</div></div><div class="img-preview-grid" id="photos-preview"></div></div>`;}
+function updateStarDisplay(id,val){const el=document.getElementById('sd-'+id);if(el)el.textContent=numToStars(parseFloat(val));}
+function renderHeroPreview(){
+  const wrap=document.getElementById('hero-preview-wrap');if(!wrap)return;
+  wrap.innerHTML=heroImgData?`<img class="hero-preview" src="${heroImgData}" alt="">`:`<div class="hero-preview-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`;
+}
+function renderPhotoPreviews(){
+  const wrap=document.getElementById('photos-preview');if(!wrap)return;
+  wrap.innerHTML=photosData.map((src,i)=>`<div class="ipreview"><img src="${src}" alt=""><button class="ipreview-del" onclick="removePhoto(${i})">✕</button></div>`).join('');
+}
+function removePhoto(i){photosData.splice(i,1);renderPhotoPreviews();}
+function onHeroFile(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=ev=>{heroImgData=ev.target.result;renderHeroPreview();};r.readAsDataURL(f);
+  e.target.value='';
+}
+function onPhotosFile(e){
+  Array.from(e.target.files).slice(0,15-photosData.length).forEach(f=>{
+    const r=new FileReader();r.onload=ev=>{photosData.push(ev.target.result);renderPhotoPreviews();};r.readAsDataURL(f);
+  });
+  e.target.value='';
+}
+
+// SAVE
+async function saveRecord(){
+  if(!authed){toast('로그인 필요');return;}
+  showLoading(true);
+  const fv=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  try{
+    const type=curFormType;
+    const fk=type==='date'?'date':type==='culture'?'culture':'etc';
+    let heroUrl=heroImgData?.startsWith('data:')?await uploadToDrive(heroImgData,fk):(heroImgData||'');
+    const photoUrls=[];
+    for(const p of photosData){
+      if(p.startsWith('data:')){const u=await uploadToDrive(p,fk);if(u)photoUrls.push(u);}
+      else if(p)photoUrls.push(p);
+    }
+    while(photoUrls.length<15)photoUrls.push('');
+    if(type==='gourmet'){
+      const row=[fv('f-가게명'),heroUrl,fv('f-가격'),fv('f-날짜'),fv('f-해시태그'),fv('f-메뉴상세'),...photoUrls.slice(0,15),fv('f-메모')];
+      curFormItem?._row?await updateRow(SHEETS.gourmet,curFormItem._row,row):await appendRow(SHEETS.gourmet,row);
+    }else if(type==='date'){
+      const row=[fv('f-장소'),fv('f-날짜'),heroUrl,fv('f-한줄평'),'',fv('f-구분'),fv('f-일차'),fv('f-데이트기록'),...photoUrls.slice(0,15)];
+      curFormItem?._row?await updateRow(SHEETS.date,curFormItem._row,row):await appendRow(SHEETS.date,row);
+    }else if(type==='culture'){
+      const row=[fv('f-영화명'),fv('f-날짜'),heroUrl,fv('f-별점'),fv('f-한줄평')];
+      curFormItem?._row?await updateRow(SHEETS.culture,curFormItem._row,row):await appendRow(SHEETS.culture,row);
+    }else if(type==='photo'){
+      const all=[heroUrl,...photosData].filter(Boolean);
+      for(const p of all){const u=p.startsWith('data:')?await uploadToDrive(p,'etc'):p;if(u)await appendRow(SHEETS.photo,[fv('f-날짜'),u,fv('f-메모')]);}
+    }else if(type==='todo'){
+      const row=[fv('f-제목'),fv('f-메모'),fv('f-해시태그'),heroUrl,'',fv('f-날짜')];
+      curFormItem?._row?await updateRow(SHEETS.todo,curFormItem._row,row):await appendRow(SHEETS.todo,row);
+    }
+    toast('저장됐어요 ✓');closeFormDirect();await loadAll();
+  }catch(e){toast('저장 실패: '+e.message);console.error(e);}
+  showLoading(false);
+}
+
+// UTILS
+function normalizeImgUrl(url){
+  if(!url)return'';
+  if(url.includes('lh3.googleusercontent.com'))return url;
+  let m=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if(!m)m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(m)return'https://lh3.googleusercontent.com/d/'+m[1];
+  return url;
+}
+function imgOrPh(src,ratio,icon){
+  const s=normalizeImgUrl(src);
+  if(s)return`<img class="gcard-img" src="${s}" style="aspect-ratio:${ratio}" alt="" loading="lazy" onerror="this.outerHTML='<div class=gcard-ph style=aspect-ratio:${ratio}>${icon}</div>'">`;
+  return`<div class="gcard-ph" style="aspect-ratio:${ratio}">${icon}</div>`;
+}
+function emptyState(icon,txt){return`<div class="empty-state" style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3)"><div class="empty-icon">${icon}</div><div class="empty-txt">${txt}</div></div>`;}
+function sortByDate(d1,d2){return(new Date(d1)||0)-(new Date(d2)||0);}
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function openLbox(src){document.getElementById('lbox-img').src=src;document.getElementById('lbox').classList.add('open');}
+function showLoading(show){document.getElementById('loading-overlay').classList.toggle('show',show);}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2500);}
+
+// START
+initGapi();
+</script>
+</body>
+</html>
