@@ -79,6 +79,8 @@ body{overflow:hidden}
 .home-dday-label{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
 .home-dday-num{font-family:var(--font-display);font-size:72px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-2px}
 .home-dday-since{font-size:13px;color:var(--text3);margin-top:8px;letter-spacing:.06em}
+.home-dday-detail{font-size:14px;color:var(--text2);margin-top:10px;letter-spacing:.02em}
+.hero-preview-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:11px;display:block}
 .home-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:520px;margin:0 auto}
 .home-cat{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:30px 20px;cursor:pointer;transition:all .2s;text-align:center}
 .home-cat:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2)}
@@ -400,6 +402,7 @@ input[type=file]{display:none}
           <div class="home-dday-label">함께한 지</div>
           <div class="home-dday-num" id="dday-num">D+0</div>
           <div class="home-dday-since">2021년 10월 9일부터 ♥</div>
+          <div class="home-dday-detail" id="dday-detail"></div>
         </div>
         <div class="home-cats">
           <div class="home-cat" onclick="goPage('matzip')"><div class="home-cat-icon">🍜</div><div class="home-cat-name">맛집</div><div class="home-cat-sub">Restaurant Tour</div></div>
@@ -659,7 +662,29 @@ function startApp(){
   initDday();loadAll();
 }
 function initDday(){
-  document.getElementById('dday-num').textContent='D+'+Math.floor((new Date()-START_DATE)/86400000).toLocaleString();
+  // KST 기준 오늘 날짜
+  const kstNow=new Date(new Date().getTime()+9*3600000);
+  const todayY=kstNow.getUTCFullYear(),todayM=kstNow.getUTCMonth(),todayD=kstNow.getUTCDate();
+  const startY=2021,startM=9,startD=9; // Oct=9 (0-indexed)
+  const startUtc=Date.UTC(startY,startM,startD);
+  const todayUtc=Date.UTC(todayY,todayM,todayD);
+  const totalDays=Math.floor((todayUtc-startUtc)/86400000);
+  document.getElementById('dday-num').textContent='D+'+totalDays.toLocaleString();
+  // 상세: n년 n개월 n주 n일째
+  let y=todayY-startY;
+  if(todayM<startM||(todayM===startM&&todayD<startD))y--;
+  let remY=startY+y,remM=startM;
+  let m=(todayY-remY)*12+(todayM-remM);
+  if(todayD<startD)m--;
+  const remDate=new Date(Date.UTC(remY,remM+m,startD));
+  const diffDays=Math.floor((todayUtc-remDate.getTime())/86400000);
+  const w=Math.floor(diffDays/7),d=diffDays%7;
+  const parts=[];
+  if(y>0)parts.push(y+'년');
+  if(m>0)parts.push(m+'개월');
+  if(w>0)parts.push(w+'주');
+  if(d>0)parts.push(d+'일');
+  document.getElementById('dday-detail').textContent=parts.length?(parts.join(' ')+'째'):'오늘';
 }
 function toggleTheme(){
   isLight=!isLight;document.body.classList.toggle('light',isLight);
@@ -1219,7 +1244,7 @@ function openForm(type,item=null,prefillName=''){
     html+=fg('날짜','date','날짜',item?.날짜);
     html+=fhero();
   }
-  html+=`<div class="form-footer"><button class="form-cancel" onclick="closeFormDirect()">취소</button><button class="form-submit" onclick="saveRecord()">저장</button></div>`;
+  html+=`<div class="form-footer"><button class="form-cancel-btn" onclick="closeFormDirect()">취소</button><button class="form-submit-btn" onclick="saveRecord()">저장</button></div>`;
   document.getElementById('form-body').innerHTML=html;
   if(item?.별점)updateStarDisplay('f-별점',item.별점);
   renderHeroPreview();renderPhotoPreviews();
@@ -1230,12 +1255,12 @@ function fg(key,type,ph,val=''){return`<div class="fg"><label class="flabel">${p
 function fga(key,ph,val=''){return`<div class="fg"><label class="flabel">${ph}</label><textarea class="finput ftarea" id="f-${key}" placeholder="${ph}">${val||''}</textarea></div>`;}
 function fgsel(key,opts,val=''){return`<div class="fg"><label class="flabel">${key}</label><select class="finput" id="f-${key}">${opts.map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;}
 function fgstar(key,label,val=''){return`<div class="fg"><label class="flabel">${label}</label><div style="display:flex;align-items:center;gap:12px"><input class="finput" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" style="width:80px" oninput="updateStarDisplay('f-${key}',this.value)"><div class="star-visual" id="sd-f-${key}">${val?numToStars(parseFloat(val)):'☆☆☆☆☆'}</div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">0.5 단위 (최대 10점)</div></div>`;}
-function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview" src="${heroImgData}" alt="">`:`<div class="hero-preview-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`}</div></div>`;}
+function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt="">`:`<div class="hero-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`}</div></div>`;}
 function fphotos(){return`<div class="fg"><label class="flabel">사진 (최대 15장)</label><div class="img-drop" onclick="document.getElementById('photos-file').click()"><div class="img-drop-icon">📷</div><div class="img-drop-label">탭해서 사진 선택</div></div><div class="img-preview-grid" id="photos-preview"></div></div>`;}
 function updateStarDisplay(id,val){const el=document.getElementById('sd-'+id);if(el)el.textContent=numToStars(parseFloat(val));}
 function renderHeroPreview(){
   const wrap=document.getElementById('hero-preview-wrap');if(!wrap)return;
-  wrap.innerHTML=heroImgData?`<img class="hero-preview" src="${heroImgData}" alt="">`:`<div class="hero-preview-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`;
+  wrap.innerHTML=heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt="">`:`<div class="hero-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`;
 }
 function renderPhotoPreviews(){
   const wrap=document.getElementById('photos-preview');if(!wrap)return;
