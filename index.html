@@ -7,10 +7,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d0d0d">
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;공주와 하이니&quot;,&quot;short_name&quot;:&quot;우리기록&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0d0d0d&quot;,&quot;theme_color&quot;:&quot;#0d0d0d&quot;}">
+<meta name="application-name" content="OO9lO9">
+<meta name="apple-mobile-web-app-title" content="OO9lO9">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
-<title>공주와 하이니 💑</title>
+<title>OO9lO9 💑</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -23,7 +24,6 @@
   --h20:#3d2b1a;--h19:#2d2916;--h18:#1a2d1a;--h17:#1a1f2d;--h16:#2d1a2d;
   --font-display:'Playfair Display',serif;
   --font-body:'Noto Sans KR',sans-serif;
-  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px;
 }
 .light{
   --bg:#faf9f6;--bg2:#f2f0eb;--bg3:#e8e5de;--bg4:#dedad2;
@@ -31,248 +31,300 @@
   --border:#e0ddd8;--border2:#ccc9c4;--card:#fff;
   --h20:#fff3e0;--h19:#fffde7;--h18:#e8f5e9;--h17:#e3f2fd;--h16:#fce4ec;
 }
-html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:15px;line-height:1.5}
 body{overflow:hidden}
 
-/* ─── LOCK / LOGIN ─── */
-.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px;z-index:1000;background:var(--bg);transition:opacity .3s}
-.screen.hidden{opacity:0;pointer-events:none}
-.heart-logo{font-size:56px;animation:heartbeat 2.4s ease-in-out infinite}
-@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.08)}70%{transform:scale(1)}}
-.screen-title{font-family:var(--font-display);font-size:26px;font-weight:500;letter-spacing:.02em;text-align:center}
-.screen-sub{font-size:12px;color:var(--text3);text-align:center;letter-spacing:.08em}
-.google-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#3c3c3c;border:none;border-radius:var(--r-lg);padding:14px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);box-shadow:0 2px 12px rgba(0,0,0,.15);transition:box-shadow .2s;width:260px;justify-content:center}
+/* LOCK */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px;z-index:1000;background:var(--bg)}
+.screen.hidden{display:none}
+.heart-logo{font-size:56px;animation:hb 2.4s ease-in-out infinite}
+@keyframes hb{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.08)}70%{transform:scale(1)}}
+.screen-title{font-family:var(--font-display);font-size:26px;font-weight:500}
+.screen-sub{font-size:13px;color:var(--text3)}
+.google-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#3c3c3c;border:none;border-radius:14px;padding:14px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);box-shadow:0 2px 12px rgba(0,0,0,.15);width:260px;justify-content:center;transition:box-shadow .2s}
 .google-btn:hover{box-shadow:0 4px 20px rgba(0,0,0,.25)}
-.google-btn svg{flex-shrink:0}
-.pin-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;width:260px}
-.pin-label{font-size:12px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase}
-.pin-dots{display:flex;gap:12px;margin:4px 0}
-.pin-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--text3);transition:all .2s}
+.pin-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;width:260px}
+.pin-dots{display:flex;gap:14px}
+.pin-dot{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--text3);transition:all .2s}
 .pin-dot.filled{background:var(--accent);border-color:var(--accent)}
 .pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:220px}
-.pin-key{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--r-md);padding:14px;font-size:18px;font-weight:400;cursor:pointer;text-align:center;transition:background .12s;color:var(--text)}
+.pin-key{background:var(--bg3);border:0.5px solid var(--border);border-radius:12px;padding:15px;font-size:18px;cursor:pointer;text-align:center;transition:background .12s;color:var(--text);font-family:var(--font-body)}
 .pin-key:active{background:var(--bg4)}
 .pin-key.del{font-size:14px;color:var(--text2)}
-.pin-err{color:var(--accent2);font-size:12px;height:16px;text-align:center}
+.pin-err{color:var(--accent2);font-size:12px;height:16px}
 
-/* ─── APP SHELL ─── */
+/* APP */
 #app{height:100%;display:none;flex-direction:column}
 
-/* ─── NAV BAR ─── */
-.navbar{display:flex;align-items:center;justify-content:space-between;padding:52px 20px 12px;background:var(--bg);border-bottom:0.5px solid var(--border);flex-shrink:0}
-.navbar-logo{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--accent);cursor:pointer}
-.navbar-tabs{display:flex;gap:2px}
-.ntab{background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:var(--r-sm);font-size:12px;color:var(--text3);font-family:var(--font-body);transition:all .15s;white-space:nowrap}
+/* NAVBAR */
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:52px 28px 14px;background:var(--bg);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.navbar-logo{font-family:var(--font-display);font-size:19px;font-weight:500;color:var(--accent);cursor:pointer}
+.navbar-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.navbar-tabs::-webkit-scrollbar{display:none}
+.ntab{background:none;border:none;cursor:pointer;padding:7px 14px;border-radius:8px;font-size:13px;color:var(--text3);font-family:var(--font-body);transition:all .15s;white-space:nowrap}
 .ntab:hover{color:var(--text2);background:var(--bg3)}
 .ntab.active{color:var(--accent);background:var(--bg3)}
-.navbar-right{display:flex;gap:6px;align-items:center}
-.icon-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:var(--r-sm);color:var(--text3);font-size:16px;transition:all .15s}
+.navbar-right{display:flex;gap:6px}
+.icon-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:var(--text3);font-size:17px;transition:all .15s}
 .icon-btn:hover{background:var(--bg3);color:var(--text2)}
 
-/* ─── CONTENT ─── */
-.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .page{display:none;min-height:100%}
 .page.active{display:block}
 
-/* ─── HOME PAGE ─── */
-.home-wrap{padding:32px 24px 80px;max-width:900px;margin:0 auto}
-.home-dday{text-align:center;padding:40px 20px;margin-bottom:32px}
-.home-dday-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.home-dday-num{font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-2px}
-.home-dday-since{font-size:12px;color:var(--text3);margin-top:6px;letter-spacing:.06em}
-.home-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:500px;margin:0 auto}
-.home-cat{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-xl);padding:28px 20px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
-.home-cat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(232,184,154,.06));pointer-events:none}
+/* HOME */
+.home-wrap{padding:40px 10% 80px;max-width:1000px;margin:0 auto}
+.home-dday{text-align:center;padding:48px 20px;margin-bottom:36px}
+.home-dday-label{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.home-dday-num{font-family:var(--font-display);font-size:72px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-2px}
+.home-dday-since{font-size:13px;color:var(--text3);margin-top:8px;letter-spacing:.06em}
+.home-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:520px;margin:0 auto}
+.home-cat{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:30px 20px;cursor:pointer;transition:all .2s;text-align:center}
 .home-cat:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2)}
 .home-cat:active{transform:scale(.97)}
-.home-cat-icon{font-size:36px;margin-bottom:10px}
-.home-cat-name{font-size:15px;font-weight:500;margin-bottom:4px}
-.home-cat-sub{font-size:11px;color:var(--text3)}
+.home-cat-icon{font-size:38px;margin-bottom:10px}
+.home-cat-name{font-size:16px;font-weight:500;margin-bottom:4px}
+.home-cat-sub{font-size:12px;color:var(--text3)}
 
-/* ─── PAGE HEADER ─── */
-.page-hdr{padding:28px 24px 16px;border-bottom:0.5px solid var(--border);background:var(--bg)}
-.page-hdr-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
-.page-title{font-family:var(--font-display);font-size:22px;font-weight:500;letter-spacing:.01em}
-.page-sub{font-size:11px;color:var(--text3);letter-spacing:.04em}
-.page-action-btn{background:var(--accent);color:#1a1816;border:none;border-radius:var(--r-md);padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body);white-space:nowrap;display:flex;align-items:center;gap:5px}
-.page-action-btn:hover{background:var(--accent2)}
+/* PAGE HEADER */
+.page-hdr{padding:28px 10% 16px;border-bottom:0.5px solid var(--border)}
+.page-hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.page-title{font-family:var(--font-display);font-size:24px;font-weight:500}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px;letter-spacing:.03em}
+.page-action-btn{background:var(--accent);color:#1a1816;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);white-space:nowrap;flex-shrink:0}
 
-/* ─── MATZIP PAGE ─── */
-/* Toggle criteria */
-.toggle-section{margin:0 24px;border-bottom:0.5px solid var(--border)}
-.toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 0;background:none;border:none;cursor:pointer;color:var(--text2);font-size:12px;font-family:var(--font-body);letter-spacing:.04em}
-.toggle-btn span{transition:transform .2s}
-.toggle-btn.open span{transform:rotate(180deg)}
-.toggle-content{padding-bottom:12px;display:none}
+/* MATZIP */
+.matzip-inner{padding:0 10% 100px;max-width:1400px;margin:0 auto}
+
+/* CRITERIA */
+.toggle-section{border-bottom:0.5px solid var(--border);margin-bottom:0}
+.toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 0;background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;font-family:var(--font-body);letter-spacing:.04em}
+.toggle-arrow{transition:transform .2s;display:inline-block}
+.toggle-btn.open .toggle-arrow{transform:rotate(180deg)}
+.toggle-content{display:none;padding-bottom:14px}
 .toggle-content.open{display:block}
 .criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.criteria-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-md);padding:12px}
-.criteria-title{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.criteria-textarea{width:100%;background:transparent;border:none;outline:none;font-size:12px;color:var(--text2);font-family:var(--font-body);resize:none;line-height:1.7;min-height:100px}
+@media(max-width:600px){.criteria-grid{grid-template-columns:1fr}}
+.criteria-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:14px}
+.criteria-title{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.criteria-textarea{width:100%;background:transparent;border:none;outline:none;font-size:13px;color:var(--text2);font-family:var(--font-body);resize:none;line-height:1.7;min-height:90px}
+.criteria-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.criteria-btn{background:var(--accent);color:#1a1816;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
+.criteria-edit-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--font-body)}
 
-/* Ranking */
-.ranking-section{padding:16px 24px;border-bottom:0.5px solid var(--border)}
-.section-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+/* RANKING */
+.ranking-section{padding:16px 0;border-bottom:0.5px solid var(--border)}
+.section-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
 .rank-list{display:flex;flex-direction:column;gap:6px}
-.rank-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r-md);border:0.5px solid var(--border);background:var(--bg2)}
-.rank-badge{font-size:15px;width:28px;text-align:center;flex-shrink:0}
-.rank-name{flex:1;font-size:13px;font-weight:500;cursor:pointer}
+.rank-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;border:0.5px solid var(--border);background:var(--bg2)}
+.rank-badge{font-size:16px;width:28px;text-align:center;flex-shrink:0}
+.rank-name{flex:1;font-size:14px;font-weight:500;cursor:pointer}
 .rank-name:hover{color:var(--accent)}
-.rank-loc{font-size:11px;color:var(--text3)}
+.rank-loc{font-size:12px;color:var(--text3);margin-right:8px}
 .rank-score{font-size:13px;font-weight:600;color:var(--accent);white-space:nowrap}
 
-/* List table */
-.list-section{padding:0 24px 100px}
-.list-table{width:100%;border-collapse:collapse;margin-top:12px}
-.list-table th{padding:9px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;border-bottom:0.5px solid var(--border);white-space:nowrap;background:var(--bg)}
-.list-row td{padding:10px;font-size:13px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+/* LIST TABLE */
+.list-section{padding:16px 0 100px}
+.list-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.list-table{width:100%;border-collapse:collapse;min-width:600px}
+.list-table th{padding:10px 10px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;border-bottom:0.5px solid var(--border);white-space:nowrap;background:var(--bg);position:sticky;top:0}
+.list-row td{padding:11px 10px;font-size:14px;border-bottom:0.5px solid var(--border);vertical-align:middle}
 .list-row:hover td{background:var(--bg2)}
 .list-row.hl-20 td{background:var(--h20)}
 .list-row.hl-19 td{background:var(--h19)}
 .list-row.hl-18 td{background:var(--h18)}
 .list-row.hl-17 td{background:var(--h17)}
 .list-row.hl-16 td{background:var(--h16)}
-.list-name-btn{background:none;border:none;cursor:pointer;color:var(--accent);font-size:13px;font-family:var(--font-body);font-weight:500;text-align:left;padding:0;text-decoration:none}
+.list-name-btn{background:none;border:none;cursor:pointer;color:var(--accent);font-size:14px;font-family:var(--font-body);font-weight:500;padding:0;text-align:left}
 .list-name-btn:hover{text-decoration:underline}
-.stars-display{color:var(--accent);font-size:12px;white-space:nowrap}
-.total-score{font-weight:700;font-size:13px}
-.new-row td{background:var(--bg3)}
-.new-row input{background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font-body);outline:none;width:100%;min-width:50px}
-.new-row input:focus{border-color:var(--accent)}
-.new-row .star-input{width:52px;text-align:center}
-.row-reg-btn{background:var(--accent);color:#1a1816;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
-.row-edit-btn{background:none;border:0.5px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--text3);cursor:pointer;white-space:nowrap}
+.stars-cell{color:var(--accent);font-size:13px;white-space:nowrap}
+.total-cell{font-weight:700;font-size:14px}
+.action-cell{white-space:nowrap;display:flex;gap:4px;align-items:center}
+.row-edit-btn{background:none;border:0.5px solid var(--border2);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--text3);cursor:pointer;white-space:nowrap;font-family:var(--font-body)}
 .row-edit-btn:hover{border-color:var(--accent);color:var(--accent)}
-.row-del-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:4px;border-radius:4px}
+.row-reg-btn{background:var(--accent);color:#1a1816;border:none;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font-body)}
+.row-cancel-btn{background:none;border:0.5px solid var(--border2);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--text3);cursor:pointer;white-space:nowrap;font-family:var(--font-body)}
+.row-del-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:4px;border-radius:5px;line-height:1}
 .row-del-btn:hover{color:#e57373}
-.add-row-btn{display:flex;align-items:center;gap:6px;background:none;border:0.5px dashed var(--border2);border-radius:var(--r-md);padding:10px 16px;font-size:12px;color:var(--text3);cursor:pointer;margin-top:10px;width:100%;font-family:var(--font-body);transition:all .15s}
+.new-row td{background:var(--bg3)}
+.new-row input,.new-row select{background:var(--bg2);border:0.5px solid var(--border2);border-radius:7px;padding:6px 8px;font-size:13px;color:var(--text);font-family:var(--font-body);outline:none;width:100%}
+.new-row input:focus,.new-row select:focus{border-color:var(--accent)}
+.star-select{width:80px!important;text-align:center}
+.add-row-btn{display:flex;align-items:center;gap:8px;background:none;border:0.5px dashed var(--border2);border-radius:10px;padding:11px 18px;font-size:13px;color:var(--text3);cursor:pointer;margin-top:12px;font-family:var(--font-body);transition:all .15s}
 .add-row-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-/* ─── GALLERY ─── */
-.gallery-wrap{padding:20px 24px 100px}
-.gallery-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.gallery-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+/* GALLERY */
+.gallery-wrap{padding:20px 10% 100px;max-width:1400px;margin:0 auto}
+.gallery-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.gallery-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:900px){.gallery-grid-4{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:640px){
   .gallery-grid-4{grid-template-columns:repeat(2,1fr)}
   .gallery-grid-2{grid-template-columns:repeat(1,1fr)}
   .navbar-tabs{display:none}
+  .page-hdr{padding:20px 16px 14px}
+  .home-wrap,.gallery-wrap,.matzip-inner{padding-left:16px;padding-right:16px}
 }
-.gcard{background:var(--card);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:all .2s}
+.gcard{background:var(--card);border-radius:14px;overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:all .2s;position:relative}
 .gcard:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15)}
 .gcard:active{transform:scale(.97)}
-.gcard-img-wrap{position:relative;overflow:hidden}
 .gcard-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--bg3)}
-.gcard-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--bg3)}
-.gcard-ph{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px}
-.gcard-ph-poster{width:100%;aspect-ratio:2/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:36px}
-.gcard-body{padding:10px 12px 12px}
-.gcard-name{font-size:13px;font-weight:500;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gcard-sub{font-size:11px;color:var(--text3);margin-bottom:2px}
-.gcard-score{font-size:11px;color:var(--accent)}
-.gcard-tags{font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* Movie card horizontal */
-.movie-card{display:flex;gap:0;background:var(--card);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:all .2s}
+.gcard-ph{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:30px}
+.gcard-body{padding:11px 13px 13px}
+.gcard-name{font-size:14px;font-weight:500;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcard-sub{font-size:12px;color:var(--text3);margin-bottom:2px}
+.gcard-score{font-size:12px;color:var(--accent)}
+.gcard-tags{font-size:11px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Favorite heart */
+.fav-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.45);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .15s;z-index:2}
+.fav-btn:hover{background:rgba(0,0,0,.65);transform:scale(1.1)}
+/* Movie card */
+.movie-card{display:flex;background:var(--card);border-radius:14px;overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:all .2s;position:relative}
 .movie-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.movie-card-poster{width:90px;flex-shrink:0}
-.movie-card-poster img{width:100%;height:100%;object-fit:cover;display:block}
-.movie-card-poster-ph{width:100%;height:100%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px;min-height:130px}
-.movie-card-info{padding:14px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between}
-.movie-card-title{font-family:var(--font-display);font-size:15px;font-weight:500;margin-bottom:4px;line-height:1.3}
-.movie-card-date{font-size:11px;color:var(--text3);margin-bottom:6px}
-.movie-card-stars{font-size:13px;color:var(--accent);margin-bottom:4px}
-.movie-card-review{font-size:12px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.movie-poster-wrap{width:100px;flex-shrink:0}
+.movie-poster-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.movie-poster-ph{width:100%;height:100%;min-height:140px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:30px}
+.movie-info{padding:14px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between}
+.movie-title{font-family:var(--font-display);font-size:16px;font-weight:500;margin-bottom:4px;line-height:1.3}
+.movie-date{font-size:12px;color:var(--text3);margin-bottom:6px}
+.movie-stars{font-size:14px;color:var(--accent);margin-bottom:5px}
+.movie-review{font-size:13px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-/* ─── POPUP / MODAL ─── */
+/* FAVORITES */
+.fav-section-title{font-size:13px;font-weight:600;color:var(--text3);padding:12px 0 8px;text-transform:uppercase;letter-spacing:.06em}
+
+/* TODO */
+.todo-wrap{padding:20px 10% 100px;max-width:900px;margin:0 auto}
+.todo-add-btn{display:flex;align-items:center;gap:8px;background:var(--accent);color:#1a1816;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);margin-bottom:16px}
+.todo-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.todo-filter{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--text3);font-family:var(--font-body);transition:all .15s}
+.todo-filter.active{background:var(--accent);color:#1a1816;border-color:var(--accent)}
+.todo-list{display:flex;flex-direction:column;gap:10px}
+.todo-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;display:flex;gap:0;transition:border-color .15s}
+.todo-card:hover{border-color:var(--border2)}
+.todo-card-img{width:80px;flex-shrink:0}
+.todo-card-img img{width:100%;height:100%;object-fit:cover;display:block}
+.todo-card-img-ph{width:100%;height:100%;min-height:80px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:24px}
+.todo-card-body{padding:12px;flex:1;min-width:0}
+.todo-card-title{font-size:14px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.todo-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.todo-check.done{background:var(--accent);border-color:var(--accent);color:#1a1816}
+.todo-memo{font-size:13px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.todo-tag{font-size:11px;color:var(--accent);margin-top:4px}
+.todo-card-actions{display:flex;flex-direction:column;gap:4px;padding:8px;justify-content:center}
+.todo-action-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:4px;border-radius:5px}
+.todo-action-btn:hover{color:var(--text)}
+
+/* PHOTO TAB */
+.photo-grid-wrap{padding:20px 10% 100px;max-width:1400px;margin:0 auto}
+.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media(max-width:900px){.photo-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.photo-grid{grid-template-columns:repeat(2,1fr)}}
+.photo-item{aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;position:relative}
+.photo-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.photo-item:hover img{transform:scale(1.04)}
+.photo-item-del{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.photo-item:hover .photo-item-del{display:flex}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 0 4px;align-items:center}
+.filter-chip{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--text3);font-family:var(--font-body);transition:all .15s}
+.filter-chip.active{background:var(--accent-bg,#3d2b1a);color:var(--accent);border-color:var(--accent)}
+.filter-search{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--text);font-family:var(--font-body);outline:none;-webkit-appearance:none;min-width:140px}
+.filter-search:focus{border-color:var(--accent)}
+
+/* POPUP */
 .popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;backdrop-filter:blur(4px)}
 .popup-overlay.open{display:flex}
-.popup{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--r-xl);width:100%;max-width:640px;margin:auto;overflow:hidden;animation:popIn .25s ease-out}
+.popup{background:var(--bg);border:0.5px solid var(--border2);border-radius:20px;width:100%;max-width:660px;margin:auto;overflow:hidden;animation:popIn .25s ease-out}
 @keyframes popIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.popup-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 16px;border-bottom:0.5px solid var(--border)}
-.popup-title{font-family:var(--font-display);font-size:18px;font-weight:500}
+.popup-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:0.5px solid var(--border)}
+.popup-title{font-family:var(--font-display);font-size:19px;font-weight:500}
 .popup-hdr-btns{display:flex;gap:8px;align-items:center}
-.popup-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;padding:4px;line-height:1}
+.popup-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:22px;padding:2px;line-height:1}
 .popup-close:hover{color:var(--text)}
-.popup-body{padding:20px;max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-/* Detail popup */
-.detail-hero{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--bg3)}
-.detail-hero-ph{width:100%;aspect-ratio:16/9;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:48px}
-.detail-poster{width:100%;max-height:300px;object-fit:contain;display:block;background:var(--bg3)}
-.detail-title{font-family:var(--font-display);font-size:22px;font-weight:500;padding:16px 20px 8px;line-height:1.3}
-.detail-props{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 16px}
-.detail-prop{display:flex;align-items:baseline;gap:6px;font-size:13px;background:var(--bg3);border-radius:6px;padding:4px 10px}
-.detail-prop-k{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
-.detail-prop-v{color:var(--text2)}
-.detail-section{padding:0 20px 16px}
-.detail-section-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-.detail-text{font-size:14px;line-height:1.75;color:var(--text2);white-space:pre-wrap}
-.photo-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
-.photo-scroll::-webkit-scrollbar{display:none}
-.photo-scroll img{height:160px;width:auto;border-radius:var(--r-md);cursor:pointer;flex-shrink:0;object-fit:cover}
-.detail-tags{display:flex;gap:6px;flex-wrap:wrap}
-.detail-tag{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--bg3);color:var(--text2)}
-.popup-action-btn{background:none;border:0.5px solid var(--border2);border-radius:var(--r-sm);padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:var(--font-body);white-space:nowrap}
+.popup-body{padding:0;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.popup-action-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 13px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font-body);white-space:nowrap;transition:all .15s}
 .popup-action-btn:hover{border-color:var(--accent);color:var(--accent)}
-.popup-action-btn.primary{background:var(--accent);color:#1a1816;border-color:var(--accent)}
+.popup-action-btn.danger:hover{border-color:#e57373;color:#e57373}
 
-/* ─── FORM ─── */
-.form-popup{max-width:560px}
-.fg{margin-bottom:16px}
-.flabel{display:block;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.finput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-md);padding:11px 13px;font-size:14px;color:var(--text);font-family:var(--font-body);outline:none;-webkit-appearance:none;transition:border-color .15s}
+/* DETAIL */
+.detail-hero{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;cursor:pointer}
+.detail-hero-ph{width:100%;aspect-ratio:16/9;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:52px}
+.detail-poster{width:100%;max-height:320px;object-fit:contain;display:block;background:var(--bg3)}
+.detail-title{font-family:var(--font-display);font-size:23px;font-weight:500;padding:18px 22px 10px;line-height:1.3}
+.detail-props{display:flex;flex-wrap:wrap;gap:8px;padding:0 22px 16px}
+.detail-prop{display:flex;align-items:baseline;gap:7px;font-size:14px;background:var(--bg3);border-radius:7px;padding:5px 11px}
+.detail-prop-k{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.detail-prop-v{color:var(--text2)}
+.detail-sec{padding:0 22px 16px}
+.detail-sec-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.detail-text{font-size:15px;line-height:1.8;color:var(--text2);white-space:pre-wrap}
+/* Photo scroll with arrows */
+.photo-scroll-wrap{position:relative;padding:0 22px 16px}
+.photo-scroll{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;scroll-behavior:smooth}
+.photo-scroll::-webkit-scrollbar{display:none}
+.photo-scroll img{height:170px;width:auto;border-radius:10px;cursor:pointer;flex-shrink:0;object-fit:cover}
+.scroll-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:3;transition:background .15s}
+.scroll-btn:hover{background:rgba(0,0,0,.8)}
+.scroll-btn.left{left:24px}
+.scroll-btn.right{right:24px}
+
+/* FORM */
+.form-popup{max-width:580px}
+.form-body-inner{padding:20px 22px 22px;max-height:75vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.fg{margin-bottom:18px}
+.flabel{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.finput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:11px;padding:12px 14px;font-size:15px;color:var(--text);font-family:var(--font-body);outline:none;-webkit-appearance:none;transition:border-color .15s}
 .finput:focus{border-color:var(--accent)}
-.ftarea{resize:none;min-height:80px;line-height:1.6}
-.fselect{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-md);padding:11px 13px;font-size:14px;color:var(--text);font-family:var(--font-body);outline:none;-webkit-appearance:none}
-/* Star input */
-.star-field{display:flex;align-items:center;gap:12px}
-.star-num{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;font-size:14px;color:var(--text);font-family:var(--font-body);outline:none;width:80px;text-align:center;-webkit-appearance:none}
+.ftarea{resize:none;min-height:82px;line-height:1.6}
+.fselect{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:11px;padding:12px 14px;font-size:15px;color:var(--text);font-family:var(--font-body);outline:none;-webkit-appearance:none}
+.star-field{display:flex;align-items:center;gap:14px}
+.star-num{background:var(--bg2);border:0.5px solid var(--border);border-radius:11px;padding:11px 12px;font-size:15px;color:var(--text);font-family:var(--font-body);outline:none;width:90px;text-align:center;-webkit-appearance:none}
 .star-num:focus{border-color:var(--accent)}
-.star-visual{font-size:20px;letter-spacing:2px;color:var(--accent);min-width:120px}
-.star-hint{font-size:10px;color:var(--text3);margin-top:4px}
-/* Image upload */
-.img-upload-section{display:flex;flex-direction:column;gap:10px}
-.img-drop{border:1.5px dashed var(--border2);border-radius:var(--r-md);padding:18px;text-align:center;cursor:pointer;color:var(--text3);transition:all .15s}
+.star-visual{font-size:22px;letter-spacing:2px;color:var(--accent);min-width:120px}
+.star-hint{font-size:11px;color:var(--text3);margin-top:5px}
+.img-drop{border:1.5px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;color:var(--text3);transition:all .15s}
 .img-drop:hover{border-color:var(--accent);color:var(--accent)}
-.img-drop-icon{font-size:24px;margin-bottom:4px}
-.img-drop-label{font-size:11px}
-.img-preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-@media(max-width:480px){.img-preview-grid{grid-template-columns:repeat(3,1fr)}}
-.ipreview{position:relative;aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden}
+.img-drop-icon{font-size:26px;margin-bottom:5px}
+.img-drop-label{font-size:12px}
+.img-prev-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
+@media(max-width:480px){.img-prev-grid{grid-template-columns:repeat(3,1fr)}}
+.ipreview{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden}
 .ipreview img{width:100%;height:100%;object-fit:cover;display:block}
-.ipreview-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-.hero-preview{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--r-md);display:block;background:var(--bg3)}
-.hero-preview-ph{width:100%;aspect-ratio:16/9;background:var(--bg3);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer;border:1.5px dashed var(--border2)}
-.form-footer{display:flex;gap:8px;justify-content:flex-end;padding-top:12px;border-top:0.5px solid var(--border);margin-top:4px}
-.form-cancel{background:none;border:0.5px solid var(--border2);border-radius:var(--r-md);padding:10px 18px;font-size:13px;color:var(--text2);cursor:pointer;font-family:var(--font-body)}
-.form-submit{background:var(--accent);color:#1a1816;border:none;border-radius:var(--r-md);padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
+.ipreview-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:19px;height:19px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hero-preview-wrap{cursor:pointer}
+.hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:11px;display:block}
+.hero-ph{width:100%;aspect-ratio:16/9;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;color:var(--text3);gap:6px}
+.hero-ph span{font-size:12px}
+.form-footer{display:flex;gap:9px;justify-content:flex-end;padding-top:14px;border-top:0.5px solid var(--border);margin-top:4px}
+.form-cancel-btn{background:none;border:0.5px solid var(--border2);border-radius:11px;padding:11px 20px;font-size:14px;color:var(--text2);cursor:pointer;font-family:var(--font-body)}
+.form-submit-btn{background:var(--accent);color:#1a1816;border:none;border-radius:11px;padding:11px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
 
-/* ─── CONFIRM POPUP ─── */
-.confirm-popup{max-width:340px;text-align:center}
-.confirm-icon{font-size:36px;margin-bottom:12px}
-.confirm-msg{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px}
-.confirm-btns{display:flex;gap:8px;justify-content:center}
-.confirm-cancel{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 24px;font-size:13px;cursor:pointer;color:var(--text2);font-family:var(--font-body)}
-.confirm-ok{background:#e57373;color:#fff;border:none;border-radius:var(--r-md);padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
+/* CONFIRM */
+.confirm-popup{max-width:340px}
+.confirm-inner{padding:28px 24px;text-align:center}
+.confirm-icon{font-size:38px;margin-bottom:14px}
+.confirm-msg{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:22px}
+.confirm-btns{display:flex;gap:9px;justify-content:center}
+.confirm-cancel{background:var(--bg3);border:0.5px solid var(--border);border-radius:11px;padding:11px 26px;font-size:14px;cursor:pointer;color:var(--text2);font-family:var(--font-body)}
+.confirm-ok{background:#e57373;color:#fff;border:none;border-radius:11px;padding:11px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
 
-/* ─── LIGHTBOX ─── */
+/* LIGHTBOX */
 .lbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;align-items:center;justify-content:center;cursor:zoom-out}
 .lbox.open{display:flex}
-.lbox img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:var(--r-md)}
+.lbox img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:10px}
 
-/* ─── TOAST ─── */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;white-space:nowrap;font-family:var(--font-body)}
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:11px 22px;border-radius:22px;font-size:14px;font-weight:500;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;white-space:nowrap;font-family:var(--font-body)}
 .toast.show{opacity:1}
 
-/* ─── LOADING ─── */
+/* LOADING */
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
 .loading-overlay.show{display:flex}
-.spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+.spinner{width:38px;height:38px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ─── EMPTY ─── */
-.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
-.empty-icon{font-size:44px;margin-bottom:12px}
-.empty-txt{font-size:14px;color:var(--text2);margin-bottom:4px}
-.empty-sub{font-size:12px}
 
 input[type=file]{display:none}
 ::-webkit-scrollbar{width:4px;height:4px}
@@ -282,7 +334,7 @@ input[type=file]{display:none}
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
+<!-- LOGIN -->
 <div class="screen" id="login-screen">
   <div class="heart-logo">💑</div>
   <div class="screen-title">공주와 하이니</div>
@@ -293,17 +345,15 @@ input[type=file]{display:none}
   </button>
 </div>
 
-<!-- ═══ PIN SCREEN ═══ -->
+<!-- PIN -->
 <div class="screen hidden" id="pin-screen">
   <div class="heart-logo">🔐</div>
   <div class="screen-title">PIN 입력</div>
   <div class="pin-wrap">
-    <div class="pin-label">4자리 비밀번호를 입력해주세요</div>
+    <div style="font-size:12px;color:var(--text3);letter-spacing:.06em">4자리 비밀번호를 입력해주세요</div>
     <div class="pin-dots">
-      <div class="pin-dot" id="d0"></div>
-      <div class="pin-dot" id="d1"></div>
-      <div class="pin-dot" id="d2"></div>
-      <div class="pin-dot" id="d3"></div>
+      <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
     </div>
     <div class="pin-err" id="pin-err"></div>
     <div class="pin-keypad">
@@ -316,26 +366,29 @@ input[type=file]{display:none}
       <button class="pin-key" onclick="pinKey('7')">7</button>
       <button class="pin-key" onclick="pinKey('8')">8</button>
       <button class="pin-key" onclick="pinKey('9')">9</button>
-      <button class="pin-key" onclick="pinKey('0')" style="grid-column:2">0</button>
+      <button class="pin-key" style="visibility:hidden"></button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
       <button class="pin-key del" onclick="pinDel()">⌫</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ APP ═══ -->
+<!-- APP -->
 <div id="app">
-  <!-- NAV -->
   <nav class="navbar">
     <div class="navbar-logo" onclick="goPage('home')">💑 공주와 하이니</div>
     <div class="navbar-tabs">
-      <button class="ntab" id="nt-home" onclick="goPage('home')">홈</button>
+      <button class="ntab active" id="nt-home" onclick="goPage('home')">홈</button>
       <button class="ntab" id="nt-matzip" onclick="goPage('matzip')">🍜 맛집</button>
       <button class="ntab" id="nt-gourmet" onclick="goPage('gourmet')">✨ 고오급</button>
-      <button class="ntab" id="nt-date" onclick="goPage('date')">📍 데이트</button>
-      <button class="ntab" id="nt-movie" onclick="goPage('movie')">🎬 영화</button>
+      <button class="ntab" id="nt-date" onclick="goPage('date')">📍 여행</button>
+      <button class="ntab" id="nt-culture" onclick="goPage('culture')">🎬 문화생활</button>
+      <button class="ntab" id="nt-photo" onclick="goPage('photo')">🖼️ 사진</button>
+      <button class="ntab" id="nt-fav" onclick="goPage('fav')">❤️ 즐겨찾기</button>
+      <button class="ntab" id="nt-todo" onclick="goPage('todo')">📝 투두</button>
     </div>
     <div class="navbar-right">
-      <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="테마 변경">🌙</button>
+      <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
     </div>
   </nav>
 
@@ -349,26 +402,13 @@ input[type=file]{display:none}
           <div class="home-dday-since">2021년 10월 9일부터 ♥</div>
         </div>
         <div class="home-cats">
-          <div class="home-cat" onclick="goPage('matzip')">
-            <div class="home-cat-icon">🍜</div>
-            <div class="home-cat-name">맛집</div>
-            <div class="home-cat-sub">Restaurant Tour</div>
-          </div>
-          <div class="home-cat" onclick="goPage('gourmet')">
-            <div class="home-cat-icon">✨</div>
-            <div class="home-cat-name">고오급</div>
-            <div class="home-cat-sub">Luxury Restaurant</div>
-          </div>
-          <div class="home-cat" onclick="goPage('date')">
-            <div class="home-cat-icon">📍</div>
-            <div class="home-cat-name">데이트</div>
-            <div class="home-cat-sub">Tour List</div>
-          </div>
-          <div class="home-cat" onclick="goPage('movie')">
-            <div class="home-cat-icon">🎬</div>
-            <div class="home-cat-name">영화</div>
-            <div class="home-cat-sub">Movie List</div>
-          </div>
+          <div class="home-cat" onclick="goPage('matzip')"><div class="home-cat-icon">🍜</div><div class="home-cat-name">맛집</div><div class="home-cat-sub">Restaurant Tour</div></div>
+          <div class="home-cat" onclick="goPage('gourmet')"><div class="home-cat-icon">✨</div><div class="home-cat-name">고오급</div><div class="home-cat-sub">Luxury Restaurant</div></div>
+          <div class="home-cat" onclick="goPage('date')"><div class="home-cat-icon">📍</div><div class="home-cat-name">여행</div><div class="home-cat-sub">Tour List</div></div>
+          <div class="home-cat" onclick="goPage('culture')"><div class="home-cat-icon">🎬</div><div class="home-cat-name">문화생활</div><div class="home-cat-sub">Culture &amp; Movie</div></div>
+          <div class="home-cat" onclick="goPage('photo')"><div class="home-cat-icon">🖼️</div><div class="home-cat-name">사진</div><div class="home-cat-sub">Photo Album</div></div>
+          <div class="home-cat" onclick="goPage('fav')"><div class="home-cat-icon">❤️</div><div class="home-cat-name">즐겨찾기</div><div class="home-cat-sub">Favorites</div></div>
+          <div class="home-cat" onclick="goPage('todo')"><div class="home-cat-icon">📝</div><div class="home-cat-name">투두리스트</div><div class="home-cat-sub">To-Do &amp; Memo</div></div>
         </div>
       </div>
     </div>
@@ -377,43 +417,49 @@ input[type=file]{display:none}
     <div class="page" id="page-matzip">
       <div class="page-hdr">
         <div class="page-hdr-top">
-          <div>
-            <div class="page-title">Restaurant Tour List</div>
-            <div class="page-sub">공주와 하이니의 맛집 탐방 리스트</div>
-          </div>
+          <div><div class="page-title">Restaurant Tour List</div><div class="page-sub">공주와 하이니의 맛집 탐방 리스트</div></div>
         </div>
       </div>
-      <div class="toggle-section">
-        <button class="toggle-btn" id="criteria-toggle" onclick="toggleCriteria()">
-          <span style="font-size:11px;letter-spacing:.06em;color:var(--text3)">★ 별점 가이드 기준표</span>
-          <span>▼</span>
-        </button>
-        <div class="toggle-content" id="criteria-content">
-          <div class="criteria-grid">
-            <div class="criteria-box">
-              <div class="criteria-title">공슐랭 가이드</div>
-              <textarea class="criteria-textarea" id="criteria-gong" placeholder="별점 기준을 직접 작성해주세요&#10;예) ★★★★★ 최고의 맛집&#10;★★★★ 꽤 괜찮은 맛집" oninput="saveCriteria()"></textarea>
-            </div>
-            <div class="criteria-box">
-              <div class="criteria-title">하슐랭 가이드</div>
-              <textarea class="criteria-textarea" id="criteria-ha" placeholder="별점 기준을 직접 작성해주세요&#10;예) ★★★★★ 최고의 맛집&#10;★★★★ 꽤 괜찮은 맛집" oninput="saveCriteria()"></textarea>
+      <div class="matzip-inner">
+        <div class="toggle-section">
+          <button class="toggle-btn" id="criteria-toggle" onclick="toggleCriteria()">
+            <span>★ 별점 가이드 기준표</span><span class="toggle-arrow">▼</span>
+          </button>
+          <div class="toggle-content" id="criteria-content">
+            <div class="criteria-grid">
+              <div class="criteria-box">
+                <div class="criteria-title">공슐랭 가이드</div>
+                <textarea class="criteria-textarea" id="criteria-gong" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집"></textarea>
+                <div class="criteria-footer">
+                  <button class="criteria-btn" onclick="saveCriteriaToSheet()">저장</button>
+                </div>
+              </div>
+              <div class="criteria-box">
+                <div class="criteria-title">하슐랭 가이드</div>
+                <textarea class="criteria-textarea" id="criteria-ha" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집"></textarea>
+                <div class="criteria-footer">
+                  <button class="criteria-btn" onclick="saveCriteriaToSheet()">저장</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="ranking-section">
-        <div class="section-title">🏆 TOP 랭킹</div>
-        <div class="rank-list" id="rank-list"></div>
-      </div>
-      <div class="list-section">
-        <div class="section-title">📋 맛집 리스트</div>
-        <table class="list-table">
-          <thead><tr>
-            <th>#</th><th>가게명</th><th>장소</th><th>공슐랭</th><th>하슐랭</th><th>합계</th><th>메뉴</th><th>비고</th><th></th>
-          </tr></thead>
-          <tbody id="matzip-tbody"></tbody>
-        </table>
-        <button class="add-row-btn" onclick="addNewRow()">+ 새 맛집 추가</button>
+        <div class="ranking-section">
+          <div class="section-title">🏆 TOP 랭킹</div>
+          <div class="rank-list" id="rank-list"></div>
+        </div>
+        <div class="list-section">
+          <div class="section-title">📋 맛집 리스트</div>
+          <div class="list-table-wrap">
+            <table class="list-table">
+              <thead><tr>
+                <th>#</th><th>가게명</th><th>장소</th><th>공슐랭</th><th>하슐랭</th><th>합계</th><th>메뉴</th><th>비고</th><th></th>
+              </tr></thead>
+              <tbody id="matzip-tbody"></tbody>
+            </table>
+          </div>
+          <button class="add-row-btn" id="add-row-btn" onclick="addNewRow()">＋ 새 맛집 추가</button>
+        </div>
       </div>
     </div>
 
@@ -421,1056 +467,638 @@ input[type=file]{display:none}
     <div class="page" id="page-gourmet">
       <div class="page-hdr">
         <div class="page-hdr-top">
-          <div>
-            <div class="page-title">Luxury Restaurant List</div>
-            <div class="page-sub">공주와 하이니의 고오급 맛집 탐방 리스트</div>
-          </div>
+          <div><div class="page-title">Luxury Restaurant List</div><div class="page-sub">공주와 하이니의 고오급 맛집 탐방 리스트</div></div>
           <button class="page-action-btn" onclick="openForm('gourmet')">✏️ 글쓰기</button>
         </div>
       </div>
-      <div class="gallery-wrap">
-        <div class="gallery-grid-4" id="gourmet-grid"></div>
-      </div>
+      <div class="gallery-wrap"><div class="gallery-grid-4" id="gourmet-grid"></div></div>
     </div>
 
-    <!-- DATE -->
+    <!-- DATE/TRAVEL -->
     <div class="page" id="page-date">
       <div class="page-hdr">
         <div class="page-hdr-top">
-          <div>
-            <div class="page-title">Tour List</div>
-            <div class="page-sub">공주와 하이니의 여행지 탐방 리스트</div>
-          </div>
+          <div><div class="page-title">Tour List</div><div class="page-sub">공주와 하이니의 여행지 탐방 리스트</div></div>
           <button class="page-action-btn" onclick="openForm('date')">✏️ 글쓰기</button>
         </div>
       </div>
-      <div class="gallery-wrap">
-        <div class="gallery-grid-4" id="date-grid"></div>
-      </div>
+      <div class="gallery-wrap"><div class="gallery-grid-4" id="date-grid"></div></div>
     </div>
 
-    <!-- MOVIE -->
-    <div class="page" id="page-movie">
+    <!-- CULTURE -->
+    <div class="page" id="page-culture">
       <div class="page-hdr">
         <div class="page-hdr-top">
-          <div>
-            <div class="page-title">Movie List</div>
-            <div class="page-sub">공주와 하이니의 영화 리스트</div>
-          </div>
-          <button class="page-action-btn" onclick="openForm('movie')">✏️ 글쓰기</button>
+          <div><div class="page-title">Culture &amp; Movie List</div><div class="page-sub">공주와 하이니의 문화생활 리스트</div></div>
+          <button class="page-action-btn" onclick="openForm('culture')">✏️ 글쓰기</button>
         </div>
       </div>
-      <div class="gallery-wrap">
-        <div class="gallery-grid-2" id="movie-grid"></div>
+      <div class="gallery-wrap"><div class="gallery-grid-2" id="culture-grid"></div></div>
+    </div>
+
+    <!-- PHOTO -->
+    <div class="page" id="page-photo">
+      <div class="page-hdr">
+        <div class="page-hdr-top">
+          <div><div class="page-title">Photo Album</div><div class="page-sub">우리의 소중한 사진들</div></div>
+          <button class="page-action-btn" onclick="openForm('photo')">＋ 사진 추가</button>
+        </div>
+      </div>
+      <div class="photo-grid-wrap"><div class="photo-grid" id="photo-grid"></div></div>
+    </div>
+
+    <!-- FAVORITES -->
+    <div class="page" id="page-fav">
+      <div class="page-hdr">
+        <div class="page-hdr-top">
+          <div><div class="page-title">Favorites</div><div class="page-sub">즐겨찾기한 기록들</div></div>
+        </div>
+      </div>
+      <div class="gallery-wrap" id="fav-wrap"></div>
+    </div>
+
+    <!-- TODO -->
+    <div class="page" id="page-todo">
+      <div class="page-hdr">
+        <div class="page-hdr-top">
+          <div><div class="page-title">To-Do &amp; Memo</div><div class="page-sub">하고 싶은 것들의 기록</div></div>
+          <button class="page-action-btn" onclick="openForm('todo')">＋ 추가</button>
+        </div>
+      </div>
+      <div class="todo-wrap">
+        <div class="todo-filters" id="todo-filters"></div>
+        <div class="todo-list" id="todo-list"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ DETAIL POPUP ═══ -->
-<div class="popup-overlay" id="detail-overlay" onclick="closeDetail(event)">
-  <div class="popup" id="detail-popup" onclick="event.stopPropagation()">
+<!-- DETAIL POPUP -->
+<div class="popup-overlay" id="detail-overlay" onclick="if(event.target===this)closeDetailDirect()">
+  <div class="popup" onclick="event.stopPropagation()">
     <div class="popup-hdr">
       <div class="popup-title" id="detail-popup-title"></div>
       <div class="popup-hdr-btns">
         <button class="popup-action-btn" id="detail-write-btn" onclick="openFormFromDetail()" style="display:none">✏️ 글쓰기</button>
         <button class="popup-action-btn" id="detail-edit-btn" onclick="editFromDetail()" style="display:none">수정</button>
-        <button class="popup-action-btn" id="detail-del-btn" onclick="deleteFromDetail()" style="display:none;border-color:#e57373;color:#e57373">삭제</button>
+        <button class="popup-action-btn danger" id="detail-del-btn" onclick="deleteFromDetail()" style="display:none">삭제</button>
         <button class="popup-close" onclick="closeDetailDirect()">✕</button>
       </div>
     </div>
-    <div id="detail-popup-body"></div>
+    <div class="popup-body" id="detail-popup-body"></div>
   </div>
 </div>
 
-<!-- ═══ FORM POPUP ═══ -->
-<div class="popup-overlay" id="form-overlay" onclick="closeForm(event)">
+<!-- FORM POPUP -->
+<div class="popup-overlay" id="form-overlay" onclick="if(event.target===this)closeFormDirect()">
   <div class="popup form-popup" onclick="event.stopPropagation()">
     <div class="popup-hdr">
       <div class="popup-title" id="form-title">새 기록</div>
       <button class="popup-close" onclick="closeFormDirect()">✕</button>
     </div>
-    <div class="popup-body" id="form-body"></div>
+    <div class="popup-body"><div class="form-body-inner" id="form-body"></div></div>
   </div>
 </div>
 
-<!-- ═══ CONFIRM POPUP ═══ -->
+<!-- CONFIRM POPUP -->
 <div class="popup-overlay" id="confirm-overlay">
-  <div class="popup confirm-popup" style="padding:28px 24px">
-    <div class="confirm-icon">🗑️</div>
-    <div class="confirm-msg">정말로 삭제하시겠어요?<br>이 작업은 되돌릴 수 없어요.</div>
-    <div class="confirm-btns">
-      <button class="confirm-cancel" onclick="closeConfirm()">취소</button>
-      <button class="confirm-ok" id="confirm-ok-btn">삭제하기</button>
+  <div class="popup confirm-popup" onclick="event.stopPropagation()">
+    <div class="confirm-inner">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-msg">정말로 삭제하시겠어요?<br><span style="font-size:13px;color:var(--text3)">이 작업은 되돌릴 수 없어요.</span></div>
+      <div class="confirm-btns">
+        <button class="confirm-cancel" onclick="closeConfirm()">취소</button>
+        <button class="confirm-ok" id="confirm-ok-btn">삭제하기</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ LIGHTBOX ═══ -->
-<div class="lbox" id="lbox" onclick="this.classList.remove('open')">
-  <img id="lbox-img" src="" alt="">
-</div>
-
-<!-- ═══ LOADING ═══ -->
-<div class="loading-overlay" id="loading-overlay">
-  <div class="spinner"></div>
-</div>
-
-<!-- ═══ TOAST ═══ -->
+<div class="lbox" id="lbox" onclick="this.classList.remove('open')"><img id="lbox-img" src="" alt=""></div>
+<div class="loading-overlay" id="loading-overlay"><div class="spinner"></div></div>
 <div class="toast" id="toast"></div>
-
 <input type="file" id="hero-file" accept="image/*" onchange="onHeroFile(event)">
 <input type="file" id="photos-file" accept="image/*" multiple onchange="onPhotosFile(event)">
 
 <script>
-// ═══════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════
+// ═══ CONFIG ═══
 const PIN = '1009';
 const SHEET_ID = '1zmvSHTIKPIvuTdgyi4UnHDxqyuhBI_7IAyckAkxqXA8';
 const API_KEY = 'AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
 const CLIENT_ID = '616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const START_DATE = new Date('2021-10-09');
-const SHEETS = {
-  matzip: '맛집 기본',
-  gourmet: '맛집 상세',
-  date: '데이트_기본',
-  dateDetail: '데이트_상세',
-  movie: '영화'
+const FOLDERS = {
+  matzip: '1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',
+  date:   '1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',
+  culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',
+  etc:    '1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C',
 };
+const SHEETS = {
+  matzip:'맛집 기본', gourmet:'맛집 상세',
+  date:'데이트_기본', dateDetail:'데이트_상세',
+  culture:'영화', criteria:'별점가이드',
+  favorites:'즐겨찾기', todo:'투두리스트', photo:'사진첩'
+};
+const STAR_OPTS = ['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10'];
 
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-let db = { matzip:[], gourmet:[], date:[], dateDetail:[], movie:[] };
-let isLight = false;
-let authed = false;
+// ═══ STATE ═══
+let db = {matzip:[],gourmet:[],date:[],dateDetail:[],culture:[],criteria:[],favorites:[],todo:[],photo:[]};
+let isLight=false, authed=false, pinVal='';
 let tokenClient, gapiLoaded=false, gisLoaded=false;
-let pinVal = '';
-let curFormType = null;
-let curFormItem = null;
-let heroImgData = null; // base64 or url
-let photosData = []; // array of base64 or url
-let confirmCallback = null;
-let curDetailType = null;
-let curDetailItem = null;
-let newRowAdded = false;
+let curFormType=null, curFormItem=null, heroImgData=null, photosData=[];
+let curDetailType=null, curDetailItem=null;
+let newRowActive=false;
+let todoFilter='전체';
 
-// ═══════════════════════════════════════
-// LOGIN FLOW
-// ═══════════════════════════════════════
-function doGoogleLogin() {
-  // Must be called from user click
-  if (!tokenClient) {
-    toast('잠시만 기다려주세요...');
-    return;
-  }
-  tokenClient.requestAccessToken({ prompt: 'consent' });
+// ═══ LOGIN ═══
+function doGoogleLogin(){
+  if(!tokenClient){toast('잠시만 기다려주세요...');return;}
+  tokenClient.requestAccessToken({prompt:'consent'});
 }
-
-function initGapi() {
-  const s1 = document.createElement('script');
-  s1.src = 'https://apis.google.com/js/api.js';
-  s1.onload = () => gapi.load('client', async () => {
-    await gapi.client.init({
-      apiKey: API_KEY,
-      discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
-    });
-    gapiLoaded = true;
-    checkAutoLogin();
-  });
-  document.body.appendChild(s1);
-
-  const s2 = document.createElement('script');
-  s2.src = 'https://accounts.google.com/gsi/client';
-  s2.onload = () => {
-    tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
-      callback: (resp) => {
-        if (resp.error) { toast('로그인 실패: ' + resp.error); return; }
-        authed = true;
-        showPinScreen();
-      }
-    });
-    gisLoaded = true;
-    checkAutoLogin();
-  };
-  document.body.appendChild(s2);
+function initGapi(){
+  const s1=document.createElement('script');s1.src='https://apis.google.com/js/api.js';
+  s1.onload=()=>gapi.load('client',async()=>{
+    await gapi.client.init({apiKey:API_KEY,discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4']});
+    gapiLoaded=true;checkAuto();
+  });document.body.appendChild(s1);
+  const s2=document.createElement('script');s2.src='https://accounts.google.com/gsi/client';
+  s2.onload=()=>{
+    tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,
+      callback:r=>{if(!r.error){authed=true;showPinScreen();}}});
+    gisLoaded=true;checkAuto();
+  };document.body.appendChild(s2);
 }
-
-function checkAutoLogin() {
-  if (!gapiLoaded || !gisLoaded) return;
-  const token = gapi.client.getToken();
-  if (token) { authed = true; showPinScreen(); }
+function checkAuto(){
+  if(!gapiLoaded||!gisLoaded)return;
+  if(gapi.client.getToken()){authed=true;showPinScreen();}
 }
-
-function showPinScreen() {
+function showPinScreen(){
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('pin-screen').classList.remove('hidden');
-  pinVal = '';
-  updatePinDots();
+  pinVal='';updatePinDots();
 }
 
-// ═══════════════════════════════════════
-// PIN
-// ═══════════════════════════════════════
-function pinKey(k) {
-  if (pinVal.length >= 4) return;
-  pinVal += k;
-  updatePinDots();
-  if (pinVal.length === 4) {
-    setTimeout(() => {
-      if (pinVal === PIN) {
-        document.getElementById('pin-screen').classList.add('hidden');
-        startApp();
-      } else {
-        document.getElementById('pin-err').textContent = '비밀번호가 틀렸어요 💔';
-        pinVal = '';
-        updatePinDots();
-        setTimeout(() => document.getElementById('pin-err').textContent = '', 1500);
-      }
-    }, 100);
+// ═══ PIN ═══
+function pinKey(k){
+  if(pinVal.length>=4)return;
+  pinVal+=k;updatePinDots();
+  if(pinVal.length===4){
+    setTimeout(()=>{
+      if(pinVal===PIN){document.getElementById('pin-screen').classList.add('hidden');startApp();}
+      else{document.getElementById('pin-err').textContent='비밀번호가 틀렸어요 💔';pinVal='';updatePinDots();setTimeout(()=>document.getElementById('pin-err').textContent='',1500);}
+    },100);
   }
 }
-function pinDel() {
-  pinVal = pinVal.slice(0, -1);
-  updatePinDots();
+function pinDel(){pinVal=pinVal.slice(0,-1);updatePinDots();}
+function updatePinDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('filled',i<pinVal.length);}
+
+// ═══ APP START ═══
+function startApp(){
+  const app=document.getElementById('app');app.style.display='flex';app.style.flexDirection='column';
+  initDday();loadAll();
 }
-function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById('d' + i).classList.toggle('filled', i < pinVal.length);
-  }
+function initDday(){
+  document.getElementById('dday-num').textContent='D+'+Math.floor((new Date()-START_DATE)/86400000).toLocaleString();
+}
+function toggleTheme(){
+  isLight=!isLight;document.body.classList.toggle('light',isLight);
+  document.getElementById('theme-btn').textContent=isLight?'☀️':'🌙';
+}
+function goPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const nt=document.getElementById('nt-'+p);if(nt)nt.classList.add('active');
+  document.querySelector('.content').scrollTo(0,0);
+  if(p==='fav')renderFavorites();
+  if(p==='todo')renderTodo();
 }
 
-// ═══════════════════════════════════════
-// APP START
-// ═══════════════════════════════════════
-function startApp() {
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('app').style.flexDirection = 'column';
-  initDday();
-  loadCriteria();
-  loadAll();
-}
-
-function initDday() {
-  const diff = Math.floor((new Date() - START_DATE) / 86400000);
-  document.getElementById('dday-num').textContent = 'D+' + diff.toLocaleString();
-}
-
-// ═══════════════════════════════════════
-// THEME
-// ═══════════════════════════════════════
-function toggleTheme() {
-  isLight = !isLight;
-  document.body.classList.toggle('light', isLight);
-  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
-}
-
-// ═══════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════
-function goPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  const nt = document.getElementById('nt-' + page);
-  if (nt) nt.classList.add('active');
-  document.querySelector('.content').scrollTo(0, 0);
-}
-
-// ═══════════════════════════════════════
-// CRITERIA (localStorage)
-// ═══════════════════════════════════════
-function saveCriteria() {
-  localStorage.setItem('criteria-gong', document.getElementById('criteria-gong').value);
-  localStorage.setItem('criteria-ha', document.getElementById('criteria-ha').value);
-}
-function loadCriteria() {
-  const g = localStorage.getItem('criteria-gong');
-  const h = localStorage.getItem('criteria-ha');
-  if (g) document.getElementById('criteria-gong').value = g;
-  if (h) document.getElementById('criteria-ha').value = h;
-}
-function toggleCriteria() {
-  const btn = document.getElementById('criteria-toggle');
-  const content = document.getElementById('criteria-content');
-  btn.classList.toggle('open');
-  content.classList.toggle('open');
-}
-
-// ═══════════════════════════════════════
-// DATA LOAD
-// ═══════════════════════════════════════
-async function loadAll() {
+// ═══ SHEET OPS ═══
+async function loadAll(){
   showLoading(true);
-  try {
-    await Promise.all(Object.entries(SHEETS).map(([k, v]) => loadSheet(k, v)));
-    renderAll();
-  } catch(e) { toast('데이터 로드 실패: ' + e.message); console.error(e); }
+  try{await Promise.all(Object.entries(SHEETS).map(([k,v])=>loadSheet(k,v)));renderAll();}
+  catch(e){toast('로드 실패: '+e.message);console.error(e);}
   showLoading(false);
 }
-
-async function loadSheet(key, name) {
-  try {
-    const res = await gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID, range: name
-    });
-    const rows = res.result.values || [];
-    if (!rows.length) { db[key] = []; return; }
-    const hdrs = rows[0];
-    db[key] = rows.slice(1)
-      .filter(row => row.some(c => c && c.trim()))
-      .map((row, i) => {
-        const o = { _row: i + 2 };
-        hdrs.forEach((h, j) => o[h] = row[j] || '');
-        return o;
-      });
-  } catch(e) { console.log('sheet load err:', name, e); db[key] = []; }
+async function loadSheet(key,name){
+  try{
+    const res=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:name});
+    const rows=res.result.values||[];
+    if(!rows.length){db[key]=[];return;}
+    const hdrs=rows[0];
+    db[key]=rows.slice(1).filter(r=>r.some(c=>c&&c.trim())).map((r,i)=>{const o={_row:i+2};hdrs.forEach((h,j)=>o[h]=r[j]||'');return o;});
+  }catch(e){console.log('load err:',name,e);db[key]=[];}
 }
-
-// ═══════════════════════════════════════
-// SHEET WRITE
-// ═══════════════════════════════════════
-async function appendRow(sheetName, vals) {
+async function appendRow(name,vals){
   return gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId: SHEET_ID, range: sheetName,
-    valueInputOption: 'USER_ENTERED',
-    resource: { values: [vals] }
-  });
+    spreadsheetId:SHEET_ID,range:name,valueInputOption:'USER_ENTERED',resource:{values:[vals]}});
 }
-
-async function updateRow(sheetName, rowIdx, vals) {
-  const hdrs = await getHeaders(sheetName);
-  const range = `${sheetName}!A${rowIdx}:${colLetter(hdrs.length)}${rowIdx}`;
+async function updateRow(name,row,vals){
+  const range=`${name}!A${row}:ZZ${row}`;
   return gapi.client.sheets.spreadsheets.values.update({
-    spreadsheetId: SHEET_ID, range,
-    valueInputOption: 'USER_ENTERED',
-    resource: { values: [vals] }
-  });
+    spreadsheetId:SHEET_ID,range,valueInputOption:'USER_ENTERED',resource:{values:[vals]}});
+}
+async function deleteSheetRow(name,row){
+  try{
+    const sid=await getSheetId(name);
+    await gapi.client.sheets.spreadsheets.batchUpdate({spreadsheetId:SHEET_ID,
+      resource:{requests:[{deleteDimension:{range:{sheetId:sid,dimension:'ROWS',startIndex:row-1,endIndex:row}}}]}});
+  }catch(e){throw new Error('삭제 실패: '+e.message);}
+}
+async function getSheetId(name){
+  const res=await gapi.client.sheets.spreadsheets.get({spreadsheetId:SHEET_ID});
+  return res.result.sheets.find(s=>s.properties.title===name)?.properties.sheetId??0;
 }
 
-async function getHeaders(sheetName) {
-  const res = await gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID, range: `${sheetName}!1:1`
-  });
-  return res.result.values?.[0] || [];
-}
-
-function colLetter(n) {
-  let s = '';
-  while (n > 0) { n--; s = String.fromCharCode(65 + n % 26) + s; n = Math.floor(n / 26); }
-  return s;
-}
-
-async function deleteSheetRow(sheetName, rowIdx) {
-  const sid = await getSheetId(sheetName);
-  return gapi.client.sheets.spreadsheets.batchUpdate({
-    spreadsheetId: SHEET_ID,
-    resource: { requests: [{ deleteDimension: {
-      range: { sheetId: sid, dimension: 'ROWS', startIndex: rowIdx - 1, endIndex: rowIdx }
-    }}]}
-  });
-}
-
-async function getSheetId(name) {
-  const res = await gapi.client.sheets.spreadsheets.get({ spreadsheetId: SHEET_ID });
-  return res.result.sheets.find(s => s.properties.title === name)?.properties.sheetId ?? 0;
-}
-
-// ═══════════════════════════════════════
-// DRIVE UPLOAD
-// ═══════════════════════════════════════
-async function uploadToDrive(base64) {
-  if (!base64 || !base64.startsWith('data:')) return base64 || '';
-  try {
-    const blob = await fetch(base64).then(r => r.blob());
-    const meta = { name: 'img_' + Date.now() + '.jpg', mimeType: 'image/jpeg' };
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
-    form.append('file', blob);
-    const res = await fetch(
-      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
-      { method: 'POST', headers: { Authorization: 'Bearer ' + gapi.client.getToken().access_token }, body: form }
-    );
-    const { id } = await res.json();
-    await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions`, {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + gapi.client.getToken().access_token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role: 'reader', type: 'anyone' })
-    });
+// ═══ DRIVE UPLOAD ═══
+async function uploadToDrive(base64,folderKey='etc'){
+  if(!base64||!base64.startsWith('data:'))return base64||'';
+  try{
+    const blob=await fetch(base64).then(r=>r.blob());
+    const folderId=FOLDERS[folderKey]||FOLDERS.etc;
+    const meta={name:'img_'+Date.now()+'.jpg',mimeType:'image/jpeg',parents:[folderId]};
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file',blob);
+    const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+      {method:'POST',headers:{Authorization:'Bearer '+gapi.client.getToken().access_token},body:form});
+    const {id}=await res.json();
+    await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions`,
+      {method:'POST',headers:{Authorization:'Bearer '+gapi.client.getToken().access_token,'Content-Type':'application/json'},
+       body:JSON.stringify({role:'reader',type:'anyone'})});
     return `https://lh3.googleusercontent.com/d/${id}=s1000`;
-  } catch(e) { console.error('drive upload fail:', e); return ''; }
+  }catch(e){console.error('upload fail:',e);return '';}
 }
 
-// ═══════════════════════════════════════
-// RENDER ALL
-// ═══════════════════════════════════════
-function renderAll() {
-  renderMatzipList();
-  renderGourmet();
-  renderDate();
-  renderMovie();
+// ═══ RENDER ═══
+function renderAll(){
+  renderMatzipList();renderGourmet();renderDate();renderCulture();renderPhoto();
+  loadCriteriaFromSheet();
 }
 
-// ═══════════════════════════════════════
 // MATZIP
-// ═══════════════════════════════════════
-function getTotal(item) {
-  const a = parseFloat(item.공슐랭) || 0;
-  const b = parseFloat(item.하슐랭) || 0;
-  return a + b;
+function getTotal(item){return (parseFloat(item.공슐랭)||0)+(parseFloat(item.하슐랭)||0);}
+function numToStars(n){
+  if(isNaN(n)||n<=0)return'☆☆☆☆☆';
+  const s=Math.min(10,Math.max(0,n))/2;
+  const full=Math.floor(s),half=s%1>=0.5?1:0;
+  return'★'.repeat(full)+(half?'½':'')+'☆'.repeat(5-full-half);
+}
+function starsAndNum(score){
+  if(!score)return'-';
+  const n=parseFloat(score);if(isNaN(n)||n<=0)return'-';
+  return numToStars(n)+' '+n;
 }
 
-function renderMatzipList() {
+function renderMatzipList(){
   // Ranking
-  const sorted = [...db.matzip]
-    .filter(i => getTotal(i) > 0)
-    .sort((a, b) => getTotal(b) - getTotal(a));
-
-  const groups = [];
-  let rank = 1;
-  let i = 0;
-  while (i < sorted.length && groups.length < 10) {
-    const score = getTotal(sorted[i]);
-    const group = sorted.filter(x => getTotal(x) === score);
-    groups.push({ rank, items: group, score });
-    i += group.length;
-    rank += group.length;
-    if (groups.length >= 10) break;
+  const sorted=[...db.matzip].filter(i=>getTotal(i)>0).sort((a,b)=>getTotal(b)-getTotal(a));
+  const groups=[];let rank=1,i=0;
+  while(i<sorted.length&&groups.length<10){
+    const score=getTotal(sorted[i]);
+    const grp=sorted.filter(x=>getTotal(x)===score);
+    if(groups.length+grp.length<=10||groups.length<10)groups.push({rank,items:grp,score});
+    i+=grp.length;rank+=grp.length;
   }
-
-  const rankMedals = ['🥇','🥈','🥉'];
-  const rankEl = document.getElementById('rank-list');
-  if (!groups.length) {
-    rankEl.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px 0">별점을 등록하면 랭킹이 표시돼요</div>';
-  } else {
-    rankEl.innerHTML = groups.flatMap(g => g.items.map(item => `
+  const medals=['🥇','🥈','🥉'];
+  const rl=document.getElementById('rank-list');
+  if(!groups.length){rl.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 0">별점을 등록하면 랭킹이 표시돼요</div>';
+  }else{
+    rl.innerHTML=groups.flatMap(g=>g.items.map(item=>`
       <div class="rank-row">
-        <div class="rank-badge">${g.rank <= 3 ? rankMedals[g.rank-1] : g.rank}</div>
-        <div style="flex:1;min-width:0">
-          <div class="rank-name" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</div>
-          <div class="rank-loc">${esc(item.장소)}</div>
-        </div>
-        <div class="rank-score">★ ${g.score.toFixed(1)} / 20</div>
+        <div class="rank-badge">${g.rank<=3?medals[g.rank-1]:g.rank}</div>
+        <div style="flex:1;min-width:0"><div class="rank-name" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</div><div class="rank-loc">${esc(item.장소)}</div></div>
+        <div class="rank-score">${numToStars(g.score/2)} ${(g.score/2).toFixed(1)} / 10</div>
       </div>`)).join('');
   }
-
   // Table
-  const tbody = document.getElementById('matzip-tbody');
-  if (!db.matzip.length) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text3)">
-      <div style="font-size:32px;margin-bottom:8px">🍜</div>아래 버튼을 눌러 첫 맛집을 추가해보세요!</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = db.matzip.map((item, idx) => {
-    const total = getTotal(item);
-    let hlClass = '';
-    if (total >= 20) hlClass = 'hl-20';
-    else if (total >= 19) hlClass = 'hl-19';
-    else if (total >= 18) hlClass = 'hl-18';
-    else if (total >= 17) hlClass = 'hl-17';
-    else if (total >= 16) hlClass = 'hl-16';
-    return `<tr class="list-row ${hlClass}" id="mrow-${item._row}">
-      <td style="color:var(--text3);font-size:12px">${idx + 1}</td>
+  const tbody=document.getElementById('matzip-tbody');
+  if(!db.matzip.length){tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--text3)"><div style="font-size:34px;margin-bottom:8px">🍜</div>아래 버튼을 눌러 첫 맛집을 추가해보세요!</td></tr>`;return;}
+  const maxT=Math.max(...db.matzip.map(i=>getTotal(i)));
+  tbody.innerHTML=db.matzip.map((item,idx)=>{
+    const total=getTotal(item);
+    let hl='';
+    if(total>=20)hl='hl-20';else if(total>=19)hl='hl-19';else if(total>=18)hl='hl-18';else if(total>=17)hl='hl-17';else if(total>=16)hl='hl-16';
+    return`<tr class="list-row ${hl}" id="mrow-${item._row}">
+      <td style="color:var(--text3);font-size:13px">${idx+1}</td>
       <td><button class="list-name-btn" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</button></td>
       <td style="color:var(--text2)">${esc(item.장소)}</td>
-      <td><span class="stars-display">${starsStr(item.공슐랭)}</span></td>
-      <td><span class="stars-display">${starsStr(item.하슐랭)}</span></td>
-      <td><span class="total-score" style="color:${total>=16?'var(--accent)':'var(--text2)'}">${total > 0 ? total.toFixed(1) : '-'}</span></td>
-      <td style="color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.메뉴)}</td>
-      <td style="color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.비고)}</td>
-      <td style="white-space:nowrap">
+      <td class="stars-cell">${starsAndNum(item.공슐랭)}</td>
+      <td class="stars-cell">${starsAndNum(item.하슐랭)}</td>
+      <td class="total-cell" style="color:${total>=16?'var(--accent)':'var(--text2)'}">${total>0?(total/2).toFixed(1)+'/10':'-'}</td>
+      <td style="color:var(--text2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.메뉴)}</td>
+      <td style="color:var(--text2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.비고)}</td>
+      <td><div class="action-cell">
         <button class="row-edit-btn" onclick="inlineEdit(${item._row})">수정</button>
         <button class="row-del-btn" onclick="confirmDelete('matzip',${item._row})" title="삭제">🗑</button>
-      </td>
+      </div></td>
     </tr>`;
   }).join('');
 }
 
-function starsStr(score) {
-  if (!score) return '-';
-  const n = parseFloat(score);
-  if (isNaN(n) || n <= 0) return '-';
-  const s = Math.min(10, Math.max(0, n));
-  const half = s / 2;
-  const full = Math.floor(half);
-  const hasHalf = half % 1 >= 0.5 ? 1 : 0;
-  const empty = 5 - full - hasHalf;
-  return '★'.repeat(full) + (hasHalf ? '½' : '') + '☆'.repeat(empty) + ` ${n}`;
-}
-
-function addNewRow() {
-  if (newRowAdded) return;
-  newRowAdded = true;
-  const tbody = document.getElementById('matzip-tbody');
-  const tr = document.createElement('tr');
-  tr.className = 'new-row';
-  tr.id = 'new-matzip-row';
-  tr.innerHTML = `
+function addNewRow(){
+  if(newRowActive)return;
+  newRowActive=true;
+  document.getElementById('add-row-btn').style.display='none';
+  const tbody=document.getElementById('matzip-tbody');
+  const tr=document.createElement('tr');tr.className='new-row';tr.id='new-row';
+  const starOpts=STAR_OPTS.map(v=>`<option value="${v}">${v}</option>`).join('');
+  tr.innerHTML=`
     <td style="color:var(--text3)">*</td>
     <td><input id="nr-가게명" placeholder="가게명" style="min-width:80px"></td>
     <td><input id="nr-장소" placeholder="장소" style="min-width:60px"></td>
-    <td><input id="nr-공슐랭" class="star-input" placeholder="0~10" type="number" min="0" max="10" step="0.5"></td>
-    <td><input id="nr-하슐랭" class="star-input" placeholder="0~10" type="number" min="0" max="10" step="0.5"></td>
+    <td><select id="nr-공슐랭" class="star-select"><option value="">-</option>${starOpts}</select></td>
+    <td><select id="nr-하슐랭" class="star-select"><option value="">-</option>${starOpts}</select></td>
     <td>-</td>
     <td><input id="nr-메뉴" placeholder="메뉴" style="min-width:80px"></td>
     <td><input id="nr-비고" placeholder="비고" style="min-width:60px"></td>
-    <td><button class="row-reg-btn" onclick="registerNewRow()">등록</button></td>`;
+    <td><div class="action-cell">
+      <button class="row-reg-btn" onclick="registerNewRow()">등록</button>
+      <button class="row-cancel-btn" onclick="cancelNewRow()">취소</button>
+    </div></td>`;
   tbody.appendChild(tr);
   document.getElementById('nr-가게명').focus();
 }
 
-async function registerNewRow() {
-  const name = document.getElementById('nr-가게명').value.trim();
-  if (!name) { toast('가게명을 입력해주세요'); return; }
+function cancelNewRow(){
+  newRowActive=false;
+  const tr=document.getElementById('new-row');if(tr)tr.remove();
+  document.getElementById('add-row-btn').style.display='flex';
+}
+
+async function registerNewRow(){
+  const name=document.getElementById('nr-가게명').value.trim();
+  if(!name){toast('가게명을 입력해주세요');return;}
   showLoading(true);
-  try {
-    const row = [
-      name,
+  try{
+    await appendRow(SHEETS.matzip,[name,
       document.getElementById('nr-장소').value.trim(),
-      document.getElementById('nr-공슐랭').value.trim(),
-      document.getElementById('nr-하슐랭').value.trim(),
+      document.getElementById('nr-공슐랭').value,
+      document.getElementById('nr-하슐랭').value,
       document.getElementById('nr-메뉴').value.trim(),
-      document.getElementById('nr-비고').value.trim()
-    ];
-    await appendRow(SHEETS.matzip, row);
-    toast('등록됐어요 ✓');
-    newRowAdded = false;
-    await loadAll();
-  } catch(e) { toast('등록 실패: ' + e.message); }
+      document.getElementById('nr-비고').value.trim()]);
+    toast('등록됐어요 ✓');newRowActive=false;await loadAll();
+    document.getElementById('add-row-btn').style.display='flex';
+  }catch(e){toast('등록 실패: '+e.message);}
   showLoading(false);
 }
 
-function inlineEdit(rowIdx) {
-  const item = db.matzip.find(i => i._row === rowIdx);
-  if (!item) return;
-  const tr = document.getElementById('mrow-' + rowIdx);
-  if (!tr) return;
-  const idx = Array.from(tr.parentNode.children).indexOf(tr) + 1;
-  tr.innerHTML = `
+function inlineEdit(rowIdx){
+  const item=db.matzip.find(i=>i._row===rowIdx);if(!item)return;
+  const tr=document.getElementById('mrow-'+rowIdx);if(!tr)return;
+  const idx=Array.from(tr.parentNode.children).indexOf(tr)+1;
+  const starOpts=STAR_OPTS.map(v=>`<option value="${v}"${item.공슐랭===v?' selected':''}>${v}</option>`).join('');
+  const starOpts2=STAR_OPTS.map(v=>`<option value="${v}"${item.하슐랭===v?' selected':''}>${v}</option>`).join('');
+  const iStyle='background:var(--bg2);border:0.5px solid var(--border2);border-radius:7px;padding:5px 7px;font-size:13px;color:var(--text);font-family:var(--font-body);outline:none;width:100%';
+  tr.innerHTML=`
     <td style="color:var(--text3)">${idx}</td>
-    <td><input class="inline-input" id="ie-가게명-${rowIdx}" value="${esc(item.가게명)}" style="min-width:80px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font-body);outline:none;width:100%"></td>
-    <td><input class="inline-input" id="ie-장소-${rowIdx}" value="${esc(item.장소)}" style="min-width:60px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font-body);outline:none;width:100%"></td>
-    <td><input id="ie-공슐랭-${rowIdx}" value="${item.공슐랭}" type="number" min="0" max="10" step="0.5" style="width:52px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 6px;font-size:12px;color:var(--text);font-family:var(--font-body);outline:none;text-align:center"></td>
-    <td><input id="ie-하슐랭-${rowIdx}" value="${item.하슐랭}" type="number" min="0" max="10" step="0.5" style="width:52px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 6px;font-size:12px;color:var(--text);font-family:var(--font-body);outline:none;text-align:center"></td>
+    <td><input style="${iStyle};min-width:80px" id="ie-가게명-${rowIdx}" value="${esc(item.가게명)}"></td>
+    <td><input style="${iStyle};min-width:60px" id="ie-장소-${rowIdx}" value="${esc(item.장소)}"></td>
+    <td><select style="${iStyle};width:80px" id="ie-공슐랭-${rowIdx}"><option value="">-</option>${starOpts}</select></td>
+    <td><select style="${iStyle};width:80px" id="ie-하슐랭-${rowIdx}"><option value="">-</option>${starOpts2}</select></td>
     <td>-</td>
-    <td><input id="ie-메뉴-${rowIdx}" value="${esc(item.메뉴)}" style="min-width:80px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font-body);outline:none;width:100%"></td>
-    <td><input id="ie-비고-${rowIdx}" value="${esc(item.비고)}" style="min-width:60px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font-body);outline:none;width:100%"></td>
-    <td style="white-space:nowrap">
+    <td><input style="${iStyle};min-width:80px" id="ie-메뉴-${rowIdx}" value="${esc(item.메뉴)}"></td>
+    <td><input style="${iStyle};min-width:60px" id="ie-비고-${rowIdx}" value="${esc(item.비고)}"></td>
+    <td><div class="action-cell">
       <button class="row-reg-btn" onclick="saveInlineEdit(${rowIdx})">저장</button>
-      <button class="row-edit-btn" onclick="renderMatzipList()" style="margin-left:4px">취소</button>
-    </td>`;
+      <button class="row-cancel-btn" onclick="renderMatzipList()">취소</button>
+    </div></td>`;
 }
 
-async function saveInlineEdit(rowIdx) {
+async function saveInlineEdit(rowIdx){
   showLoading(true);
-  try {
-    const vals = [
+  try{
+    await updateRow(SHEETS.matzip,rowIdx,[
       document.getElementById(`ie-가게명-${rowIdx}`).value.trim(),
       document.getElementById(`ie-장소-${rowIdx}`).value.trim(),
-      document.getElementById(`ie-공슐랭-${rowIdx}`).value.trim(),
-      document.getElementById(`ie-하슐랭-${rowIdx}`).value.trim(),
+      document.getElementById(`ie-공슐랭-${rowIdx}`).value,
+      document.getElementById(`ie-하슐랭-${rowIdx}`).value,
       document.getElementById(`ie-메뉴-${rowIdx}`).value.trim(),
-      document.getElementById(`ie-비고-${rowIdx}`).value.trim()
-    ];
-    await updateRow(SHEETS.matzip, rowIdx, vals);
-    toast('수정됐어요 ✓');
-    await loadAll();
-  } catch(e) { toast('수정 실패: ' + e.message); }
+      document.getElementById(`ie-비고-${rowIdx}`).value.trim()]);
+    toast('수정됐어요 ✓');await loadAll();
+  }catch(e){toast('수정 실패: '+e.message);}
   showLoading(false);
 }
 
-function openMatzipDetail(name) {
-  const gItem = db.gourmet.find(i => i.가게명 === name);
-  const mItem = db.matzip.find(i => i.가게명 === name);
-  if (gItem) {
-    curDetailType = 'gourmet';
-    curDetailItem = gItem;
-    showDetailPopup(gItem, 'gourmet');
-  } else {
-    // 상세 없음 - 글쓰기 유도
-    curDetailType = 'gourmet-new';
-    curDetailItem = { 가게명: name, _row: mItem?._row };
-    document.getElementById('detail-popup-title').textContent = name;
-    document.getElementById('detail-write-btn').style.display = 'flex';
-    document.getElementById('detail-edit-btn').style.display = 'none';
-    document.getElementById('detail-del-btn').style.display = 'none';
-    document.getElementById('detail-popup-body').innerHTML = `
-      <div style="padding:40px 20px;text-align:center;color:var(--text3)">
-        <div style="font-size:40px;margin-bottom:12px">🍽️</div>
-        <div style="font-size:14px;color:var(--text2);margin-bottom:4px">아직 상세 기록이 없어요</div>
-        <div style="font-size:12px">글쓰기 버튼을 눌러 기록을 남겨보세요!</div>
-      </div>`;
-    document.getElementById('detail-overlay').classList.add('open');
-  }
+// CRITERIA
+async function loadCriteriaFromSheet(){
+  if(!db.criteria||!db.criteria.length)return;
+  const g=db.criteria.find(r=>r.구분==='공슐랭');
+  const h=db.criteria.find(r=>r.구분==='하슐랭');
+  if(g)document.getElementById('criteria-gong').value=g.내용||'';
+  if(h)document.getElementById('criteria-ha').value=h.내용||'';
+}
+async function saveCriteriaToSheet(){
+  showLoading(true);
+  try{
+    const gVal=document.getElementById('criteria-gong').value;
+    const hVal=document.getElementById('criteria-ha').value;
+    // Clear and rewrite
+    const sid=await getSheetId(SHEETS.criteria);
+    await gapi.client.sheets.spreadsheets.values.clear({spreadsheetId:SHEET_ID,range:SHEETS.criteria+'!A2:B100'});
+    await appendRow(SHEETS.criteria,['공슐랭',gVal]);
+    await appendRow(SHEETS.criteria,['하슐랭',hVal]);
+    toast('가이드 저장됐어요 ✓');await loadSheet('criteria',SHEETS.criteria);
+  }catch(e){toast('저장 실패: '+e.message);}
+  showLoading(false);
+}
+function toggleCriteria(){
+  document.getElementById('criteria-toggle').classList.toggle('open');
+  document.getElementById('criteria-content').classList.toggle('open');
 }
 
-// ═══════════════════════════════════════
 // GOURMET
-// ═══════════════════════════════════════
-function renderGourmet() {
-  const grid = document.getElementById('gourmet-grid');
-  const sorted = [...db.gourmet].sort((a, b) => sortByDate(b.날짜, a.날짜));
-  if (!sorted.length) {
-    grid.innerHTML = emptyState('🍽️', '고오급 식당을 추가해보세요!');
-    return;
-  }
-  grid.innerHTML = sorted.map(item => {
-    const tags = item.해시태그 ? item.해시태그.split(',').slice(0,3).map(t => '#'+t.trim()).join(' ') : '';
-    return `<div class="gcard" onclick="showDetailPopup(db.gourmet.find(i=>i._row===${item._row}),'gourmet')">
-      <div class="gcard-img-wrap">${imgOrPh(item.대표이미지, '4/3', '🍽️')}</div>
-      <div class="gcard-body">
+function renderGourmet(){
+  const grid=document.getElementById('gourmet-grid');
+  const sorted=[...db.gourmet].sort((a,b)=>sortByDate(b.날짜,a.날짜));
+  if(!sorted.length){grid.innerHTML=emptyState('🍽️','고오급 식당을 추가해보세요!');return;}
+  grid.innerHTML=sorted.map(item=>{
+    const faved=isFaved('gourmet',item._row);
+    return`<div class="gcard">
+      <button class="fav-btn" onclick="event.stopPropagation();toggleFav('gourmet',${item._row},'${esc(item.가게명)}','${esc(item.대표이미지)}')">${faved?'❤️':'🤍'}</button>
+      <div onclick="showDetailPopup(db.gourmet.find(i=>i._row===${item._row}),'gourmet')">${imgOrPh(item.대표이미지,'4/3','🍽️')}</div>
+      <div class="gcard-body" onclick="showDetailPopup(db.gourmet.find(i=>i._row===${item._row}),'gourmet')">
         <div class="gcard-name">${esc(item.가게명)}</div>
-        ${item.가격 ? `<div class="gcard-sub">${esc(item.가격)}</div>` : ''}
-        ${item.날짜 ? `<div class="gcard-sub">${esc(item.날짜)}</div>` : ''}
-        ${tags ? `<div class="gcard-tags">${tags}</div>` : ''}
+        ${item.가격?`<div class="gcard-sub">${esc(item.가격)}</div>`:''}
+        ${item.날짜?`<div class="gcard-sub">${esc(item.날짜)}</div>`:''}
+        ${item.해시태그?`<div class="gcard-tags">${item.해시태그.split(',').slice(0,3).map(t=>'#'+t.trim()).join(' ')}</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════
 // DATE
-// ═══════════════════════════════════════
-function renderDate() {
-  const grid = document.getElementById('date-grid');
-  const sorted = [...db.date].sort((a, b) => sortByDate(b.날짜, a.날짜));
-  if (!sorted.length) {
-    grid.innerHTML = emptyState('📍', '데이트 기록을 추가해보세요!');
-    return;
-  }
-  grid.innerHTML = sorted.map(item => {
-    return `<div class="gcard" onclick="showDateDetail(${item._row})">
-      <div class="gcard-img-wrap">${imgOrPh(item.대표이미지, '4/3', '📸')}</div>
-      <div class="gcard-body">
+function renderDate(){
+  const grid=document.getElementById('date-grid');
+  const sorted=[...db.date].sort((a,b)=>sortByDate(b.날짜,a.날짜));
+  if(!sorted.length){grid.innerHTML=emptyState('📍','여행 기록을 추가해보세요!');return;}
+  grid.innerHTML=sorted.map(item=>{
+    const faved=isFaved('date',item._row);
+    return`<div class="gcard">
+      <button class="fav-btn" onclick="event.stopPropagation();toggleFav('date',${item._row},'${esc(item.장소)}','${esc(item.대표이미지)}')">${faved?'❤️':'🤍'}</button>
+      <div onclick="showDateDetail(${item._row})">${imgOrPh(item.대표이미지,'4/3','📸')}</div>
+      <div class="gcard-body" onclick="showDateDetail(${item._row})">
         <div class="gcard-name">${esc(item.장소)}</div>
         <div class="gcard-sub">${esc(item.날짜)}${item.구분?' · '+esc(item.구분):''}</div>
-        ${item.한줄평 ? `<div class="gcard-tags">${esc(item.한줄평)}</div>` : ''}
+        ${item.한줄평?`<div class="gcard-tags">${esc(item.한줄평)}</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-function showDateDetail(rowIdx) {
-  const basic = db.date.find(i => i._row === rowIdx);
-  if (!basic) return;
-  const detail = db.dateDetail.find(d => d.장소 === basic.장소 && d.날짜 === basic.날짜)
-               || db.dateDetail.find(d => d.장소 === basic.장소);
-  const merged = { ...basic };
-  if (detail) {
-    merged._detailRow = detail._row;
-    if (detail.대표이미지 && !merged.대표이미지) merged.대표이미지 = detail.대표이미지;
-    merged.일차 = detail.일차 || '';
-    merged.데이트기록 = detail.데이트기록 || '';
-    for (let i = 1; i <= 15; i++) if (detail['사진'+i]) merged['사진'+i] = detail['사진'+i];
+function showDateDetail(rowIdx){
+  const basic=db.date.find(i=>i._row===rowIdx);if(!basic)return;
+  const detail=db.dateDetail.find(d=>d.장소===basic.장소&&d.날짜===basic.날짜)||db.dateDetail.find(d=>d.장소===basic.장소);
+  const merged={...basic};
+  if(detail){
+    merged._detailRow=detail._row;
+    if(detail.대표이미지&&!merged.대표이미지)merged.대표이미지=detail.대표이미지;
+    merged.일차=detail.일차||'';merged.데이트기록=detail.데이트기록||'';
+    for(let i=1;i<=15;i++)if(detail['사진'+i])merged['사진'+i]=detail['사진'+i];
   }
-  curDetailType = 'date';
-  curDetailItem = merged;
-  showDetailPopup(merged, 'date');
+  curDetailType='date';curDetailItem=merged;showDetailPopup(merged,'date');
 }
 
-// ═══════════════════════════════════════
-// MOVIE
-// ═══════════════════════════════════════
-function renderMovie() {
-  const grid = document.getElementById('movie-grid');
-  const sorted = [...db.movie].sort((a, b) => sortByDate(b.날짜, a.날짜));
-  if (!sorted.length) {
-    grid.innerHTML = emptyState('🎬', '영화 기록을 추가해보세요!');
-    return;
-  }
-  grid.innerHTML = sorted.map(item => {
-    const imgEl = normalizeImgUrl(item.대표이미지)
-      ? `<img src="${normalizeImgUrl(item.대표이미지)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML='<div style=&quot;width:100%;height:100%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px&quot;>🎬</div>'">`
-      : '<div style="width:100%;height:100%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px">🎬</div>';
-    return `<div class="movie-card" onclick="showDetailPopup(db.movie.find(i=>i._row===${item._row}),'movie')">
-      <div class="movie-card-poster">${imgEl}</div>
-      <div class="movie-card-info">
-        <div>
-          <div class="movie-card-title">${esc(item.영화명)}</div>
-          <div class="movie-card-date">${esc(item.날짜)}</div>
-          <div class="movie-card-stars">${starsStr(item.별점)}</div>
-        </div>
-        <div class="movie-card-review">${esc(item.한줄평)}</div>
+// CULTURE
+function renderCulture(){
+  const grid=document.getElementById('culture-grid');
+  const sorted=[...db.culture].sort((a,b)=>sortByDate(b.날짜,a.날짜));
+  if(!sorted.length){grid.innerHTML=emptyState('🎬','문화생활을 기록해보세요!');return;}
+  grid.innerHTML=sorted.map(item=>{
+    const faved=isFaved('culture',item._row);
+    const imgEl=item.대표이미지?`<img src="${item.대표이미지}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML='<div class=movie-poster-ph>🎬</div>'">`:`<div class="movie-poster-ph">🎬</div>`;
+    return`<div class="movie-card" onclick="showDetailPopup(db.culture.find(i=>i._row===${item._row}),'culture')">
+      <button class="fav-btn" style="top:6px;right:6px;z-index:3" onclick="event.stopPropagation();toggleFav('culture',${item._row},'${esc(item.영화명)}','${esc(item.대표이미지)}')">${faved?'❤️':'🤍'}</button>
+      <div class="movie-poster-wrap">${imgEl}</div>
+      <div class="movie-info">
+        <div><div class="movie-title">${esc(item.영화명)}</div><div class="movie-date">${esc(item.날짜)}</div><div class="movie-stars">${starsAndNum(item.별점)}</div></div>
+        <div class="movie-review">${esc(item.한줄평)}</div>
       </div>
     </div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════
-// DETAIL POPUP
-// ═══════════════════════════════════════
-function showDetailPopup(item, type) {
-  if (!item) return;
-  curDetailType = type;
-  curDetailItem = item;
-
-  const name = type === 'movie' ? item.영화명 : type === 'date' ? item.장소 : item.가게명;
-  document.getElementById('detail-popup-title').textContent = name || '';
-
-  const writeBtn = document.getElementById('detail-write-btn');
-  const editBtn = document.getElementById('detail-edit-btn');
-  const delBtn = document.getElementById('detail-del-btn');
-  writeBtn.style.display = 'none';
-  editBtn.style.display = 'flex';
-  delBtn.style.display = 'flex';
-
-  let body = '';
-  // Hero image
-  if (type === 'movie') {
-    const _hero = normalizeImgUrl(item.대표이미지);
-    body += _hero
-      ? `<img class="detail-poster" src="${_hero}" alt="" onerror="this.style.display='none'">`
-      : `<div class="detail-hero-ph">🎬</div>`;
-  } else {
-    const _hero = normalizeImgUrl(item.대표이미지);
-    body += _hero
-      ? `<img class="detail-hero" src="${_hero}" alt="" style="cursor:pointer" onclick="openLbox('${_hero}')" onerror="this.style.display='none'">`
-      : `<div class="detail-hero-ph">${type==='date'?'📸':'🍽️'}</div>`;
-  }
-
-  body += `<div class="detail-title">${esc(name)}</div>`;
-  body += `<div class="detail-props">`;
-
-  if (type === 'gourmet') {
-    if (item.날짜) body += detailProp('날짜', item.날짜);
-    if (item.가격) body += detailProp('가격', item.가격);
-    if (item.해시태그) body += detailProp('태그', item.해시태그);
-    const basic = db.matzip.find(m => m.가게명 === item.가게명);
-    if (basic?.공슐랭) body += detailProp('공슐랭', '★ ' + basic.공슐랭);
-    if (basic?.하슐랭) body += detailProp('하슐랭', '★ ' + basic.하슐랭);
-  }
-  if (type === 'date') {
-    if (item.날짜) body += detailProp('날짜', item.날짜);
-    if (item.구분) body += detailProp('구분', item.구분);
-    if (item.일차) body += detailProp('일차', item.일차);
-    if (item.한줄평) body += detailProp('한줄평', item.한줄평);
-  }
-  if (type === 'movie') {
-    if (item.날짜) body += detailProp('날짜', item.날짜);
-    if (item.별점) body += detailProp('별점', starsStr(item.별점));
-    if (item.한줄평) body += detailProp('한줄평', item.한줄평);
-  }
-  body += '</div>';
-
-  if (type === 'gourmet' && item.메뉴상세) {
-    body += `<div class="detail-section"><div class="detail-section-title">메뉴 상세</div><div class="detail-text">${esc(item.메뉴상세)}</div></div>`;
-  }
-  if (type === 'date' && item.데이트기록) {
-    body += `<div class="detail-section"><div class="detail-section-title">데이트 기록</div><div class="detail-text">${esc(item.데이트기록)}</div></div>`;
-  }
-  if (type === 'gourmet' && item.메모) {
-    body += `<div class="detail-section"><div class="detail-section-title">메모</div><div class="detail-text">${esc(item.메모)}</div></div>`;
-  }
-
-  // Photos
-  const photos = [];
-  for (let i = 1; i <= 15; i++) { const u = normalizeImgUrl(item['사진'+i]); if (u) photos.push(u); }
-  if (photos.length) {
-    body += `<div class="detail-section"><div class="detail-section-title">사진 (${photos.length}장)</div>
-      <div class="photo-scroll">${photos.map(p => `<img src="${p}" onclick="openLbox('${p}')" onerror="this.style.display='none'">`).join('')}
-    </div></div>`;
-  }
-
-  document.getElementById('detail-popup-body').innerHTML = body;
-  document.getElementById('detail-overlay').classList.add('open');
+// PHOTO
+function renderPhoto(){
+  const grid=document.getElementById('photo-grid');
+  const sorted=[...db.photo].sort((a,b)=>sortByDate(b.날짜,a.날짜));
+  if(!sorted.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3)"><div style="font-size:40px;margin-bottom:10px">🖼️</div>사진을 추가해보세요!</div>';return;}
+  grid.innerHTML=sorted.map(item=>`
+    <div class="photo-item" onclick="openLbox('${item.대표이미지}')">
+      <img src="${item.대표이미지}" alt="" loading="lazy" onerror="this.style.display='none'">
+      <button class="photo-item-del" onclick="event.stopPropagation();confirmDelete('photo',${item._row})">✕</button>
+    </div>`).join('');
 }
 
-function detailProp(k, v) {
-  return `<div class="detail-prop"><span class="detail-prop-k">${k}</span><span class="detail-prop-v">${esc(String(v))}</span></div>`;
-}
-
-function closeDetail(e) { if (e.target === document.getElementById('detail-overlay')) closeDetailDirect(); }
-function closeDetailDirect() { document.getElementById('detail-overlay').classList.remove('open'); }
-
-function openFormFromDetail() {
-  closeDetailDirect();
-  openForm('gourmet', null, curDetailItem?.가게명 || '');
-}
-function editFromDetail() {
-  closeDetailDirect();
-  openForm(curDetailType, curDetailItem);
-}
-function deleteFromDetail() {
-  const type = curDetailType;
-  const item = curDetailItem;
-  showConfirm(async () => {
-    showLoading(true);
-    try {
-      await deleteSheetRow(SHEETS[type] || SHEETS.matzip, item._row);
-      closeDetailDirect();
-      toast('삭제됐어요');
-      await loadAll();
-    } catch(e) { toast('삭제 실패: ' + e.message); }
-    showLoading(false);
-  });
-}
-
-// ═══════════════════════════════════════
-// FORM
-// ═══════════════════════════════════════
-function openForm(type, item=null, prefillName='') {
-  curFormType = type;
-  curFormItem = item;
-  heroImgData = item?.대표이미지 || null;
-  photosData = [];
-  if (item) {
-    for (let i = 1; i <= 15; i++) if (item['사진'+i]) photosData.push(item['사진'+i]);
-  }
-
-  const titles = {
-    gourmet: item ? '고오급 수정' : '고오급 글쓰기',
-    'gourmet-new': '고오급 글쓰기',
-    date: item ? '데이트 수정' : '데이트 글쓰기',
-    movie: item ? '영화 수정' : '영화 글쓰기'
-  };
-  document.getElementById('form-title').textContent = titles[type] || '새 기록';
-
-  let html = '';
-  // Hero image
-  html += `<div class="fg"><label class="flabel">대표 이미지</label>
-    ${heroImgData
-      ? `<img class="hero-preview" src="${heroImgData}" onclick="document.getElementById('hero-file').click()" onerror="this.outerHTML='<div class=hero-preview-ph onclick=document.getElementById(hero-file).click()>📷</div>'">`
-      : `<div class="hero-preview-ph" onclick="document.getElementById('hero-file').click()">📷<br><span style="font-size:11px;margin-top:6px;display:block">클릭해서 대표 이미지 선택</span></div>`}
-  </div>`;
-
-  if (type === 'gourmet' || type === 'gourmet-new') {
-    html += fInput('가게명', '가게명', item?.가게명 || prefillName);
-    html += fInput('가격', '가격 (예: ₩50,000)', item?.가격);
-    html += fInput('날짜', '날짜', item?.날짜, 'date');
-    html += fInput('해시태그', '해시태그 (쉼표로 구분)', item?.해시태그);
-    html += fTextarea('메뉴상세', '코스 메뉴 상세', item?.메뉴상세);
-    html += fTextarea('메모', '메모', item?.메모);
-    html += photosUpload();
-  }
-  if (type === 'date') {
-    html += fInput('장소', '장소', item?.장소);
-    html += fInput('날짜', '날짜', item?.날짜, 'date');
-    html += `<div class="fg"><label class="flabel">구분</label>
-      <select class="fselect" id="f-구분">
-        <option value="당일" ${item?.구분==='당일'?'selected':''}>당일 데이트</option>
-        <option value="여행" ${item?.구분==='여행'?'selected':''}>여행</option>
-      </select></div>`;
-    html += fInput('한줄평', '한줄평', item?.한줄평);
-    html += fInput('일차', '일차 (예: 3박4일)', item?.일차);
-    html += fTextarea('데이트기록', '데이트 기록', item?.데이트기록);
-    html += photosUpload();
-  }
-  if (type === 'movie') {
-    html += fInput('영화명', '영화 제목', item?.영화명);
-    html += fInput('날짜', '날짜', item?.날짜, 'date');
-    html += fStarInput('별점', '별점 (0~10)', item?.별점);
-    html += fInput('한줄평', '한줄평', item?.한줄평);
-  }
-
-  html += `<div class="form-footer">
-    <button class="form-cancel" onclick="closeFormDirect()">취소</button>
-    <button class="form-submit" onclick="submitForm()">등록하기</button>
-  </div>`;
-
-  document.getElementById('form-body').innerHTML = html;
-  renderHeroPreview();
-  renderPhotoPreviews();
-  document.getElementById('form-overlay').classList.add('open');
-}
-
-function fInput(key, ph, val='', type='text') {
-  return `<div class="fg"><label class="flabel">${ph}</label>
-    <input class="finput" id="f-${key}" type="${type}" placeholder="${ph}" value="${esc(val||'')}"></div>`;
-}
-function fTextarea(key, ph, val='') {
-  return `<div class="fg"><label class="flabel">${ph}</label>
-    <textarea class="finput ftarea" id="f-${key}" placeholder="${ph}">${val||''}</textarea></div>`;
-}
-function fStarInput(key, label, val='') {
-  return `<div class="fg"><label class="flabel">${label}</label>
-    <div class="star-field">
-      <input class="star-num" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" oninput="updateStarVisual('${key}',this.value)">
-      <div class="star-visual" id="sv-${key}">${val?numToStars(parseFloat(val)):'☆☆☆☆☆'}</div>
-    </div>
-    <div class="star-hint">숫자 입력 (0~10, 0.5 단위)</div>
-  </div>`;
-}
-function photosUpload() {
-  return `<div class="fg"><label class="flabel">사진 (최대 15장)</label>
-    <div class="img-drop" onclick="document.getElementById('photos-file').click()">
-      <div class="img-drop-icon">🖼️</div>
-      <div class="img-drop-label">클릭해서 사진 선택 (여러 장 가능)</div>
-    </div>
-    <div class="img-preview-grid" id="photos-preview"></div>
-  </div>`;
-}
-
-function numToStars(n) {
-  if (isNaN(n) || n <= 0) return '☆☆☆☆☆';
-  const s = Math.min(10, Math.max(0, n)) / 2;
-  const full = Math.floor(s);
-  const half = s % 1 >= 0.5 ? 1 : 0;
-  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
-}
-function updateStarVisual(key, val) {
-  const el = document.getElementById('sv-' + key);
-  if (el) el.textContent = numToStars(parseFloat(val));
-}
-
-function onHeroFile(e) {
-  const f = e.target.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = ev => { heroImgData = ev.target.result; renderHeroPreview(); };
-  r.readAsDataURL(f);
-  e.target.value = '';
-}
-function onPhotosFile(e) {
-  const files = Array.from(e.target.files);
-  const remaining = 15 - photosData.length;
-  files.slice(0, remaining).forEach(f => {
-    const r = new FileReader();
-    r.onload = ev => { photosData.push(ev.target.result); renderPhotoPreviews(); };
-    r.readAsDataURL(f);
-  });
-  e.target.value = '';
-}
-function renderHeroPreview() {
-  const wrap = document.querySelector('.hero-preview, .hero-preview-ph');
-  if (!wrap) return;
-  if (heroImgData) {
-    wrap.outerHTML = `<img class="hero-preview" src="${heroImgData}" onclick="document.getElementById('hero-file').click()">`;
-  }
-}
-function renderPhotoPreviews() {
-  const wrap = document.getElementById('photos-preview');
-  if (!wrap) return;
-  wrap.innerHTML = photosData.map((src, i) => `
-    <div class="ipreview"><img src="${src}" alt="">
-    <button class="ipreview-del" onclick="removePhoto(${i})">×</button></div>`).join('');
-}
-function removePhoto(i) { photosData.splice(i, 1); renderPhotoPreviews(); }
-
-function fVal(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
-
-async function submitForm() {
+// FAVORITES
+function isFaved(type,rowIdx){return db.favorites.some(f=>f.타입===type&&f.ID===String(rowIdx));}
+async function toggleFav(type,rowIdx,name,img){
+  const existing=db.favorites.find(f=>f.타입===type&&f.ID===String(rowIdx));
   showLoading(true);
-  try {
-    const type = curFormType;
-    const item = curFormItem;
-
-    // Upload images
-    const heroUrl = heroImgData ? await uploadToDrive(heroImgData) : '';
-    const photoUrls = [];
-    for (const p of photosData) {
-      const url = await uploadToDrive(p);
-      if (url) photoUrls.push(url);
-    }
-    while (photoUrls.length < 15) photoUrls.push('');
-
-    if (type === 'gourmet' || type === 'gourmet-new') {
-      // 맛집 상세: 가게명,대표이미지,가격,날짜,해시태그,메뉴상세,사진1~15,메모
-      const row = [
-        fVal('f-가게명'), heroUrl, fVal('f-가격'), fVal('f-날짜'),
-        fVal('f-해시태그'), fVal('f-메뉴상세'), ...photoUrls.slice(0,15), fVal('f-메모')
-      ];
-      if (item?._row) await updateRow(SHEETS.gourmet, item._row, row);
-      else await appendRow(SHEETS.gourmet, row);
-    }
-    if (type === 'date') {
-      // 데이트_기본: 장소,날짜,대표이미지,한줄평,비고,구분
-      const basicRow = [fVal('f-장소'), fVal('f-날짜'), heroUrl, fVal('f-한줄평'), '', fVal('f-구분')];
-      if (item?._row) await updateRow(SHEETS.date, item._row, basicRow);
-      else await appendRow(SHEETS.date, basicRow);
-      // 데이트_상세: 장소,날짜,일차,대표이미지,사진1~15,데이트기록
-      const detailRow = [fVal('f-장소'), fVal('f-날짜'), fVal('f-일차'), heroUrl, ...photoUrls.slice(0,15), fVal('f-데이트기록')];
-      if (item?._detailRow) await updateRow(SHEETS.dateDetail, item._detailRow, detailRow);
-      else await appendRow(SHEETS.dateDetail, detailRow);
-    }
-    if (type === 'movie') {
-      // 영화: 영화명,날짜,대표이미지,별점,한줄평
-      const row = [fVal('f-영화명'), fVal('f-날짜'), heroUrl, fVal('f-별점'), fVal('f-한줄평')];
-      if (item?._row) await updateRow(SHEETS.movie, item._row, row);
-      else await appendRow(SHEETS.movie, row);
-    }
-
-    toast('저장됐어요 ✓');
-    closeFormDirect();
-    await loadAll();
-  } catch(e) { toast('저장 실패: ' + e.message); console.error(e); }
+  try{
+    if(existing){await deleteSheetRow(SHEETS.favorites,existing._row);toast('즐겨찾기 해제');}
+    else{await appendRow(SHEETS.favorites,[type,String(rowIdx),name,img,new Date().toISOString().slice(0,10)]);toast('즐겨찾기 추가 ❤️');}
+    await loadSheet('favorites',SHEETS.favorites);renderAll();
+    if(document.getElementById('page-fav').classList.contains('active'))renderFavorites();
+  }catch(e){toast('오류: '+e.message);}
   showLoading(false);
 }
-
-function closeForm(e) { if (e.target === document.getElementById('form-overlay')) closeFormDirect(); }
-function closeFormDirect() {
-  document.getElementById('form-overlay').classList.remove('open');
-  curFormType = null; curFormItem = null; heroImgData = null; photosData = [];
-}
-
-// ═══════════════════════════════════════
-// CONFIRM
-// ═══════════════════════════════════════
-function confirmDelete(type, rowIdx) {
-  showConfirm(async () => {
-    showLoading(true);
-    try {
-      await deleteSheetRow(SHEETS[type], rowIdx);
-      toast('삭제됐어요');
-      await loadAll();
-    } catch(e) { toast('삭제 실패: ' + e.message); }
-    showLoading(false);
+function renderFavorites(){
+  const wrap=document.getElementById('fav-wrap');
+  if(!db.favorites.length){wrap.innerHTML='<div class="empty-state" style="text-align:center;padding:48px;color:var(--text3)"><div style="font-size:44px;margin-bottom:12px">❤️</div><div>즐겨찾기한 항목이 없어요</div></div>';return;}
+  const groups={gourmet:[],date:[],culture:[],photo:[]};
+  db.favorites.forEach(f=>{if(groups[f.타입])groups[f.타입].push(f);});
+  const labels={gourmet:'고오급',date:'여행',culture:'문화생활',photo:'사진'};
+  let html='';
+  Object.entries(groups).forEach(([type,items])=>{
+    if(!items.length)return;
+    html+=`<div class="fav-section-title">${labels[type]||type}</div><div class="gallery-grid-4">`;
+    html+=items.map(f=>`
+      <div class="gcard" onclick="openFavDetail('${f.타입}',${f.ID})">
+        ${imgOrPh(f.대표이미지,'4/3','⭐')}
+        <div class="gcard-body"><div class="gcard-name">${esc(f['가게명또는제목'])}</div><div class="gcard-sub">${esc(f.날짜)}</div></div>
+      </div>`).join('');
+    html+='</div>';
   });
+  wrap.innerHTML=html;
 }
-function showConfirm(cb) {
-  confirmCallback = cb;
-  document.getElementById('confirm-overlay').classList.add('open');
-  document.getElementById('confirm-ok-btn').onclick = () => { closeConfirm(); cb(); };
-}
-function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
-
-// ═══════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════
-function sortByDate(a, b) {
-  if (!a && !b) return 0;
-  if (!a) return -1;
-  if (!b) return 1;
-  return new Date(a) - new Date(b);
-}
-function normalizeImgUrl(url) {
-  if (!url) return '';
-  if (url.includes('lh3.googleusercontent.com')) return url;
-  let m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (!m) m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
-  return url;
-}
-function imgOrPh(src, ratio, icon) {
-  const s = normalizeImgUrl(src);
-  if (s) return `<img class="gcard-img" src="${s}" style="aspect-ratio:${ratio}" alt="" loading="lazy" onerror="this.outerHTML='<div class=gcard-ph style=aspect-ratio:${ratio}>${icon}</div>'">`;
-  return `<div class="gcard-ph" style="aspect-ratio:${ratio}">${icon}</div>`;
-}
-function emptyState(icon, txt) {
-  return `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">${icon}</div><div class="empty-txt">${txt}</div></div>`;
-}
-function openLbox(src) { document.getElementById('lbox-img').src = src; document.getElementById('lbox').classList.add('open'); }
-function showLoading(show) { document.getElementById('loading-overlay').classList.toggle('show', show); }
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 2500);
-}
-function esc(s) {
-  if (s == null) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-function toggleTheme() {
-  isLight = !isLight;
-  document.body.classList.toggle('light', isLight);
-  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+function openFavDetail(type,rowIdx){
+  const item=db[type]?.find(i=>i._row===parseInt(rowIdx));
+  if(!item){toast('항목을 찾을 수 없어요');return;}
+  if(type==='date')showDateDetail(parseInt(rowIdx));
+  else{curDetailType=type;curDetailItem=item;showDetailPopup(item,type);}
 }
 
-// Start
-initGapi();
-</script>
-</body>
-</html>
+// TODO
+function renderTodo(){
+  const filters=['전체','맛집','여행','데이트','문화생활','기타'];
+  document.getElementById('todo-filters').innerHTML=filters.map(f=>
+    `<button class="todo-filter ${todoFilter===f?'active':''}" onclick="setTodoFilter('${f}')">${f}</button>`).join('');
+  const items=todoFilter==='전체'?db.todo:db.todo.filter(i=>i.해시태그===todoFilter);
+  const list=document.getElementById('todo-list');
+  if(!items.length){list.innerHTML='<div style="text-align:center;padding:36px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">📝</div>할 일을 추가해보세요!</div>';return;}
+  list.innerHTML=items.map(item=>`
+    <div class="todo-card">
+      <div class="todo-card-img">${item.대표이미지?`<img src="${item.대표이미지}" alt="">`:`<div class="todo-card-img-ph">📝</div>`}</div>
+      <div class="todo-card-body">
+        <div class="todo-card-title">
+          <div class="todo-check ${item.완료여부==='완료'?'done':''}" onclick="toggleTodoDone(${item._row},this)">
+            ${item.완료여부==='완료'?'✓':''}
+          </div>
+          <span style="${item.완료여부==='완료'?'text-decoration:line-through;color:var(--text3)':''}">${esc(item.제목)}</span>
+        </div>
+        <div class="todo-memo">${esc(item.메모)}</div>
+        ${item.해시태그?`<div class="todo-tag">#${esc(item.해시태그)}</div>`:''}
+      </div>
+      <div class="todo-card-actions">
+        <button class="todo-action-btn" onclick="openFormEdit('todo',${item._row})" title="수정">✏️</button>
+        <button class="todo-action-btn" onclick="confirmDelete('todo',${item._row})" title="삭제">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function setTodoFilter(f){todoFilter=f;renderTodo();}
+async function toggleTodoDone(rowIdx,el){
+  const item=db.todo.find(i=>i._row===rowIdx);if(!item)return;
+  const newVal=item.완료여부==='완료'?'':' 완료';
+  showLoading(true);
+  try{
+    const vals=[item.제목,item.메모,item.해시태그,item.대표이미지,newVal.trim(),item.날짜];
+    await updateRow(SHEETS.todo,rowIdx,vals);
+    await loadSheet('todo',SHEETS.todo);renderTodo();
+  }catch(e){toast('오류: '+e.message);}
+  showLoading(false);
+}
+function openFormEdit(type,rowIdx){
+  const item=db[type]?.find(i=>i._row===rowIdx);
+  if(item)openForm(type,item);
+}
+
+// DETAIL POPUP
+function showDetailPopup(item,type){
+  if(!item)return;
+  curDetailType=type;curDetailItem=item;
+  const name=type==='culture'?item.영화명:type==='date'?item.장소:item.가게명;
+  document.getElementById('detail-popup-title').textContent=name||'';
+  document.getElementById('detail-write-btn').style.display='none';
+  document.getElementById('detail-edit-btn').style.display='flex';
+  document.getElementById('detail-del-btn').style.display='flex';
+
+  let body='';
+  // Hero
+  if(type==='culture'){
+    body+=item.대표이미지?`<img class="detail-poster" src="${item.대표이미지}" alt="" onerror="this.style.display='none'">`:`<div class="detail-hero-ph">🎬</div>`;
+  }else{
+    body+=item.대표이미지?`<img class="detail-hero" src="${item.대표이미지}" alt="" onclick="openLbox('${item.대표이미지}')" onerror="this.style.display='none'">`:`<div class="detail-hero-ph">${type==='date'?'📸':'🍽️'}</div>`;
+  }
+  body+=`<div class="detail-title">${esc(name)}</div><div class="detail-props">`;
+  if(type==='gourmet'){
+    if(item.날짜)body+=dProp('날짜',item.날짜);
+    if(item.가격)body+=dProp('가격',item.가격);
+    if(item.해시태그)body+=dProp('태그',item.해시태그);
+    const basic=db.matzip.find(m=>m.가게명===item.가게명);
+    if(basic?.공슐랭)body+=dProp('공슐랭',starsAndNum(basic.공슐랭));
+    if(basic?.하슐랭)body+=dProp('하슐랭',starsAndNum(basic.하슐랭));
+  }
+  if(type==='date'){
