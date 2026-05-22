@@ -243,6 +243,7 @@ function renderMatzipList(){
 }
 
 function addNewRow(){
+  if(window.innerWidth<=768){openForm('matzip');return;}
   if(newRowActive)return;
   newRowActive=true;
   document.getElementById('add-row-btn').style.display='none';
@@ -290,6 +291,7 @@ async function registerNewRow(){
 }
 
 function inlineEdit(rowIdx){
+  if(window.innerWidth<=768){const item=db.matzip.find(i=>i._row===rowIdx);if(item)openForm('matzip',item);return;}
   const item=db.matzip.find(i=>i._row===rowIdx);if(!item)return;
   const tr=document.getElementById('mrow-'+rowIdx);if(!tr)return;
   const idx=Array.from(tr.parentNode.children).indexOf(tr)+1;
@@ -628,7 +630,7 @@ function openForm(type,item=null,prefillName=''){
   curFormType=type;curFormItem=item;
   heroImgData=normalizeImgUrl(item?.대표이미지)||null;photosData=[];
   if(item){for(let i=1;i<=15;i++){const u=normalizeImgUrl(item['사진'+i]);if(u)photosData.push(u);}}
-  const titles={gourmet:item?'고오급 수정':'고오급 글쓰기',date:item?'여행 수정':'여행 글쓰기',culture:item?'문화생활 수정':'문화생활 글쓰기',photo:'사진 추가',todo:item?'투두 수정':'투두 추가'};
+  const titles={matzip:item?'맛집 수정':'맛집 추가',gourmet:item?'고오급 수정':'고오급 글쓰기',date:item?'여행 수정':'여행 글쓰기',culture:item?'문화생활 수정':'문화생활 글쓰기',photo:'사진 추가',todo:item?'투두 수정':'투두 추가'};
   document.getElementById('form-title').textContent=titles[type]||'새 기록';
   let html='';
   if(type==='gourmet'){
@@ -663,6 +665,14 @@ function openForm(type,item=null,prefillName=''){
     html+=fgsel('해시태그',['맛집','여행','데이트','문화생활','기타'],item?.해시태그);
     html+=fg('날짜','date','날짜',item?.날짜);
     html+=fhero();
+  }else if(type==='matzip'){
+    const sopts=(v='')=>'<option value="">-</option>'+STAR_OPTS.map(o=>`<option value="${o}"${o===v?' selected':''}>${o}</option>`).join('');
+    html+=fg('가게명','text','가게명',item?.가게명);
+    html+=fg('장소','text','장소',item?.장소);
+    html+=`<div class="fg"><label class="flabel">공슐랭</label><select class="finput" id="f-공슐랭">${sopts(item?.공슐랭||'')}</select></div>`;
+    html+=`<div class="fg"><label class="flabel">하슐랭</label><select class="finput" id="f-하슐랭">${sopts(item?.하슐랭||'')}</select></div>`;
+    html+=fg('메뉴','text','메뉴',item?.메뉴);
+    html+=fg('비고','text','비고',item?.비고);
   }
   html+=`<div class="form-footer"><button class="form-cancel-btn" onclick="closeFormDirect()">취소</button><button class="form-submit-btn" onclick="saveRecord()">저장</button></div>`;
   document.getElementById('form-body').innerHTML=html;
@@ -707,6 +717,15 @@ async function saveRecord(){
   const fv=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
   try{
     const type=curFormType;
+    if(type==='matzip'){
+      const name=fv('f-가게명');
+      if(!name){toast('가게명을 입력해주세요');showLoading(false);return;}
+      const row=[name,fv('f-장소'),fv('f-공슐랭'),fv('f-하슐랭'),fv('f-메뉴'),fv('f-비고')];
+      if(curFormItem?._row){await updateRow(SHEETS.matzip,curFormItem._row,row);}
+      else{await appendRow(SHEETS.matzip,row);}
+      toast(curFormItem?'수정됐어요 ✓':'등록됐어요 ✓');closeFormDirect();await loadAll();
+      showLoading(false);return;
+    }
     const fk=type==='date'?'date':type==='culture'?'culture':'etc';
     let heroUrl=heroImgData?.startsWith('data:')?await uploadToDrive(heroImgData,fk):(heroImgData||'');
     const photoUrls=[];
