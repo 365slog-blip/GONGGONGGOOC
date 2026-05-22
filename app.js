@@ -558,21 +558,21 @@ function showDetailPopup(item,type){
   }
   body+='</div>';
   if(type==='gourmet'){
-    if(item.메뉴상세)body+=`<div class="detail-section"><div class="detail-section-title">메뉴 상세</div><div class="detail-text">${esc(item.메뉴상세)}</div></div>`;
-    if(item.메모)body+=`<div class="detail-section"><div class="detail-section-title">메모</div><div class="detail-text">${esc(item.메모)}</div></div>`;
+    if(item.메뉴상세)body+=`<div class="detail-sec"><div class="detail-sec-title">메뉴 상세</div><div class="detail-text">${esc(item.메뉴상세)}</div></div>`;
+    if(item.메모)body+=`<div class="detail-sec"><div class="detail-sec-title">메모</div><div class="detail-text">${esc(item.메모)}</div></div>`;
   }
-  if(type==='date'&&item.데이트기록)body+=`<div class="detail-section"><div class="detail-section-title">여행 기록</div><div class="detail-text">${esc(item.데이트기록)}</div></div>`;
+  if(type==='date'&&item.데이트기록)body+=`<div class="detail-sec"><div class="detail-sec-title">여행 기록</div><div class="detail-text">${esc(item.데이트기록)}</div></div>`;
   // Photos
   const photos=[];
   for(let i=1;i<=15;i++){const u=normalizeImgUrl(item['사진'+i]);if(u)photos.push(u);}
-  if(photos.length)body+=`<div class="detail-section"><div class="detail-section-title">사진 (${photos.length}장)</div>
-    <div class="photo-scroll">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" onerror="this.style.display='none'">`).join('')}</div></div>`;
+  if(photos.length)body+=`<div class="detail-sec"><div class="detail-sec-title">사진 (${photos.length}장)</div><div class="photo-scroll-wrap"><button class="scroll-btn left" onclick="scrollPhotos(this,-1)">&#8249;</button><div class="photo-scroll">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" onerror="this.style.display='none'">`).join('')}</div><button class="scroll-btn right" onclick="scrollPhotos(this,1)">&#8250;</button></div></div>`;
   document.getElementById('detail-popup-body').innerHTML=body;
   document.getElementById('detail-overlay').classList.add('open');
 }
 
 function dProp(k,v){return`<div class="detail-prop"><span class="detail-prop-k">${k}</span><span class="detail-prop-v">${esc(String(v))}</span></div>`;}
 function dPropHtml(k,v){return`<div class="detail-prop"><span class="detail-prop-k">${k}</span><span class="detail-prop-v">${v}</span></div>`;}
+function scrollPhotos(btn,dir){const sc=btn.closest('.photo-scroll-wrap').querySelector('.photo-scroll');sc.scrollBy({left:dir*220,behavior:'smooth'});}
 function closeDetailDirect(){document.getElementById('detail-overlay').classList.remove('open');}
 function openFormFromDetail(){closeDetailDirect();openForm('gourmet',null,curDetailItem?.가게명||'');}
 function editFromDetail(){closeDetailDirect();openForm(curDetailType,curDetailItem);}
