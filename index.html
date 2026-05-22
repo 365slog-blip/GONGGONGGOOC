@@ -28,6 +28,7 @@
     <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285f4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34a853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#fbbc05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#ea4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.3z"/></svg>
     Google 계정으로 시작하기
   </button>
+  <div class="app-version">v1.0.0</div>
 </div>
 
 <!-- PIN -->
@@ -60,8 +61,27 @@
 
 <!-- APP -->
 <div id="app">
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">♥</div>
+    <div class="sidebar-item" onclick="goPage('home')">🏠 홈</div>
+    <div class="sidebar-item" onclick="goPage('matzip')">🍜 맛집</div>
+    <div class="sidebar-item" onclick="goPage('gourmet')">✨ 고오급</div>
+    <div class="sidebar-item" onclick="goPage('date')">📍 여행</div>
+    <div class="sidebar-item" onclick="goPage('culture')">🎬 문화생활</div>
+    <div class="sidebar-item" onclick="goPage('photo')">🖼️ 사진</div>
+    <div class="sidebar-item" onclick="goPage('fav')">❤️ 즐겨찾기</div>
+    <div class="sidebar-item" onclick="goPage('todo')">📝 투두</div>
+    <div class="sidebar-item" onclick="goPage('settings')">⚙️ 설정</div>
+  </nav>
+
   <nav class="navbar">
-    <div class="navbar-logo" onclick="goPage('home')">💑 공주와 하이니</div>
+    <div class="navbar-left">
+      <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+      <div class="navbar-logo" onclick="goPage('home')">♥</div>
+    </div>
     <div class="navbar-tabs">
       <button class="ntab active" id="nt-home" onclick="goPage('home')">홈</button>
       <button class="ntab" id="nt-matzip" onclick="goPage('matzip')">🍜 맛집</button>
@@ -71,11 +91,20 @@
       <button class="ntab" id="nt-photo" onclick="goPage('photo')">🖼️ 사진</button>
       <button class="ntab" id="nt-fav" onclick="goPage('fav')">❤️ 즐겨찾기</button>
       <button class="ntab" id="nt-todo" onclick="goPage('todo')">📝 투두</button>
+      <button class="ntab" id="nt-settings" onclick="goPage('settings')">⚙️</button>
     </div>
     <div class="navbar-right">
       <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
     </div>
   </nav>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap" id="ticker-wrap" style="display:none">
+    <div class="ticker-inner" id="ticker-text"></div>
+  </div>
+
+  <!-- PTR INDICATOR -->
+  <div class="ptr-indicator" id="ptr-indicator">↓ 당겨서 새로고침</div>
 
   <div class="content">
     <!-- HOME -->
@@ -107,23 +136,24 @@
         </div>
       </div>
       <div class="matzip-inner">
+        <!-- 별점 가이드 (토글) -->
         <div class="criteria-section">
-          <div class="criteria-section-hdr">★ 별점 가이드 기준표</div>
-          <div class="criteria-grid">
-            <div class="criteria-box">
-              <div class="criteria-title">공슐랭 가이드</div>
-              <textarea class="criteria-textarea" id="criteria-gong" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집" readonly></textarea>
-              <div class="criteria-footer">
-                <button class="criteria-edit-btn" id="criteria-gong-edit" onclick="editCriteria('gong')" style="display:none">수정</button>
-                <button class="criteria-btn" id="criteria-gong-save" onclick="saveCriteriaToSheet()">저장</button>
-              </div>
+          <div class="criteria-toggle-hdr" onclick="toggleCriteria()">
+            <span class="criteria-section-hdr">★ 별점 가이드 기준표</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="criteria-btn" id="criteria-save-btn" style="display:none" onclick="event.stopPropagation();saveCriteriaToSheet()">저장</button>
+              <span class="criteria-arrow" id="criteria-arrow">›</span>
             </div>
-            <div class="criteria-box">
-              <div class="criteria-title">하슐랭 가이드</div>
-              <textarea class="criteria-textarea" id="criteria-ha" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집" readonly></textarea>
-              <div class="criteria-footer">
-                <button class="criteria-edit-btn" id="criteria-ha-edit" onclick="editCriteria('ha')" style="display:none">수정</button>
-                <button class="criteria-btn" id="criteria-ha-save" onclick="saveCriteriaToSheet()">저장</button>
+          </div>
+          <div class="criteria-body" id="criteria-body" style="display:none">
+            <div class="criteria-grid">
+              <div class="criteria-box">
+                <div class="criteria-title">공슐랭 가이드</div>
+                <textarea class="criteria-textarea" id="criteria-gong" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집" oninput="autoResize(this)"></textarea>
+              </div>
+              <div class="criteria-box">
+                <div class="criteria-title">하슐랭 가이드</div>
+                <textarea class="criteria-textarea" id="criteria-ha" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집" oninput="autoResize(this)"></textarea>
               </div>
             </div>
           </div>
@@ -176,6 +206,7 @@
           <div><div class="page-title">Culture &amp; Movie List</div><div class="page-sub">공주와 하이니의 문화생활 리스트</div></div>
           <button class="page-action-btn" onclick="openForm('culture')">✏️ 글쓰기</button>
         </div>
+        <div class="filter-bar" id="culture-filter-bar"></div>
       </div>
       <div class="gallery-wrap"><div class="gallery-grid-2" id="culture-grid"></div></div>
     </div>
@@ -185,7 +216,6 @@
       <div class="page-hdr">
         <div class="page-hdr-top">
           <div><div class="page-title">Photo Album</div><div class="page-sub">우리의 소중한 사진들</div></div>
-          <button class="page-action-btn" onclick="openForm('photo')">＋ 사진 추가</button>
         </div>
       </div>
       <div class="photo-grid-wrap"><div class="photo-grid" id="photo-grid"></div></div>
@@ -212,6 +242,28 @@
       <div class="todo-wrap">
         <div class="todo-filters" id="todo-filters"></div>
         <div class="todo-list" id="todo-list"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-hdr">
+        <div class="page-hdr-top">
+          <div><div class="page-title">Settings</div><div class="page-sub">앱 설정</div></div>
+        </div>
+      </div>
+      <div class="settings-wrap">
+        <div class="settings-section">
+          <div class="settings-section-title">티커 텍스트</div>
+          <div class="settings-section-desc">상단에 흐르는 텍스트를 설정해요</div>
+          <textarea class="finput ftarea" id="settings-ticker" placeholder="표시할 텍스트를 입력해주세요" oninput="autoResize(this)"></textarea>
+          <button class="settings-save-btn" onclick="saveTicker()">저장</button>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">계정</div>
+          <button class="settings-logout-btn" onclick="doLogout()">로그아웃</button>
+        </div>
+        <div class="settings-version">버전 v1.0.0</div>
       </div>
     </div>
   </div>
@@ -249,7 +301,7 @@
   <div class="popup confirm-popup" onclick="event.stopPropagation()">
     <div class="confirm-inner">
       <div class="confirm-icon">🗑️</div>
-      <div class="confirm-msg">정말로 삭제하시겠어요?<br><span style="font-size:13px;color:var(--text3)">이 작업은 되돌릴 수 없어요.</span></div>
+      <div class="confirm-msg" id="confirm-msg">정말로 삭제하시겠어요?<br><span style="font-size:13px;color:var(--text3)">이 작업은 되돌릴 수 없어요.</span></div>
       <div class="confirm-btns">
         <button class="confirm-cancel" onclick="closeConfirm()">취소</button>
         <button class="confirm-ok" id="confirm-ok-btn">삭제하기</button>
@@ -263,6 +315,7 @@
 <div class="toast" id="toast"></div>
 <input type="file" id="hero-file" accept="image/*" onchange="onHeroFile(event)">
 <input type="file" id="photos-file" accept="image/*" multiple onchange="onPhotosFile(event)">
+<input type="file" id="photo-tab-file" accept="image/*" multiple onchange="onPhotoTabFile(event)">
 
 <script src="app.js"></script>
 </body>
