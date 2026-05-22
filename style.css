@@ -270,7 +270,12 @@ body{overflow:hidden}
 .star-field{display:flex;align-items:center;gap:14px}
 .star-num{background:var(--bg2);border:0.5px solid var(--border);border-radius:11px;padding:11px 12px;font-size:15px;color:var(--text);font-family:var(--font-body);outline:none;width:90px;text-align:center;-webkit-appearance:none}
 .star-num:focus{border-color:var(--accent)}
-.star-visual{font-size:22px;letter-spacing:2px;color:var(--accent);min-width:120px}
+.star-visual{font-size:22px;letter-spacing:2px;min-width:120px}
+.star-full{color:var(--accent)}
+.star-empty{color:var(--text3)}
+.star-half{display:inline-block;position:relative;width:.65em;height:1em;vertical-align:bottom}
+.star-half::after{content:'☆';position:absolute;left:0;top:0;color:var(--text3)}
+.star-half::before{content:'★';position:absolute;left:0;top:0;clip-path:inset(0 50% 0 0);color:var(--accent)}
 .star-hint{font-size:11px;color:var(--text3);margin-top:5px}
 .img-drop{border:1.5px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;color:var(--text3);transition:all .15s}
 .img-drop:hover{border-color:var(--accent);color:var(--accent)}

@@ -17,7 +17,7 @@ const SHEETS = {
   culture:'영화', criteria:'별점가이드',
   favorites:'즐겨찾기', todo:'투두리스트', photo:'사진첩'
 };
-const STAR_OPTS = ['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10'];
+const STAR_OPTS = ['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
 
 // ═══ STATE ═══
 let db = {matzip:[],gourmet:[],date:[],dateDetail:[],culture:[],criteria:[],favorites:[],todo:[],photo:[]};
@@ -180,15 +180,20 @@ function renderAll(){
 // MATZIP
 function getTotal(item){return (parseFloat(item.공슐랭)||0)+(parseFloat(item.하슐랭)||0);}
 function numToStars(n){
-  if(isNaN(n)||n<=0)return'☆☆☆☆☆';
-  const s=Math.min(10,Math.max(0,n))/2;
-  const full=Math.floor(s),half=s%1>=0.5?1:0;
-  return'★'.repeat(full)+(half?'½':'')+'☆'.repeat(5-full-half);
+  if(isNaN(n)||n<=0)return'<span class="star-empty">☆☆☆☆☆</span>';
+  const s=Math.min(5,Math.max(0,n));
+  const full=Math.floor(s),half=(s-full)>=0.5?1:0,empty=5-full-half;
+  return(full?'<span class="star-full">'+'★'.repeat(full)+'</span>':'')+(half?'<span class="star-half"></span>':'')+(empty?'<span class="star-empty">'+'☆'.repeat(empty)+'</span>':'');
 }
 function starsAndNum(score){
   if(!score)return'-';
   const n=parseFloat(score);if(isNaN(n)||n<=0)return'-';
-  return numToStars(n)+' '+n;
+  return numToStars(n)+'<small style="color:var(--text2);margin-left:4px">'+n+'</small>';
+}
+function starsAndNum10(score){
+  if(!score)return'-';
+  const n=parseFloat(score);if(isNaN(n)||n<=0)return'-';
+  return numToStars(n/2)+'<small style="color:var(--text2);margin-left:4px">'+n+'/10</small>';
 }
 
 function renderMatzipList(){
@@ -209,7 +214,7 @@ function renderMatzipList(){
       <div class="rank-row">
         <div class="rank-badge">${g.rank<=3?medals[g.rank-1]:g.rank}</div>
         <div style="flex:1;min-width:0"><div class="rank-name" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</div><div class="rank-loc">${esc(item.장소)}</div></div>
-        <div class="rank-score">${numToStars(g.score/2)} ${(g.score/2).toFixed(1)} / 10</div>
+        <div class="rank-score">${numToStars(g.score/2)} <small style="color:var(--text2);margin-left:4px">${g.score.toFixed(1)} / 10</small></div>
       </div>`)).join('');
   }
   // Table
@@ -219,14 +224,14 @@ function renderMatzipList(){
   tbody.innerHTML=db.matzip.map((item,idx)=>{
     const total=getTotal(item);
     let hl='';
-    if(total>=20)hl='hl-20';else if(total>=19)hl='hl-19';else if(total>=18)hl='hl-18';else if(total>=17)hl='hl-17';else if(total>=16)hl='hl-16';
+    if(total>=10)hl='hl-20';else if(total>=9.5)hl='hl-19';else if(total>=9)hl='hl-18';else if(total>=8.5)hl='hl-17';else if(total>=8)hl='hl-16';
     return`<tr class="list-row ${hl}" id="mrow-${item._row}">
       <td style="color:var(--text3);font-size:13px">${idx+1}</td>
       <td><button class="list-name-btn" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</button></td>
       <td style="color:var(--text2)">${esc(item.장소)}</td>
       <td class="stars-cell">${starsAndNum(item.공슐랭)}</td>
       <td class="stars-cell">${starsAndNum(item.하슐랭)}</td>
-      <td class="total-cell" style="color:${total>=16?'var(--accent)':'var(--text2)'}">${total>0?(total/2).toFixed(1)+'/10':'-'}</td>
+      <td class="total-cell" style="color:${total>=8?'var(--accent)':'var(--text2)'}">${total>0?total.toFixed(1)+' / 10':'-'}</td>
       <td style="color:var(--text2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.메뉴)}</td>
       <td style="color:var(--text2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.비고)}</td>
       <td><div class="action-cell">
@@ -412,7 +417,7 @@ function renderCulture(){
       <button class="fav-btn" style="top:6px;right:6px;z-index:3" onclick="event.stopPropagation();toggleFav('culture',${item._row},'${esc(item.영화명)}','${esc(item.대표이미지)}')">${faved?'❤️':'🤍'}</button>
       <div class="movie-poster-wrap">${imgEl}</div>
       <div class="movie-info">
-        <div><div class="movie-title">${esc(item.영화명)}</div><div class="movie-date">${esc(item.날짜)}</div><div class="movie-stars">${starsAndNum(item.별점)}</div></div>
+        <div><div class="movie-title">${esc(item.영화명)}</div><div class="movie-date">${esc(item.날짜)}</div><div class="movie-stars">${starsAndNum10(item.별점)}</div></div>
         <div class="movie-review">${esc(item.한줄평)}</div>
       </div>
     </div>`;
@@ -537,8 +542,8 @@ function showDetailPopup(item,type){
     if(item.가격)body+=dProp('가격',item.가격);
     if(item.해시태그)body+=dProp('태그',item.해시태그);
     const basic=db.matzip.find(m=>m.가게명===item.가게명);
-    if(basic?.공슐랭)body+=dProp('공슐랭',starsAndNum(basic.공슐랭));
-    if(basic?.하슐랭)body+=dProp('하슐랭',starsAndNum(basic.하슐랭));
+    if(basic?.공슐랭)body+=dPropHtml('공슐랭',starsAndNum(basic.공슐랭));
+    if(basic?.하슐랭)body+=dPropHtml('하슐랭',starsAndNum(basic.하슐랭));
   }
   if(type==='date'){
     if(item.날짜)body+=dProp('날짜',item.날짜);
@@ -548,7 +553,7 @@ function showDetailPopup(item,type){
   }
   if(type==='culture'){
     if(item.날짜)body+=dProp('날짜',item.날짜);
-    if(item.별점)body+=dProp('별점',starsAndNum(item.별점));
+    if(item.별점)body+=dPropHtml('별점',starsAndNum10(item.별점));
     if(item.한줄평)body+=dProp('한줄평',item.한줄평);
   }
   body+='</div>';
@@ -567,6 +572,7 @@ function showDetailPopup(item,type){
 }
 
 function dProp(k,v){return`<div class="detail-prop"><span class="detail-prop-k">${k}</span><span class="detail-prop-v">${esc(String(v))}</span></div>`;}
+function dPropHtml(k,v){return`<div class="detail-prop"><span class="detail-prop-k">${k}</span><span class="detail-prop-v">${v}</span></div>`;}
 function closeDetailDirect(){document.getElementById('detail-overlay').classList.remove('open');}
 function openFormFromDetail(){closeDetailDirect();openForm('gourmet',null,curDetailItem?.가게명||'');}
 function editFromDetail(){closeDetailDirect();openForm(curDetailType,curDetailItem);}
@@ -591,8 +597,8 @@ function openMatzipDetail(name){
     document.getElementById('detail-del-btn').style.display='none';
     let body=`<div class="detail-hero-ph">🍽️</div><div class="detail-title">${esc(basic.가게명)}</div><div class="detail-props">`;
     if(basic.장소)body+=dProp('장소',basic.장소);
-    if(basic.공슐랭)body+=dProp('공슐랭',starsAndNum(basic.공슐랭));
-    if(basic.하슐랭)body+=dProp('하슐랭',starsAndNum(basic.하슐랭));
+    if(basic.공슐랭)body+=dPropHtml('공슐랭',starsAndNum(basic.공슐랭));
+    if(basic.하슐랭)body+=dPropHtml('하슐랭',starsAndNum(basic.하슐랭));
     if(basic.메뉴)body+=dProp('메뉴',basic.메뉴);
     body+=`</div><div style="margin:16px 20px;font-size:13px;color:var(--text3)">상세 기록이 없어요. 글을 남겨보세요!</div>`;
     document.getElementById('detail-popup-body').innerHTML=body;
@@ -660,7 +666,7 @@ function openForm(type,item=null,prefillName=''){
   }
   html+=`<div class="form-footer"><button class="form-cancel-btn" onclick="closeFormDirect()">취소</button><button class="form-submit-btn" onclick="saveRecord()">저장</button></div>`;
   document.getElementById('form-body').innerHTML=html;
-  if(item?.별점)updateStarDisplay('f-별점',item.별점);
+  if(item?.별점)updateStarDisplay10('f-별점',item.별점);
   renderHeroPreview();renderPhotoPreviews();
   document.getElementById('form-overlay').classList.add('open');
 }
@@ -668,10 +674,11 @@ function closeFormDirect(){document.getElementById('form-overlay').classList.rem
 function fg(key,type,ph,val=''){return`<div class="fg"><label class="flabel">${ph||key}</label><input class="finput" id="f-${key}" type="${type}" placeholder="${ph||''}" value="${esc(val||'')}"></div>`;}
 function fga(key,ph,val=''){return`<div class="fg"><label class="flabel">${ph}</label><textarea class="finput ftarea" id="f-${key}" placeholder="${ph}">${val||''}</textarea></div>`;}
 function fgsel(key,opts,val=''){return`<div class="fg"><label class="flabel">${key}</label><select class="finput" id="f-${key}">${opts.map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;}
-function fgstar(key,label,val=''){return`<div class="fg"><label class="flabel">${label}</label><div style="display:flex;align-items:center;gap:12px"><input class="finput" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" style="width:80px" oninput="updateStarDisplay('f-${key}',this.value)"><div class="star-visual" id="sd-f-${key}">${val?numToStars(parseFloat(val)):'☆☆☆☆☆'}</div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">0.5 단위 (최대 10점)</div></div>`;}
+function fgstar(key,label,val=''){return`<div class="fg"><label class="flabel">${label}</label><div style="display:flex;align-items:center;gap:12px"><input class="finput" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" style="width:80px" oninput="updateStarDisplay10('f-${key}',this.value)"><div class="star-visual" id="sd-f-${key}">${val?numToStars(parseFloat(val)/2):'<span class=\\"star-empty\\">☆☆☆☆☆</span>'}</div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">0.5 단위 (최대 10점)</div></div>`;}
 function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt="">`:`<div class="hero-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`}</div></div>`;}
 function fphotos(){return`<div class="fg"><label class="flabel">사진 (최대 15장)</label><div class="img-drop" onclick="document.getElementById('photos-file').click()"><div class="img-drop-icon">📷</div><div class="img-drop-label">탭해서 사진 선택</div></div><div class="img-preview-grid" id="photos-preview"></div></div>`;}
-function updateStarDisplay(id,val){const el=document.getElementById('sd-'+id);if(el)el.textContent=numToStars(parseFloat(val));}
+function updateStarDisplay(id,val){const el=document.getElementById('sd-'+id);if(el)el.innerHTML=numToStars(parseFloat(val));}
+function updateStarDisplay10(id,val){const el=document.getElementById('sd-'+id);if(el)el.innerHTML=numToStars(parseFloat(val)/2);}
 function renderHeroPreview(){
   const wrap=document.getElementById('hero-preview-wrap');if(!wrap)return;
   wrap.innerHTML=heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt="">`:`<div class="hero-ph">📷<div style="font-size:12px;margin-top:6px">대표 사진 선택</div></div>`;
