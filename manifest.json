@@ -1,0 +1,17 @@
+{
+  "name": "공주와 하이니",
+  "short_name": "OO9lO9",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "start_url": "/GONGGONGGOOC/",
+  "scope": "/GONGGONGGOOC/",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
