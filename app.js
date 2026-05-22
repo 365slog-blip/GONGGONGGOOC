@@ -582,9 +582,11 @@ function deleteFromDetail(){
   const type=curDetailType,item=curDetailItem;
   showConfirm(async()=>{
     showLoading(true);
+    const imgUrls=getItemImageUrls(type,item._row);
     try{await deleteSheetRow(SHEETS[type]||SHEETS.matzip,item._row);closeDetailDirect();toast('삭제됐어요');await loadAll();}
-    catch(e){toast('삭제 실패: '+e.message);}
+    catch(e){toast('삭제 실패: '+e.message);showLoading(false);return;}
     showLoading(false);
+    if(imgUrls.length)deleteDriveFiles(imgUrls);
   });
 }
 function openMatzipDetail(name){
@@ -619,9 +621,11 @@ function closeConfirm(){document.getElementById('confirm-overlay').classList.rem
 function confirmDelete(type,rowIdx){
   showConfirm(async()=>{
     showLoading(true);
+    const imgUrls=getItemImageUrls(type,rowIdx);
     try{await deleteSheetRow(SHEETS[type],rowIdx);toast('삭제됐어요');await loadAll();}
-    catch(e){toast('삭제 실패: '+e.message);}
+    catch(e){toast('삭제 실패: '+e.message);showLoading(false);return;}
     showLoading(false);
+    if(imgUrls.length)deleteDriveFiles(imgUrls);
   });
 }
 
@@ -726,7 +730,7 @@ async function saveRecord(){
       toast(curFormItem?'수정됐어요 ✓':'등록됐어요 ✓');closeFormDirect();await loadAll();
       showLoading(false);return;
     }
-    const fk=type==='date'?'date':type==='culture'?'culture':'etc';
+    const fk=type==='gourmet'?'matzip':type==='date'?'date':type==='culture'?'culture':'etc';
     let heroUrl=heroImgData?.startsWith('data:')?await uploadToDrive(heroImgData,fk):(heroImgData||'');
     const photoUrls=[];
     for(const p of photosData){
@@ -753,6 +757,31 @@ async function saveRecord(){
     toast('저장됐어요 ✓');closeFormDirect();await loadAll();
   }catch(e){toast('저장 실패: '+e.message);console.error(e);}
   showLoading(false);
+}
+
+// ═══ DRIVE DELETE ═══
+function extractDriveId(url){
+  if(!url)return null;
+  const m=url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
+  return m?m[1]:null;
+}
+async function deleteDriveFiles(urls){
+  const token=gapi.client.getToken()?.access_token;
+  if(!token)return;
+  const ids=[...new Set(urls.map(extractDriveId).filter(Boolean))];
+  await Promise.allSettled(ids.map(id=>
+    fetch(`https://www.googleapis.com/drive/v3/files/${id}`,
+      {method:'DELETE',headers:{Authorization:'Bearer '+token}})
+    .catch(e=>console.warn('Drive delete fail:',id,e))
+  ));
+}
+function getItemImageUrls(type,rowIdx){
+  const item=(db[type]||[]).find(i=>i._row===rowIdx);
+  if(!item)return[];
+  const urls=[];
+  if(item.대표이미지)urls.push(item.대표이미지);
+  for(let i=1;i<=15;i++){if(item['사진'+i])urls.push(item['사진'+i]);}
+  return urls;
 }
 
 // UTILS
