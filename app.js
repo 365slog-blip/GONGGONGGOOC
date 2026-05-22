@@ -228,10 +228,10 @@ function renderMatzipList(){
     return`<tr class="list-row ${hl}" id="mrow-${item._row}">
       <td style="color:var(--text3);font-size:13px">${idx+1}</td>
       <td><button class="list-name-btn" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</button></td>
-      <td style="color:var(--text2)">${esc(item.장소)}</td>
+      <td style="color:var(--text2);white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis">${esc(item.장소)}</td>
       <td class="stars-cell">${starsAndNum(item.공슐랭)}</td>
       <td class="stars-cell">${starsAndNum(item.하슐랭)}</td>
-      <td class="total-cell" style="color:${total>=8?'var(--accent)':'var(--text2)'}">${total>0?total.toFixed(1)+' / 10':'-'}</td>
+      <td class="total-cell" style="color:${total>=8?'var(--accent)':'var(--text2)'}">${total>0?total.toFixed(1):'-'}</td>
       <td style="color:var(--text2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.메뉴)}</td>
       <td style="color:var(--text2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.비고)}</td>
       <td><div class="action-cell">
@@ -329,30 +329,44 @@ async function saveInlineEdit(rowIdx){
 }
 
 // CRITERIA
+function setCriteriaViewMode(){
+  ['gong','ha'].forEach(k=>{
+    const ta=document.getElementById('criteria-'+k);
+    const saveBtn=document.getElementById('criteria-'+k+'-save');
+    const editBtn=document.getElementById('criteria-'+k+'-edit');
+    if(ta)ta.readOnly=true;
+    if(saveBtn)saveBtn.style.display='none';
+    if(editBtn)editBtn.style.display='';
+  });
+}
+function editCriteria(k){
+  const ta=document.getElementById('criteria-'+k);
+  const saveBtn=document.getElementById('criteria-'+k+'-save');
+  const editBtn=document.getElementById('criteria-'+k+'-edit');
+  if(ta){ta.readOnly=false;ta.focus();}
+  if(saveBtn)saveBtn.style.display='';
+  if(editBtn)editBtn.style.display='none';
+}
 async function loadCriteriaFromSheet(){
   if(!db.criteria||!db.criteria.length)return;
   const g=db.criteria.find(r=>r.구분==='공슐랭');
   const h=db.criteria.find(r=>r.구분==='하슐랭');
   if(g)document.getElementById('criteria-gong').value=g.내용||'';
   if(h)document.getElementById('criteria-ha').value=h.내용||'';
+  if((g?.내용||'').trim()||(h?.내용||'').trim())setCriteriaViewMode();
 }
 async function saveCriteriaToSheet(){
   showLoading(true);
   try{
     const gVal=document.getElementById('criteria-gong').value;
     const hVal=document.getElementById('criteria-ha').value;
-    // Clear and rewrite
-    const sid=await getSheetId(SHEETS.criteria);
     await gapi.client.sheets.spreadsheets.values.clear({spreadsheetId:SHEET_ID,range:SHEETS.criteria+'!A2:B100'});
     await appendRow(SHEETS.criteria,['공슐랭',gVal]);
     await appendRow(SHEETS.criteria,['하슐랭',hVal]);
     toast('가이드 저장됐어요 ✓');await loadSheet('criteria',SHEETS.criteria);
+    setCriteriaViewMode();
   }catch(e){toast('저장 실패: '+e.message);}
   showLoading(false);
-}
-function toggleCriteria(){
-  document.getElementById('criteria-toggle').classList.toggle('open');
-  document.getElementById('criteria-content').classList.toggle('open');
 }
 
 // GOURMET

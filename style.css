@@ -6,7 +6,7 @@
   --accent:#e8b89a;--accent2:#d4956f;
   --gold:#f0c674;--silver:#c0bdb8;--bronze:#c9956a;
   --card:#161616;
-  --h20:#3d2b1a;--h19:#2d2916;--h18:#1a2d1a;--h17:#1a1f2d;--h16:#2d1a2d;
+  --h20:#1e1510;--h19:#1a190c;--h18:#0f1a0f;--h17:#0f1219;--h16:#1a0f14;
   --font-display:'Playfair Display',serif;
   --font-body:'Noto Sans KR',sans-serif;
 }
@@ -85,17 +85,14 @@ body{overflow:hidden}
 .matzip-inner{padding:0 10% 100px;max-width:1400px;margin:0 auto}
 
 /* CRITERIA */
-.toggle-section{border-bottom:0.5px solid var(--border);margin-bottom:0}
-.toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 0;background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;font-family:var(--font-body);letter-spacing:.04em}
-.toggle-arrow{transition:transform .2s;display:inline-block}
-.toggle-btn.open .toggle-arrow{transform:rotate(180deg)}
-.toggle-content{display:none;padding-bottom:14px}
-.toggle-content.open{display:block}
+.criteria-section{border-bottom:0.5px solid var(--border);padding-bottom:16px;margin-bottom:0}
+.criteria-section-hdr{font-size:12px;color:var(--text3);letter-spacing:.06em;padding:14px 0 10px;font-family:var(--font-body)}
 .criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:600px){.criteria-grid{grid-template-columns:1fr}}
 .criteria-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:14px}
 .criteria-title{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
 .criteria-textarea{width:100%;background:transparent;border:none;outline:none;font-size:13px;color:var(--text2);font-family:var(--font-body);resize:none;line-height:1.7;min-height:90px}
+.criteria-textarea[readonly]{color:var(--text2);cursor:default}
 .criteria-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 .criteria-btn{background:var(--accent);color:#1a1816;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
 .criteria-edit-btn{background:none;border:0.5px solid var(--border2);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--font-body)}
@@ -123,12 +120,18 @@ body{overflow:hidden}
 .list-row.hl-18 td{background:var(--h18)}
 .list-row.hl-17 td{background:var(--h17)}
 .list-row.hl-16 td{background:var(--h16)}
-.list-name-btn{background:none;border:none;cursor:pointer;color:var(--accent);font-size:14px;font-family:var(--font-body);font-weight:500;padding:0;text-align:left}
+.list-name-btn{background:none;border:none;cursor:pointer;color:var(--accent);font-size:14px;font-family:var(--font-body);font-weight:500;padding:0;text-align:left;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;display:block}
 .list-name-btn:hover{text-decoration:underline}
 .stars-cell{color:var(--accent);font-size:13px;white-space:nowrap}
 .total-cell{font-weight:700;font-size:14px}
+@media(max-width:768px){
+  .list-row td{font-size:12px;padding:9px 7px}
+  .list-name-btn{font-size:12px;max-width:90px}
+  .stars-cell{font-size:11px}
+  .total-cell{font-size:12px}
+}
 .action-cell{white-space:nowrap;display:flex;gap:4px;align-items:center}
-.row-edit-btn{background:none;border:0.5px solid var(--border2);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--text3);cursor:pointer;white-space:nowrap;font-family:var(--font-body)}
+.row-edit-btn{background:none;border:0.5px solid var(--border2);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:var(--font-body)}
 .row-edit-btn:hover{border-color:var(--accent);color:var(--accent)}
 .row-reg-btn{background:var(--accent);color:#1a1816;border:none;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font-body)}
 .row-cancel-btn{background:none;border:0.5px solid var(--border2);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--text3);cursor:pointer;white-space:nowrap;font-family:var(--font-body)}

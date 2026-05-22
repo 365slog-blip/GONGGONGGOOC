@@ -107,25 +107,23 @@
         </div>
       </div>
       <div class="matzip-inner">
-        <div class="toggle-section">
-          <button class="toggle-btn" id="criteria-toggle" onclick="toggleCriteria()">
-            <span>★ 별점 가이드 기준표</span><span class="toggle-arrow">▼</span>
-          </button>
-          <div class="toggle-content" id="criteria-content">
-            <div class="criteria-grid">
-              <div class="criteria-box">
-                <div class="criteria-title">공슐랭 가이드</div>
-                <textarea class="criteria-textarea" id="criteria-gong" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집"></textarea>
-                <div class="criteria-footer">
-                  <button class="criteria-btn" onclick="saveCriteriaToSheet()">저장</button>
-                </div>
+        <div class="criteria-section">
+          <div class="criteria-section-hdr">★ 별점 가이드 기준표</div>
+          <div class="criteria-grid">
+            <div class="criteria-box">
+              <div class="criteria-title">공슐랭 가이드</div>
+              <textarea class="criteria-textarea" id="criteria-gong" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집" readonly></textarea>
+              <div class="criteria-footer">
+                <button class="criteria-edit-btn" id="criteria-gong-edit" onclick="editCriteria('gong')" style="display:none">수정</button>
+                <button class="criteria-btn" id="criteria-gong-save" onclick="saveCriteriaToSheet()">저장</button>
               </div>
-              <div class="criteria-box">
-                <div class="criteria-title">하슐랭 가이드</div>
-                <textarea class="criteria-textarea" id="criteria-ha" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집"></textarea>
-                <div class="criteria-footer">
-                  <button class="criteria-btn" onclick="saveCriteriaToSheet()">저장</button>
-                </div>
+            </div>
+            <div class="criteria-box">
+              <div class="criteria-title">하슐랭 가이드</div>
+              <textarea class="criteria-textarea" id="criteria-ha" placeholder="별점 기준을 작성해주세요&#10;예) ★★★★★ 최고의 맛집" readonly></textarea>
+              <div class="criteria-footer">
+                <button class="criteria-edit-btn" id="criteria-ha-edit" onclick="editCriteria('ha')" style="display:none">수정</button>
+                <button class="criteria-btn" id="criteria-ha-save" onclick="saveCriteriaToSheet()">저장</button>
               </div>
             </div>
           </div>
