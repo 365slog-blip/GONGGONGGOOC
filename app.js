@@ -180,10 +180,10 @@ function renderAll(){
 // MATZIP
 function getTotal(item){return (parseFloat(item.공슐랭)||0)+(parseFloat(item.하슐랭)||0);}
 function numToStars(n){
-  if(isNaN(n)||n<=0)return'<span class="star-empty">☆☆☆☆☆</span>';
+  if(isNaN(n)||n<=0)return'<span class="star empty">☆</span>'.repeat(5);
   const s=Math.min(5,Math.max(0,n));
   const full=Math.floor(s),half=(s-full)>=0.5?1:0,empty=5-full-half;
-  return(full?'<span class="star-full">'+'★'.repeat(full)+'</span>':'')+(half?'<span class="star-half"></span>':'')+(empty?'<span class="star-empty">'+'☆'.repeat(empty)+'</span>':'');
+  return'<span class="star full">★</span>'.repeat(full)+(half?'<span class="star half">★</span>':'')+'<span class="star empty">☆</span>'.repeat(empty);
 }
 function starsAndNum(score){
   if(!score)return'-';
