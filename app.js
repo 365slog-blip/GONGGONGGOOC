@@ -5,7 +5,7 @@ const API_KEY='AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
 const CLIENT_ID='616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleusercontent.com';
 const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
-const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_기본',dateDetail:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
+const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',dateDetail:'데이트_기본',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
 const APP_VERSION='v1.0.0';
 
