@@ -514,8 +514,12 @@ function renderCulture(){
   const fb=document.getElementById('culture-filter-bar');
   if(fb){
     const types=['전체',...new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean))];
+    const existingInput=fb.querySelector('.filter-search');
+    const hadFocus=existingInput&&document.activeElement===existingInput;
+    const cursorPos=hadFocus?existingInput.selectionStart:null;
     fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
       +`<input class="filter-search" type="text" placeholder="검색..." value="${esc(cultureSearch)}" oninput="setCultureSearch(this.value)">`;
+    if(hadFocus){const inp=fb.querySelector('.filter-search');if(inp){inp.focus();try{inp.setSelectionRange(cursorPos,cursorPos);}catch(e){}}}
   }
   const grid=document.getElementById('culture-grid');
   let list=cultureFilter==='전체'?[...db.culture]:[...db.culture].filter(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim()).includes(cultureFilter));
