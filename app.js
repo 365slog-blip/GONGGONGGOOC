@@ -876,7 +876,11 @@ function showDetailPopup(item,type){
     if(item.일차)body+=dProp('일차',item.일차);
   }
   if(type==='culture'){
-    if(item.날짜)body+=dProp('날짜',item.날짜);
+    if(item.날짜){
+      const datePart=item.날짜.slice(0,10);
+      const timePart=item.날짜.slice(11,16);
+      body+=dProp('날짜',datePart+(timePart?` ${timePart}`:''));
+    }
     if(item.별점)body+=dPropHtml('별점',starsAndNum10(item.별점));
     if(item['해시태그_종류'])body+=dProp('종류',item['해시태그_종류']);
     if(item['해시태그_장르'])body+=dProp('장르',item['해시태그_장르']);
@@ -1075,6 +1079,8 @@ function toggleCultureType(type,el){
   const curGenre=document.getElementById('cf-장르')?.value||'';
   const curNation=document.getElementById('cf-국가')?.value||'';
   const curDirector=document.getElementById('cf-감독')?.value||'';
+  const curTimeH=document.getElementById('cf-시-h')?.value||'';
+  const curTimeM=document.getElementById('cf-시-m')?.value||'';
   const curLoc=document.getElementById('cf-위치')?.value||'';
   const curEtc=document.getElementById('cf-기타')?.value||'';
   renderCultureExtraFields();
@@ -1084,6 +1090,8 @@ function toggleCultureType(type,el){
     if(isMovie){
       if(document.getElementById('cf-국가'))document.getElementById('cf-국가').value=curNation;
       if(document.getElementById('cf-감독'))document.getElementById('cf-감독').value=curDirector;
+      if(document.getElementById('cf-시-h'))document.getElementById('cf-시-h').value=curTimeH;
+      if(document.getElementById('cf-시-m'))document.getElementById('cf-시-m').value=curTimeM;
     }else{
       if(document.getElementById('cf-위치'))document.getElementById('cf-위치').value=curLoc;
       if(document.getElementById('cf-기타'))document.getElementById('cf-기타').value=curEtc;
@@ -1095,10 +1103,13 @@ function renderCultureExtraFields(){
   const isMovie=cultureTypes.has('영화');
   const hasNonMovie=[...cultureTypes].some(t=>t!=='영화');
   if(isMovie){
+    const hOpts='<option value="">시</option>'+Array.from({length:24},(_,i)=>`<option value="${String(i).padStart(2,'0')}">${i}시</option>`).join('');
+    const mOpts='<option value="">분</option>'+Array.from({length:12},(_,i)=>`<option value="${String(i*5).padStart(2,'0')}">${String(i*5).padStart(2,'0')}분</option>`).join('');
     c.innerHTML=
       `<div class="fg"><label class="flabel">장르</label><input class="finput" id="cf-장르" type="text" placeholder="장르 (예: 드라마, 액션)" autocomplete="off"></div>`+
       `<div class="fg"><label class="flabel">국가</label><input class="finput" id="cf-국가" type="text" placeholder="국가 (예: 한국, 미국)" autocomplete="off"></div>`+
-      `<div class="fg"><label class="flabel">감독</label><input class="finput" id="cf-감독" type="text" placeholder="감독" autocomplete="off"></div>`;
+      `<div class="fg"><label class="flabel">감독</label><input class="finput" id="cf-감독" type="text" placeholder="감독" autocomplete="off"></div>`+
+      `<div class="fg"><label class="flabel">관람 시간</label><div class="date-select-wrap"><select class="finput date-sel" id="cf-시-h">${hOpts}</select><select class="finput date-sel" id="cf-시-m">${mOpts}</select></div></div>`;
   }else if(hasNonMovie){
     c.innerHTML=
       `<div class="fg"><label class="flabel">장르</label><input class="finput" id="cf-장르" type="text" placeholder="장르 (예: 뮤지컬, 현대미술)" autocomplete="off"></div>`+
@@ -1173,7 +1184,7 @@ function openForm(type,item=null,prefillName=''){
       </div>
       <div id="culture-extra-fields"></div>
     </div>`;
-    html+=fgdate('날짜','날짜',item?.날짜);
+    html+=fgdate('날짜','날짜',(item?.날짜||'').slice(0,10)||undefined);
     html+=fgstar('별점','별점 (0~10)',item?.별점);
     html+=fg('한줄평','text','한줄평',item?.한줄평);
     html+=fhero();
@@ -1220,6 +1231,11 @@ function openForm(type,item=null,prefillName=''){
         if(eg)eg.value=item?.['해시태그_장르']||'';
         if(en)en.value=item?.['해시태그_위치']||'';
         if(ed)ed.value=item?.['해시태그_기타']||'';
+        const timePart=(item?.날짜||'').slice(11,16);
+        if(timePart){const[hh,mm]=timePart.split(':');
+          const eh=document.getElementById('cf-시-h');const em=document.getElementById('cf-시-m');
+          if(eh)eh.value=hh||'';if(em)em.value=mm||'';
+        }
       }else if(cultureTypes.size>0){
         const eg=document.getElementById('cf-장르');const el=document.getElementById('cf-위치');const ee=document.getElementById('cf-기타');
         if(eg)eg.value=item?.['해시태그_장르']||'';
@@ -1311,7 +1327,11 @@ async function saveRecord(){
       const hashGenre=document.getElementById('cf-장르')?.value?.trim()||'';
       const hashLoc=isMovie?(document.getElementById('cf-국가')?.value?.trim()||''):(document.getElementById('cf-위치')?.value?.trim()||'');
       const hashOther=isMovie?(document.getElementById('cf-감독')?.value?.trim()||''):(document.getElementById('cf-기타')?.value?.trim()||'');
-      const row=[fv('f-영화명'),hashType,hashGenre,hashLoc,hashOther,getDateVal('날짜'),fv('f-별점'),fv('f-한줄평'),heroUrl];
+      const dateBase=getDateVal('날짜');
+      const timeH=document.getElementById('cf-시-h')?.value||'';
+      const timeM=document.getElementById('cf-시-m')?.value||'';
+      const dateVal=(isMovie&&timeH&&timeM)?`${dateBase} ${timeH}:${timeM}`:dateBase;
+      const row=[fv('f-영화명'),hashType,hashGenre,hashLoc,hashOther,dateVal,fv('f-별점'),fv('f-한줄평'),heroUrl];
       curFormItem?._row?await updateRow(SHEETS.culture,curFormItem._row,row):await appendRow(SHEETS.culture,row);
     }else if(type==='photo'){
       const all=[heroUrl,...photosData].filter(Boolean);
