@@ -9,7 +9,7 @@
   --h20:#1e1510;--h19:#1a190c;--h18:#0f1a0f;--h17:#0f1219;--h16:#1a0f14;
   --font-display:'Playfair Display',serif;
   --font-body:'Noto Sans KR',sans-serif;
-  --page-padding:10%;
+  --page-padding:10vw;
 }
 .light{
   --bg:#faf9f6;--bg2:#f2f0eb;--bg3:#e8e5de;--bg4:#dedad2;
