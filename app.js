@@ -575,6 +575,23 @@ function renderPhoto(){
   });
   grid.innerHTML=cols.map(c=>`<div class="photo-col">${c.join('')}</div>`).join('');
 }
+function toggleDateSkip(){
+  const btn=document.getElementById('date-skip-btn');
+  const y=document.getElementById('f-날짜-y');
+  const m=document.getElementById('f-날짜-m');
+  const d=document.getElementById('f-날짜-d');
+  if(!y)return;
+  if(y.value){
+    y.value='';m.value='';d.value='';
+    btn.textContent='날짜 입력';btn.classList.add('active');
+  }else{
+    const t=new Date();
+    y.value=String(t.getFullYear());
+    m.value=String(t.getMonth()+1).padStart(2,'0');
+    d.value=String(t.getDate()).padStart(2,'0');
+    btn.textContent='날짜 없음';btn.classList.remove('active');
+  }
+}
 function togglePhotoSelectMode(){
   photoSelectMode=!photoSelectMode;
   photoSelected.clear();
@@ -1095,6 +1112,8 @@ function toggleCultureType(type,el){
     }else{
       if(document.getElementById('cf-위치'))document.getElementById('cf-위치').value=curLoc;
       if(document.getElementById('cf-기타'))document.getElementById('cf-기타').value=curEtc;
+      if(document.getElementById('cf-시-h'))document.getElementById('cf-시-h').value=curTimeH;
+      if(document.getElementById('cf-시-m'))document.getElementById('cf-시-m').value=curTimeM;
     }
   },0);
 }
@@ -1111,10 +1130,13 @@ function renderCultureExtraFields(){
       `<div class="fg"><label class="flabel">감독</label><input class="finput" id="cf-감독" type="text" placeholder="감독" autocomplete="off"></div>`+
       `<div class="fg"><label class="flabel">관람 시간</label><div class="date-select-wrap"><select class="finput date-sel" id="cf-시-h">${hOpts}</select><select class="finput date-sel" id="cf-시-m">${mOpts}</select></div></div>`;
   }else if(hasNonMovie){
+    const hOpts='<option value="">시</option>'+Array.from({length:24},(_,i)=>`<option value="${String(i).padStart(2,'0')}">${i}시</option>`).join('');
+    const mOpts='<option value="">분</option>'+Array.from({length:12},(_,i)=>`<option value="${String(i*5).padStart(2,'0')}">${String(i*5).padStart(2,'0')}분</option>`).join('');
     c.innerHTML=
       `<div class="fg"><label class="flabel">장르</label><input class="finput" id="cf-장르" type="text" placeholder="장르 (예: 뮤지컬, 현대미술)" autocomplete="off"></div>`+
       `<div class="fg"><label class="flabel">위치</label><input class="finput" id="cf-위치" type="text" placeholder="위치 (예: 서울, 홍대)" autocomplete="off"></div>`+
-      `<div class="fg"><label class="flabel">기타</label><input class="finput" id="cf-기타" type="text" placeholder="기타 메모" autocomplete="off"></div>`;
+      `<div class="fg"><label class="flabel">기타</label><input class="finput" id="cf-기타" type="text" placeholder="기타 메모" autocomplete="off"></div>`+
+      `<div class="fg"><label class="flabel">관람 시간</label><div class="date-select-wrap"><select class="finput date-sel" id="cf-시-h">${hOpts}</select><select class="finput date-sel" id="cf-시-m">${mOpts}</select></div></div>`;
   }else c.innerHTML='';
 }
 
@@ -1185,6 +1207,7 @@ function openForm(type,item=null,prefillName=''){
       <div id="culture-extra-fields"></div>
     </div>`;
     html+=fgdate('날짜','날짜',(item?.날짜||'').slice(0,10)||undefined);
+    html+=`<div style="margin:-8px 0 10px;padding:0 2px"><button type="button" class="date-skip-btn" id="date-skip-btn" onclick="toggleDateSkip()">${item?.날짜?'날짜 없음':'날짜 없음'}</button></div>`;
     html+=fgstar('별점','별점 (0~10)',item?.별점);
     html+=fg('한줄평','text','한줄평',item?.한줄평);
     html+=fhero();
@@ -1241,6 +1264,11 @@ function openForm(type,item=null,prefillName=''){
         if(eg)eg.value=item?.['해시태그_장르']||'';
         if(el)el.value=item?.['해시태그_위치']||'';
         if(ee)ee.value=item?.['해시태그_기타']||'';
+        const timePart=(item?.날짜||'').slice(11,16);
+        if(timePart){const[hh,mm]=timePart.split(':');
+          const eh=document.getElementById('cf-시-h');const em=document.getElementById('cf-시-m');
+          if(eh)eh.value=hh||'';if(em)em.value=mm||'';
+        }
       }
     },0);
   }
@@ -1330,7 +1358,7 @@ async function saveRecord(){
       const dateBase=getDateVal('날짜');
       const timeH=document.getElementById('cf-시-h')?.value||'';
       const timeM=document.getElementById('cf-시-m')?.value||'';
-      const dateVal=(isMovie&&timeH&&timeM)?`${dateBase} ${timeH}:${timeM}`:dateBase;
+      const dateVal=(timeH&&timeM)?`${dateBase} ${timeH}:${timeM}`:dateBase;
       const row=[fv('f-영화명'),hashType,hashGenre,hashLoc,hashOther,dateVal,fv('f-별점'),fv('f-한줄평'),heroUrl];
       curFormItem?._row?await updateRow(SHEETS.culture,curFormItem._row,row):await appendRow(SHEETS.culture,row);
     }else if(type==='photo'){

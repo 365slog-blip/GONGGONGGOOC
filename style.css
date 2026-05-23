@@ -357,6 +357,9 @@ body{overflow:hidden}
 .trip-type-btn.active{background:var(--accent);color:#1a1816;border-color:var(--accent)}
 .end-date-btn{background:none;border:0.5px dashed var(--border2);border-radius:8px;padding:8px 14px;font-size:13px;color:var(--text3);cursor:pointer;font-family:var(--font-body);transition:all .15s}
 .end-date-btn:hover{border-color:var(--accent);color:var(--accent)}
+.date-skip-btn{background:none;border:0.5px solid var(--border2);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.date-skip-btn:hover{border-color:var(--accent);color:var(--accent)}
+.date-skip-btn.active{border-color:#c0392b;color:#c0392b;background:rgba(192,57,43,.08)}
 .day-entry{margin-bottom:12px}
 .day-entry-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .day-entry-num{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.04em;white-space:nowrap}
