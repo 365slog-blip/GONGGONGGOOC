@@ -277,14 +277,34 @@ function renderMatzipList(){
     i+=grp.length;rank+=grp.length;
   }
   const medals=['🥇','🥈','🥉'];
+  const rc=document.getElementById('rank-cards');
   const rl=document.getElementById('rank-list');
-  if(!groups.length){rl.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 0">별점을 등록하면 랭킹이 표시돼요</div>';}
-  else{rl.innerHTML=groups.flatMap(g=>g.items.map(item=>`
-    <div class="rank-row">
-      <div class="rank-badge">${g.rank<=3?medals[g.rank-1]:g.rank}</div>
-      <div style="flex:1;min-width:0"><div class="rank-name" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</div><div class="rank-loc">${esc(item.장소)}</div></div>
-      <div class="rank-score">${numToStars(g.score/2)} <small style="color:var(--text2);margin-left:4px">${g.score.toFixed(1)} / 10</small></div>
-    </div>`)).join('');}
+  if(!groups.length){
+    if(rc)rc.innerHTML='';
+    if(rl)rl.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 0">별점을 등록하면 랭킹이 표시돼요</div>';
+  } else {
+    // 1~3위: 카드 그리드
+    const cardGroups=groups.filter(g=>g.rank<=3);
+    const firstCount=cardGroups[0]?.items.length||0;
+    if(rc){rc.innerHTML=cardGroups.flatMap(g=>g.items.map(item=>{
+      const solo=g.rank===1&&firstCount===1;
+      return`<div class="rank-card${solo?' rank-card-first':''}" onclick="openMatzipDetail('${esc(item.가게명)}')">
+        <div class="rank-card-medal">${g.rank<=3?medals[g.rank-1]:g.rank}</div>
+        <div class="rank-card-name">${esc(item.가게명)}</div>
+        <div class="rank-card-loc">${esc(item.장소)}</div>
+        <div class="rank-card-stars">${numToStars(g.score/2)}</div>
+        <div class="rank-card-score">${g.score.toFixed(1)} / 10</div>
+      </div>`;
+    })).join('');}
+    // 4위 이하: 리스트
+    const listGroups=groups.filter(g=>g.rank>3);
+    if(rl){rl.innerHTML=listGroups.flatMap(g=>g.items.map(item=>`
+      <div class="rank-row">
+        <div class="rank-badge">${g.rank}</div>
+        <div style="flex:1;min-width:0"><div class="rank-name" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</div><div class="rank-loc">${esc(item.장소)}</div></div>
+        <div class="rank-score">${numToStars(g.score/2)} <small style="color:var(--text2);margin-left:4px">${g.score.toFixed(1)} / 10</small></div>
+      </div>`)).join('');}
+  }
   const tbody=document.getElementById('matzip-tbody');
   if(!db.matzip.length){tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--text3)"><div style="font-size:34px;margin-bottom:8px">🍜</div>아래 버튼을 눌러 첫 맛집을 추가해보세요!</td></tr>`;return;}
   tbody.innerHTML=db.matzip.map((item,idx)=>{
