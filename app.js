@@ -7,7 +7,7 @@ const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapi
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
 const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
-const APP_VERSION='v1.0.0';
+const APP_VERSION='v1.1.0';
 
 // ═══ STATE ═══
 let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
@@ -212,17 +212,33 @@ async function getSheetId(name){
 }
 
 // ═══ 이미지 회전 (90° 시계방향) ═══
+async function urlToDataUrl(url){
+  if(!url||url.startsWith('data:'))return url;
+  try{
+    const m=url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
+    if(m){
+      const token=gapi.client.getToken()?.access_token;
+      if(token){
+        const res=await fetch(`https://www.googleapis.com/drive/v3/files/${m[1]}?alt=media`,{headers:{Authorization:'Bearer '+token}});
+        if(res.ok){const blob=await res.blob();return await new Promise(r=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(blob);});}
+      }
+    }
+  }catch(e){}
+  return url;
+}
 async function rotateImage(dataUrl){
   return new Promise(resolve=>{
     const img=new Image();
     img.onload=()=>{
-      const c=document.createElement('canvas');
-      c.width=img.naturalHeight;c.height=img.naturalWidth;
-      const ctx=c.getContext('2d');
-      ctx.translate(c.width/2,c.height/2);
-      ctx.rotate(Math.PI/2);
-      ctx.drawImage(img,-img.naturalWidth/2,-img.naturalHeight/2);
-      resolve(c.toDataURL('image/jpeg',0.92));
+      try{
+        const c=document.createElement('canvas');
+        c.width=img.naturalHeight;c.height=img.naturalWidth;
+        const ctx=c.getContext('2d');
+        ctx.translate(c.width/2,c.height/2);
+        ctx.rotate(Math.PI/2);
+        ctx.drawImage(img,-img.naturalWidth/2,-img.naturalHeight/2);
+        resolve(c.toDataURL('image/jpeg',0.92));
+      }catch(e){resolve(dataUrl);}
     };
     img.onerror=()=>resolve(dataUrl);
     img.src=dataUrl;
@@ -233,7 +249,7 @@ async function rotateHero(){
   const img=document.querySelector('#hero-preview-wrap img');
   if(img){img.classList.add('img-spinning');}
   await new Promise(r=>setTimeout(r,300));
-  heroImgData=await rotateImage(heroImgData);
+  heroImgData=await rotateImage(await urlToDataUrl(heroImgData));
   renderHeroPreview();
 }
 async function rotatePhoto(i){
@@ -241,7 +257,7 @@ async function rotatePhoto(i){
   const imgs=document.querySelectorAll('.ipreview img');
   if(imgs[i]){imgs[i].classList.add('img-spinning');}
   await new Promise(r=>setTimeout(r,300));
-  photosData[i]=await rotateImage(photosData[i]);
+  photosData[i]=await rotateImage(await urlToDataUrl(photosData[i]));
   renderPhotoPreviews();
 }
 
