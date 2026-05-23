@@ -1073,26 +1073,37 @@ function toggleCultureType(type,el){
   else{cultureTypes.add(type);el.classList.add('active');}
   // save current extra field values before re-rendering
   const curGenre=document.getElementById('cf-장르')?.value||'';
-  const curLoc=document.getElementById('cf-위치')?.value||document.getElementById('cf-국가')?.value||'';
-  const curOther=document.getElementById('cf-감독')?.value||'';
+  const curNation=document.getElementById('cf-국가')?.value||'';
+  const curDirector=document.getElementById('cf-감독')?.value||'';
+  const curLoc=document.getElementById('cf-위치')?.value||'';
+  const curEtc=document.getElementById('cf-기타')?.value||'';
   renderCultureExtraFields();
   setTimeout(()=>{
-    const elG=document.getElementById('cf-장르');const elL=document.getElementById('cf-위치')||document.getElementById('cf-국가');const elO=document.getElementById('cf-감독');
-    if(elG)elG.value=curGenre;if(elL)elL.value=curLoc;if(elO)elO.value=curOther;
+    const isMovie=cultureTypes.has('영화');
+    if(document.getElementById('cf-장르'))document.getElementById('cf-장르').value=curGenre;
+    if(isMovie){
+      if(document.getElementById('cf-국가'))document.getElementById('cf-국가').value=curNation;
+      if(document.getElementById('cf-감독'))document.getElementById('cf-감독').value=curDirector;
+    }else{
+      if(document.getElementById('cf-위치'))document.getElementById('cf-위치').value=curLoc;
+      if(document.getElementById('cf-기타'))document.getElementById('cf-기타').value=curEtc;
+    }
   },0);
 }
 function renderCultureExtraFields(){
   const c=document.getElementById('culture-extra-fields');if(!c)return;
   const isMovie=cultureTypes.has('영화');
+  const hasNonMovie=[...cultureTypes].some(t=>t!=='영화');
   if(isMovie){
     c.innerHTML=
+      `<div class="fg"><label class="flabel">장르</label><input class="finput" id="cf-장르" type="text" placeholder="장르 (예: 드라마, 액션)" autocomplete="off"></div>`+
       `<div class="fg"><label class="flabel">국가</label><input class="finput" id="cf-국가" type="text" placeholder="국가 (예: 한국, 미국)" autocomplete="off"></div>`+
-      `<div class="fg"><label class="flabel">감독</label><input class="finput" id="cf-감독" type="text" placeholder="감독" autocomplete="off"></div>`+
-      `<div class="fg"><label class="flabel">장르</label><input class="finput" id="cf-장르" type="text" placeholder="장르 (예: 드라마, 액션)" autocomplete="off"></div>`;
-  }else if(cultureTypes.size>0){
+      `<div class="fg"><label class="flabel">감독</label><input class="finput" id="cf-감독" type="text" placeholder="감독" autocomplete="off"></div>`;
+  }else if(hasNonMovie){
     c.innerHTML=
-      `<div class="fg"><label class="flabel">장르</label><input class="finput" id="cf-장르" type="text" placeholder="장르" autocomplete="off"></div>`+
-      `<div class="fg"><label class="flabel">위치</label><input class="finput" id="cf-위치" type="text" placeholder="위치 (예: 서울, 홍대)" autocomplete="off"></div>`;
+      `<div class="fg"><label class="flabel">장르</label><input class="finput" id="cf-장르" type="text" placeholder="장르 (예: 뮤지컬, 현대미술)" autocomplete="off"></div>`+
+      `<div class="fg"><label class="flabel">위치</label><input class="finput" id="cf-위치" type="text" placeholder="위치 (예: 서울, 홍대)" autocomplete="off"></div>`+
+      `<div class="fg"><label class="flabel">기타</label><input class="finput" id="cf-기타" type="text" placeholder="기타 메모" autocomplete="off"></div>`;
   }else c.innerHTML='';
 }
 
@@ -1205,14 +1216,15 @@ function openForm(type,item=null,prefillName=''){
     renderCultureExtraFields();
     setTimeout(()=>{
       if(cultureTypes.has('영화')){
-        const en=document.getElementById('cf-국가');const ed=document.getElementById('cf-감독');const eg=document.getElementById('cf-장르');
+        const eg=document.getElementById('cf-장르');const en=document.getElementById('cf-국가');const ed=document.getElementById('cf-감독');
+        if(eg)eg.value=item?.['해시태그_장르']||'';
         if(en)en.value=item?.['해시태그_위치']||'';
         if(ed)ed.value=item?.['해시태그_기타']||'';
-        if(eg)eg.value=item?.['해시태그_장르']||'';
       }else if(cultureTypes.size>0){
-        const eg=document.getElementById('cf-장르');const el=document.getElementById('cf-위치');
+        const eg=document.getElementById('cf-장르');const el=document.getElementById('cf-위치');const ee=document.getElementById('cf-기타');
         if(eg)eg.value=item?.['해시태그_장르']||'';
         if(el)el.value=item?.['해시태그_위치']||'';
+        if(ee)ee.value=item?.['해시태그_기타']||'';
       }
     },0);
   }
@@ -1298,7 +1310,7 @@ async function saveRecord(){
       const isMovie=cultureTypes.has('영화');
       const hashGenre=document.getElementById('cf-장르')?.value?.trim()||'';
       const hashLoc=isMovie?(document.getElementById('cf-국가')?.value?.trim()||''):(document.getElementById('cf-위치')?.value?.trim()||'');
-      const hashOther=isMovie?(document.getElementById('cf-감독')?.value?.trim()||''):'';
+      const hashOther=isMovie?(document.getElementById('cf-감독')?.value?.trim()||''):(document.getElementById('cf-기타')?.value?.trim()||'');
       const row=[fv('f-영화명'),hashType,hashGenre,hashLoc,hashOther,getDateVal('날짜'),fv('f-별점'),fv('f-한줄평'),heroUrl];
       curFormItem?._row?await updateRow(SHEETS.culture,curFormItem._row,row):await appendRow(SHEETS.culture,row);
     }else if(type==='photo'){
