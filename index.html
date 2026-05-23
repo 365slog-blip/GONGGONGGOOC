@@ -216,6 +216,7 @@
       <div class="page-hdr">
         <div class="page-hdr-top">
           <div><div class="page-title">Photo Album</div><div class="page-sub">우리의 소중한 사진들</div></div>
+          <button class="page-action-btn" onclick="openForm('photo')">📋 날짜 지정 추가</button>
         </div>
       </div>
       <div class="photo-grid-wrap"><div class="photo-grid" id="photo-grid"></div></div>
@@ -258,6 +259,13 @@
           <div class="settings-section-desc">상단에 흐르는 텍스트를 설정해요</div>
           <textarea class="finput ftarea" id="settings-ticker" placeholder="표시할 텍스트를 입력해주세요" oninput="autoResize(this)"></textarea>
           <button class="settings-save-btn" onclick="saveTicker()">저장</button>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">PIN 변경</div>
+          <div class="settings-section-desc">앱 잠금 비밀번호를 변경해요</div>
+          <input class="finput" id="settings-new-pin" type="password" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="새 PIN 4자리">
+          <input class="finput" id="settings-confirm-pin" type="password" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="새 PIN 확인" style="margin-top:8px">
+          <button class="settings-save-btn" onclick="savePin()">변경</button>
         </div>
         <div class="settings-section">
           <div class="settings-section-title">계정</div>

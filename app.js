@@ -5,12 +5,12 @@ const API_KEY='AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
 const CLIENT_ID='616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleusercontent.com';
 const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
-const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',dateDetail:'데이트_기본',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
+const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
 const APP_VERSION='v1.0.0';
 
 // ═══ STATE ═══
-let db={matzip:[],gourmet:[],date:[],dateDetail:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
+let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
 let isLight=false,authed=false,pinVal='';
 let tokenClient,gapiLoaded=false,gisLoaded=false;
 let curFormType=null,curFormItem=null,heroImgData=null,photosData=[];
@@ -19,6 +19,7 @@ let newRowActive=false;
 let todoFilter='전체';
 let criteriaOpen=false;
 let cultureFilter='전체';
+let cultureSearch='';
 // date form state
 let dayEntries=[],hasEndDate=false,tripType='';
 // culture form state
@@ -65,8 +66,9 @@ function pinKey(k){
   if(pinVal.length>=4)return;
   pinVal+=k;updatePinDots();
   if(pinVal.length===4){
+    const correctPin=localStorage.getItem('gonggong_pin')||PIN;
     setTimeout(()=>{
-      if(pinVal===PIN){document.getElementById('pin-screen').classList.add('hidden');startApp();}
+      if(pinVal===correctPin){document.getElementById('pin-screen').classList.add('hidden');startApp();}
       else{document.getElementById('pin-err').textContent='비밀번호가 틀렸어요 💔';pinVal='';updatePinDots();setTimeout(()=>document.getElementById('pin-err').textContent='',1500);}
     },100);
   }
@@ -482,15 +484,21 @@ function renderDate(){
 
 // ═══ CULTURE ═══
 function setCultureFilter(f){cultureFilter=f;renderCulture();}
+function setCultureSearch(val){cultureSearch=val;renderCulture();}
 function renderCulture(){
   // filter bar
   const fb=document.getElementById('culture-filter-bar');
   if(fb){
     const types=['전체',...new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean))];
-    fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('');
+    fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
+      +`<input class="filter-search" type="text" placeholder="검색..." value="${esc(cultureSearch)}" oninput="setCultureSearch(this.value)">`;
   }
   const grid=document.getElementById('culture-grid');
-  const list=cultureFilter==='전체'?[...db.culture]:[...db.culture].filter(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim()).includes(cultureFilter));
+  let list=cultureFilter==='전체'?[...db.culture]:[...db.culture].filter(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim()).includes(cultureFilter));
+  if(cultureSearch){
+    const q=cultureSearch.toLowerCase();
+    list=list.filter(i=>(i.영화명||'').toLowerCase().includes(q)||(i.한줄평||'').toLowerCase().includes(q)||(i['해시태그_종류']||'').toLowerCase().includes(q)||(i['해시태그_장르']||'').toLowerCase().includes(q));
+  }
   const sorted=list.sort((a,b)=>sortByDate(b.날짜,a.날짜));
   if(!sorted.length){grid.innerHTML=emptyState('🎬','문화생활을 기록해보세요!');return;}
   grid.innerHTML=sorted.map(item=>{
@@ -534,7 +542,7 @@ async function onPhotoTabFile(e){
     await Promise.all(files.slice(0,15).map(async f=>{
       const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=ev=>res(ev.target.result);r.readAsDataURL(f);});
       const url=await uploadToDrive(dataUrl,'etc');
-      if(url)await appendRow(SHEETS.photo,[today,url,'']);
+      if(url)await appendRow(SHEETS.photo,[url,'',today,'']);
     }));
     toast(`사진 ${files.length}장 추가됐어요 ✓`);await loadAll();
   }catch(err){toast('업로드 실패: '+err.message);}
@@ -542,7 +550,14 @@ async function onPhotoTabFile(e){
 }
 
 // ═══ FAVORITES ═══
-function isFaved(type,rowIdx){return db.favorites.some(f=>f.타입===type&&f.ID===String(rowIdx));}
+function isFaved(type,rowIdx){
+  if(!db[type]?.find(i=>i._row===rowIdx))return false;
+  return db.favorites.some(f=>f.타입===type&&f.ID===String(rowIdx));
+}
+async function deleteFavsFor(type,rowIdx){
+  const fav=db.favorites.find(f=>f.타입===type&&f.ID===String(rowIdx));
+  if(fav)try{await deleteSheetRow(SHEETS.favorites,fav._row);}catch(e){console.warn('즐겨찾기 삭제 실패:',e);}
+}
 async function toggleFav(type,rowIdx,name,img){
   const existing=db.favorites.find(f=>f.타입===type&&f.ID===String(rowIdx));
   showLoading(true);
@@ -557,9 +572,9 @@ async function toggleFav(type,rowIdx,name,img){
 function renderFavorites(){
   const wrap=document.getElementById('fav-wrap');
   if(!db.favorites.length){wrap.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3)"><div style="font-size:44px;margin-bottom:12px">❤️</div>즐겨찾기한 항목이 없어요</div>';return;}
-  const groups={gourmet:[],date:[],culture:[],photo:[]};
+  const groups={gourmet:[],date:[],culture:[]};
   db.favorites.forEach(f=>{if(groups[f.타입])groups[f.타입].push(f);});
-  const labels={gourmet:'고오급',date:'여행',culture:'문화생활',photo:'사진'};
+  const labels={gourmet:'고오급',date:'여행',culture:'문화생활'};
   let html='';
   Object.entries(groups).forEach(([type,items])=>{
     if(!items.length)return;
@@ -625,6 +640,16 @@ function renderSettings(){
   const tickerRow=db.settings?.find(r=>r.구분==='ticker');
   const el=document.getElementById('settings-ticker');
   if(el)el.value=tickerRow?.내용||'';
+}
+function savePin(){
+  const np=(document.getElementById('settings-new-pin')?.value||'').trim();
+  const cp=(document.getElementById('settings-confirm-pin')?.value||'').trim();
+  if(!np||np.length!==4||!/^\d{4}$/.test(np)){toast('4자리 숫자를 입력해주세요');return;}
+  if(np!==cp){toast('PIN이 일치하지 않아요 💔');return;}
+  localStorage.setItem('gonggong_pin',np);
+  toast('PIN이 변경됐어요 ✓');
+  document.getElementById('settings-new-pin').value='';
+  document.getElementById('settings-confirm-pin').value='';
 }
 async function saveTicker(){
   const text=document.getElementById('settings-ticker')?.value||'';
@@ -710,7 +735,7 @@ function deleteFromDetail(){
   showConfirm(async()=>{
     showLoading(true);
     const imgUrls=getItemImageUrls(type,item._row);
-    try{await deleteSheetRow(SHEETS[type]||SHEETS.matzip,item._row);closeDetailDirect();toast('삭제됐어요');await loadAll();}
+    try{await deleteSheetRow(SHEETS[type],item._row);await deleteFavsFor(type,item._row);closeDetailDirect();toast('삭제됐어요');await loadAll();}
     catch(e){toast('삭제 실패: '+e.message);showLoading(false);return;}
     showLoading(false);
     if(imgUrls.length)deleteDriveFiles(imgUrls);
@@ -755,10 +780,10 @@ function confirmDelete(type,rowIdx){
     showLoading(true);
     const imgUrls=getItemImageUrls(type,rowIdx);
     try{
-      await deleteSheetRow(SHEETS[type],rowIdx);
+      await deleteSheetRow(SHEETS[type],rowIdx);await deleteFavsFor(type,rowIdx);
       for(const g of [...linkedGourmet].sort((a,b)=>b._row-a._row)){
         const gImgs=getItemImageUrls('gourmet',g._row);
-        try{await deleteSheetRow(SHEETS.gourmet,g._row);if(gImgs.length)deleteDriveFiles(gImgs);}
+        try{await deleteSheetRow(SHEETS.gourmet,g._row);await deleteFavsFor('gourmet',g._row);if(gImgs.length)deleteDriveFiles(gImgs);}
         catch(e){console.warn('고오급 삭제 실패:',e);}
       }
       toast('삭제됐어요');await loadAll();
@@ -771,6 +796,7 @@ function confirmDelete(type,rowIdx){
 // ═══ FORM ═══
 // 날짜 선택 (3 셀렉트: 년/월/일)
 function fgdate(key,label,val=''){
+  if(!val){const t=new Date();val=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;}
   const parts=(val||'').split('-');
   const y=parts[0]||'',m=parts[1]||'',d=parts[2]||'';
   const ys=Array.from({length:13},(_,i)=>2018+i);
@@ -1085,7 +1111,7 @@ async function saveRecord(){
       curFormItem?._row?await updateRow(SHEETS.culture,curFormItem._row,row):await appendRow(SHEETS.culture,row);
     }else if(type==='photo'){
       const all=[heroUrl,...photosData].filter(Boolean);
-      for(const p of all){const u=p.startsWith('data:')?await uploadToDrive(p,'etc'):p;if(u)await appendRow(SHEETS.photo,[getDateVal('날짜'),u,fv('f-메모')]);}
+      for(const p of all){const u=p.startsWith('data:')?await uploadToDrive(p,'etc'):p;if(u)await appendRow(SHEETS.photo,[u,fv('f-메모'),getDateVal('날짜'),'']);}
     }else if(type==='todo'){
       const row=[fv('f-제목'),fv('f-메모'),fv('f-해시태그'),heroUrl,'',getDateVal('날짜')];
       curFormItem?._row?await updateRow(SHEETS.todo,curFormItem._row,row):await appendRow(SHEETS.todo,row);
