@@ -84,6 +84,14 @@ function startApp(){
   // 폼 입력 자동 임시저장 (이벤트 위임)
   const fo=document.getElementById('form-overlay');
   if(fo){fo.addEventListener('input',saveDraft,{capture:true});fo.addEventListener('change',saveDraft,{capture:true});}
+  // 화면 회전/리사이즈 시 사진 그리드 재렌더
+  let _photoResizeTimer;
+  window.addEventListener('resize',()=>{
+    clearTimeout(_photoResizeTimer);
+    _photoResizeTimer=setTimeout(()=>{
+      if(document.getElementById('page-photo')?.classList.contains('active'))renderPhoto();
+    },200);
+  });
 }
 function initDday(){
   const kstNow=new Date(new Date().getTime()+9*3600000);
@@ -539,15 +547,18 @@ function renderPhoto(){
   const grid=document.getElementById('photo-grid');
   const sorted=[...db.photo].sort((a,b)=>sortByDate(b.날짜,a.날짜));
   const addCard=`<div class="photo-item photo-add-card" onclick="document.getElementById('photo-tab-file').click()"><div class="photo-add-icon">＋</div></div>`;
-  if(!sorted.length){grid.innerHTML=addCard;return;}
-  grid.innerHTML=addCard+sorted.map(item=>{
-    const url=getPhotoUrl(item);
-    if(!url)return'';
-    return`<div class="photo-item" onclick="openLbox('${url}')">
-      <img src="${url}" alt="" loading="lazy" onerror="this.style.display='none'">
+  const items=sorted.map(item=>({item,url:getPhotoUrl(item)})).filter(({url})=>url);
+  const n=window.innerWidth>=900?5:window.innerWidth>=600?3:2;
+  if(!items.length){grid.innerHTML=`<div class="photo-col" style="flex:unset;width:100%">${addCard}</div>`;return;}
+  const cols=Array.from({length:n},()=>[]);
+  cols[0].push(addCard);
+  items.forEach(({item,url},i)=>{
+    cols[(i+1)%n].push(`<div class="photo-item" onclick="openLbox('${url}')">
+      <img src="${url}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'">
       <button class="photo-item-del" onclick="event.stopPropagation();confirmDelete('photo',${item._row})">✕</button>
-    </div>`;
-  }).join('');
+    </div>`);
+  });
+  grid.innerHTML=cols.map(c=>`<div class="photo-col">${c.join('')}</div>`).join('');
 }
 async function onPhotoTabFile(e){
   const files=Array.from(e.target.files).slice(0,15);
