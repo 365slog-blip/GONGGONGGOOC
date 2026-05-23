@@ -91,7 +91,7 @@ body{overflow:hidden}
 .home-dday-since{font-size:13px;color:var(--text3);margin-top:8px;letter-spacing:.06em}
 .home-dday-detail{font-size:14px;color:var(--text2);margin-top:10px;letter-spacing:.02em}
 .hero-preview-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:11px;display:block}
-.home-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:520px;margin:0 auto}
+.home-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .home-cat{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:30px 20px;cursor:pointer;transition:all .2s;text-align:center}
 .home-cat:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2)}
 .home-cat:active{transform:scale(.97)}
@@ -423,6 +423,7 @@ input[type=file]{display:none}
   .navbar-tabs{display:none}
   .refresh-btn{display:none}
   .page-hdr{padding-top:20px;padding-bottom:14px}
+  .home-cats{grid-template-columns:repeat(2,1fr)}
   .rank-cards{grid-template-columns:repeat(2,1fr)}
   .rank-card-first{grid-column:1/-1}
 }
