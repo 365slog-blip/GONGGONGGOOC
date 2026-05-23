@@ -211,6 +211,34 @@ async function getSheetId(name){
   return res.result.sheets.find(s=>s.properties.title===name)?.properties.sheetId??0;
 }
 
+// ═══ 이미지 회전 (90° 시계방향) ═══
+async function rotateImage(dataUrl){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalHeight;c.height=img.naturalWidth;
+      const ctx=c.getContext('2d');
+      ctx.translate(c.width/2,c.height/2);
+      ctx.rotate(Math.PI/2);
+      ctx.drawImage(img,-img.naturalWidth/2,-img.naturalHeight/2);
+      resolve(c.toDataURL('image/jpeg',0.92));
+    };
+    img.onerror=()=>resolve(dataUrl);
+    img.src=dataUrl;
+  });
+}
+async function rotateHero(){
+  if(!heroImgData)return;
+  heroImgData=await rotateImage(heroImgData);
+  renderHeroPreview();
+}
+async function rotatePhoto(i){
+  if(!photosData[i])return;
+  photosData[i]=await rotateImage(photosData[i]);
+  renderPhotoPreviews();
+}
+
 // ═══ EXIF 회전 보정 ═══
 async function fixOrientation(dataUrl){
   return new Promise(resolve=>{
@@ -1368,11 +1396,13 @@ function updateStarDisplay(id,val){const el=document.getElementById('sd-'+id);if
 function updateStarDisplay10(id,val){const el=document.getElementById('sd-'+id);if(el)el.innerHTML=numToStars(parseFloat(val)/2);}
 function renderHeroPreview(){
   const wrap=document.getElementById('hero-preview-wrap');if(!wrap)return;
-  wrap.innerHTML=heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt="">`:`<div class="hero-ph">📷<span>대표 사진 선택</span></div>`;
+  wrap.innerHTML=heroImgData
+    ?`<img class="hero-preview-img" src="${heroImgData}" alt=""><button class="hero-rot-btn" onclick="event.stopPropagation();rotateHero()" title="90° 회전">↻</button>`
+    :`<div class="hero-ph">📷<span>대표 사진 선택</span></div>`;
 }
 function renderPhotoPreviews(){
   const wrap=document.getElementById('photos-preview');if(!wrap)return;
-  wrap.innerHTML=photosData.map((src,i)=>`<div class="ipreview"><img src="${src}" alt=""><button class="ipreview-del" onclick="removePhoto(${i})">✕</button></div>`).join('');
+  wrap.innerHTML=photosData.map((src,i)=>`<div class="ipreview"><img src="${src}" alt=""><button class="ipreview-del" onclick="removePhoto(${i})">✕</button><button class="ipreview-rot" onclick="rotatePhoto(${i})" title="90° 회전">↻</button></div>`).join('');
 }
 function removePhoto(i){photosData.splice(i,1);renderPhotoPreviews();}
 function onHeroFile(e){

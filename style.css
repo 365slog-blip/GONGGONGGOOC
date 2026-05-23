@@ -351,7 +351,10 @@ body{overflow:hidden}
 .ipreview{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden}
 .ipreview img{width:100%;height:100%;object-fit:cover;display:block}
 .ipreview-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:19px;height:19px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.hero-preview-wrap{cursor:pointer}
+.ipreview-rot{position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:19px;height:19px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.hero-preview-wrap{cursor:pointer;position:relative}
+.hero-rot-btn{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:2}
+.hero-rot-btn:active,.ipreview-rot:active{background:rgba(0,0,0,.9)}
 .hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:11px;display:block}
 .hero-ph{width:100%;aspect-ratio:16/9;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;color:var(--text3);gap:6px}
 .hero-ph span{font-size:12px}
