@@ -389,9 +389,15 @@ input[type=file]{display:none}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
+/* DETAIL DELETE FOOTER */
+.detail-del-footer{padding:10px 22px 20px;border-top:0.5px solid var(--border);text-align:center}
+.detail-del-btn-bottom{background:none;border:1px solid #e57373;color:#e57373;border-radius:10px;padding:10px 0;font-size:13px;cursor:pointer;font-family:var(--font-body);width:100%;transition:all .2s}
+.detail-del-btn-bottom:hover{background:#e57373;color:#fff}
+
 /* MOBILE (768px 이하) */
 @media(max-width:768px){
   .hamburger-btn{display:flex}
   .navbar-tabs{display:none}
   .navbar{padding:52px 16px 12px}
+  .refresh-btn{display:none}
 }

@@ -94,6 +94,7 @@
       <button class="ntab" id="nt-settings" onclick="goPage('settings')">⚙️</button>
     </div>
     <div class="navbar-right">
+      <button class="icon-btn refresh-btn" onclick="reloadData()" title="새로고침">🔄</button>
       <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
     </div>
   </nav>
@@ -285,7 +286,6 @@
       <div class="popup-hdr-btns">
         <button class="popup-action-btn" id="detail-write-btn" onclick="openFormFromDetail()" style="display:none">✏️ 글쓰기</button>
         <button class="popup-action-btn" id="detail-edit-btn" onclick="editFromDetail()" style="display:none">수정</button>
-        <button class="popup-action-btn danger" id="detail-del-btn" onclick="deleteFromDetail()" style="display:none">삭제</button>
         <button class="popup-close" onclick="closeDetailDirect()">✕</button>
       </div>
     </div>
@@ -313,6 +313,20 @@
       <div class="confirm-btns">
         <button class="confirm-cancel" onclick="closeConfirm()">취소</button>
         <button class="confirm-ok" id="confirm-ok-btn">삭제하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAFT RESTORE POPUP -->
+<div class="popup-overlay" id="draft-restore-overlay">
+  <div class="popup confirm-popup" onclick="event.stopPropagation()">
+    <div class="confirm-inner">
+      <div class="confirm-icon">📝</div>
+      <div class="confirm-msg">임시저장된 내용이 있어요.<br><span style="font-size:13px;color:var(--text3)">이전에 작성하던 내용을 복원할까요?</span></div>
+      <div class="confirm-btns">
+        <button class="confirm-cancel" id="draft-discard-btn">새로 작성</button>
+        <button class="confirm-ok" id="draft-restore-btn" style="background:var(--accent);color:#1a1816">복원하기</button>
       </div>
     </div>
   </div>

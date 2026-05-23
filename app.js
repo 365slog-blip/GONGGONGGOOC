@@ -20,6 +20,7 @@ let todoFilter='전체';
 let criteriaOpen=false;
 let cultureFilter='전체';
 let cultureSearch='';
+let _pendingDraft=null;
 // date form state
 let dayEntries=[],hasEndDate=false,tripType='';
 // culture form state
@@ -80,6 +81,9 @@ function updatePinDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).clas
 function startApp(){
   const app=document.getElementById('app');app.style.display='flex';app.style.flexDirection='column';
   initDday();loadAll();initPullToRefresh();
+  // 폼 입력 자동 임시저장 (이벤트 위임)
+  const fo=document.getElementById('form-overlay');
+  if(fo){fo.addEventListener('input',saveDraft,{capture:true});fo.addEventListener('change',saveDraft,{capture:true});}
 }
 function initDday(){
   const kstNow=new Date(new Date().getTime()+9*3600000);
@@ -119,6 +123,8 @@ function goPage(p){
   if(p==='settings')renderSettings();
   closeSidebar();
 }
+
+async function reloadData(){await loadAll();}
 
 // ═══ HAMBURGER SIDEBAR ═══
 function toggleSidebar(){
@@ -219,6 +225,8 @@ async function uploadToDrive(base64,folderKey='etc'){
 function renderAll(){
   renderMatzipList();renderGourmet();renderDate();renderCulture();renderPhoto();
   loadCriteriaFromSheet();renderTicker();
+  if(document.getElementById('page-todo')?.classList.contains('active'))renderTodo();
+  if(document.getElementById('page-fav')?.classList.contains('active'))renderFavorites();
 }
 
 // ═══ TICKER ═══
@@ -410,6 +418,12 @@ function toggleCriteria(){
   if(body)body.style.display=criteriaOpen?'block':'none';
   if(arrow)arrow.style.transform=criteriaOpen?'rotate(90deg)':'';
   if(saveBtn)saveBtn.style.display=criteriaOpen?'':'none';
+  if(criteriaOpen){
+    setTimeout(()=>{
+      autoResize(document.getElementById('criteria-gong'));
+      autoResize(document.getElementById('criteria-ha'));
+    },0);
+  }
 }
 function autoResize(el){
   if(!el)return;
@@ -581,6 +595,7 @@ function renderFavorites(){
     html+=`<div class="fav-section-title">${labels[type]||type}</div><div class="gallery-grid-4">`;
     html+=items.map(f=>`
       <div class="gcard" onclick="openFavDetail('${f.타입}',${f.ID})">
+        <button class="fav-btn" onclick="event.stopPropagation();toggleFav('${f.타입}',${f.ID},'${esc(f['가게명또는제목'])}','${esc(f.대표이미지)}')">❤️</button>
         ${imgOrPh(f.대표이미지,'4/3','⭐')}
         <div class="gcard-body"><div class="gcard-name">${esc(f['가게명또는제목'])}</div><div class="gcard-sub">${esc(f.날짜)}</div></div>
       </div>`).join('');
@@ -603,23 +618,38 @@ function renderTodo(){
   const list=document.getElementById('todo-list');
   if(!items.length){list.innerHTML='<div style="text-align:center;padding:36px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">📝</div>할 일을 추가해보세요!</div>';return;}
   list.innerHTML=items.map(item=>`
-    <div class="todo-card">
+    <div class="todo-card" onclick="showTodoDetail(${item._row})" style="cursor:pointer">
       <div class="todo-card-img">${item.대표이미지?`<img src="${item.대표이미지}" alt="">`:`<div class="todo-card-img-ph">📝</div>`}</div>
       <div class="todo-card-body">
         <div class="todo-card-title">
-          <div class="todo-check ${item.완료여부==='완료'?'done':''}" onclick="toggleTodoDone(${item._row},this)">${item.완료여부==='완료'?'✓':''}</div>
+          <div class="todo-check ${item.완료여부==='완료'?'done':''}" onclick="event.stopPropagation();toggleTodoDone(${item._row},this)">${item.완료여부==='완료'?'✓':''}</div>
           <span style="${item.완료여부==='완료'?'text-decoration:line-through;color:var(--text3)':''}">${esc(item.제목)}</span>
         </div>
         <div class="todo-memo">${esc(item.메모)}</div>
         ${item.해시태그?`<div class="todo-tag">#${esc(item.해시태그)}</div>`:''}
       </div>
-      <div class="todo-card-actions">
-        <button class="todo-action-btn" onclick="openFormEdit('todo',${item._row})" title="수정">✏️</button>
-        <button class="todo-action-btn" onclick="confirmDelete('todo',${item._row})" title="삭제">🗑</button>
-      </div>
     </div>`).join('');
 }
 function setTodoFilter(f){todoFilter=f;renderTodo();}
+function showTodoDetail(rowIdx){
+  const item=db.todo.find(i=>i._row===rowIdx);if(!item)return;
+  curDetailType='todo';curDetailItem=item;
+  document.getElementById('detail-popup-title').textContent=item.제목||'';
+  document.getElementById('detail-write-btn').style.display='none';
+  document.getElementById('detail-edit-btn').style.display='flex';
+  let body='';
+  if(item.대표이미지)body+=`<img class="detail-hero" src="${item.대표이미지}" alt="" onerror="this.style.display='none'">`;
+  else body+=`<div class="detail-hero-ph">📝</div>`;
+  body+=`<div class="detail-title">${esc(item.제목)}</div><div class="detail-props">`;
+  if(item.날짜)body+=dProp('날짜',item.날짜);
+  if(item.해시태그)body+=dProp('태그','#'+item.해시태그);
+  body+=dProp('상태',item.완료여부==='완료'?'✅ 완료':'⬜ 미완료');
+  body+='</div>';
+  if(item.메모)body+=`<div class="detail-sec"><div class="detail-sec-title">메모</div><div class="detail-text">${esc(item.메모)}</div></div>`;
+  body+=`<div class="detail-del-footer"><button class="detail-del-btn-bottom" onclick="deleteFromDetail()">삭제하기</button></div>`;
+  document.getElementById('detail-popup-body').innerHTML=body;
+  document.getElementById('detail-overlay').classList.add('open');
+}
 async function toggleTodoDone(rowIdx,el){
   const item=db.todo.find(i=>i._row===rowIdx);if(!item)return;
   const newVal=item.완료여부==='완료'?'':'완료';
@@ -664,6 +694,61 @@ async function saveTicker(){
   showLoading(false);
 }
 
+// ═══ DRAFT (임시저장) ═══
+const DRAFT_TYPES=['gourmet','date','culture','todo'];
+function saveDraft(){
+  if(!curFormType||curFormItem)return;
+  if(!DRAFT_TYPES.includes(curFormType))return;
+  try{
+    const data={};
+    document.querySelectorAll('#form-body input[id],#form-body textarea[id],#form-body select[id]').forEach(el=>{if(el.id)data[el.id]=el.value;});
+    if(curFormType==='date'){
+      data._tripType=tripType;
+      data._hasEndDate=hasEndDate;
+      data._dayEntries=dayEntries.map((_,i)=>document.getElementById('day-text-'+i)?.value||'');
+    }
+    if(curFormType==='culture')data._cultureTypes=[...cultureTypes];
+    localStorage.setItem('draft_'+curFormType,JSON.stringify(data));
+  }catch(e){}
+}
+function clearDraft(type){try{localStorage.removeItem('draft_'+type);}catch(e){}}
+function restoreDraft(draft,type){
+  if(!draft)return;
+  Object.entries(draft).forEach(([id,val])=>{
+    if(id.startsWith('_'))return;
+    const el=document.getElementById(id);if(el)el.value=val;
+  });
+  if(type==='date'){
+    if(draft._tripType){
+      tripType=draft._tripType;
+      document.querySelectorAll('.trip-type-btn').forEach(b=>{if(b.dataset.type===tripType)b.classList.add('active');});
+    }
+    if(draft._hasEndDate&&!hasEndDate){
+      hasEndDate=true;
+      renderEndDateField('');
+      setTimeout(()=>{
+        ['f-종료날짜-y','f-종료날짜-m','f-종료날짜-d'].forEach(id=>{const el=document.getElementById(id);if(el&&draft[id])el.value=draft[id];});
+        updateTripDuration();
+      },50);
+    }
+    if(draft._dayEntries?.length){dayEntries=draft._dayEntries;renderDayEntries();}
+  }
+  if(type==='culture'&&draft._cultureTypes){
+    cultureTypes=new Set(draft._cultureTypes);
+    document.querySelectorAll('.culture-type-btn').forEach(b=>{if(cultureTypes.has(b.dataset.type))b.classList.add('active');});
+    renderCultureExtraFields();
+    setTimeout(()=>{Object.entries(draft).forEach(([id,val])=>{if(id.startsWith('cf-')){const el=document.getElementById(id);if(el)el.value=val;}});},0);
+  }
+  if(type==='culture'){const s=document.getElementById('f-별점')?.value;if(s)updateStarDisplay10('f-별점',s);}
+  setTimeout(()=>document.querySelectorAll('#form-body .ftarea').forEach(autoResize),0);
+}
+function showDraftRestorePrompt(onRestore,onDiscard){
+  const ov=document.getElementById('draft-restore-overlay');
+  ov.classList.add('open');
+  document.getElementById('draft-restore-btn').onclick=()=>{ov.classList.remove('open');onRestore();};
+  document.getElementById('draft-discard-btn').onclick=()=>{ov.classList.remove('open');onDiscard();};
+}
+
 // ═══ DETAIL POPUP ═══
 function showDetailPopup(item,type){
   if(!item)return;
@@ -672,7 +757,6 @@ function showDetailPopup(item,type){
   document.getElementById('detail-popup-title').textContent=name||'';
   document.getElementById('detail-write-btn').style.display='none';
   document.getElementById('detail-edit-btn').style.display='flex';
-  document.getElementById('detail-del-btn').style.display='flex';
   let body='';
   if(type==='culture'){
     body+=item.대표이미지?`<img class="detail-poster" src="${item.대표이미지}" alt="" onerror="this.style.display='none'">`:`<div class="detail-hero-ph">🎬</div>`;
@@ -721,6 +805,7 @@ function showDetailPopup(item,type){
   const photos=[];
   for(let i=1;i<=15;i++){const u=normalizeImgUrl(item['사진'+i]);if(u)photos.push(u);}
   if(photos.length)body+=`<div class="detail-sec"><div class="detail-sec-title">사진 (${photos.length}장)</div><div class="photo-scroll-wrap"><button class="scroll-btn left" onclick="scrollPhotos(this,-1)">&#8249;</button><div class="photo-scroll">${photos.map(p=>`<img src="${p}" onclick="openLbox('${p}')" onerror="this.style.display='none'">`).join('')}</div><button class="scroll-btn right" onclick="scrollPhotos(this,1)">&#8250;</button></div></div>`;
+  body+=`<div class="detail-del-footer"><button class="detail-del-btn-bottom" onclick="deleteFromDetail()">삭제하기</button></div>`;
   document.getElementById('detail-popup-body').innerHTML=body;
   document.getElementById('detail-overlay').classList.add('open');
 }
@@ -750,7 +835,6 @@ function openMatzipDetail(name){
     document.getElementById('detail-popup-title').textContent=basic.가게명||'';
     document.getElementById('detail-write-btn').style.display='flex';
     document.getElementById('detail-edit-btn').style.display='none';
-    document.getElementById('detail-del-btn').style.display='none';
     let body=`<div class="detail-hero-ph">🍽️</div><div class="detail-title">${esc(basic.가게명)}</div><div class="detail-props">`;
     if(basic.장소)body+=dProp('장소',basic.장소);
     if(basic.공슐랭)body+=dPropHtml('공슐랭',starsAndNum(basic.공슐랭));
@@ -922,6 +1006,22 @@ function renderCultureExtraFields(){
 }
 
 function openForm(type,item=null,prefillName=''){
+  // 임시저장 체크 (새 기록 작성 시에만)
+  if(!item&&!_pendingDraft&&DRAFT_TYPES.includes(type)){
+    const saved=localStorage.getItem('draft_'+type);
+    if(saved){
+      try{
+        const parsed=JSON.parse(saved);
+        showDraftRestorePrompt(
+          ()=>{_pendingDraft=parsed;openForm(type,null,prefillName);},
+          ()=>{clearDraft(type);openForm(type,null,prefillName);}
+        );
+        return;
+      }catch(e){clearDraft(type);}
+    }
+  }
+  const draft=_pendingDraft;_pendingDraft=null;
+
   curFormType=type;curFormItem=item;
   heroImgData=normalizeImgUrl(item?.대표이미지)||null;photosData=[];
   if(item){for(let i=1;i<=15;i++){const u=normalizeImgUrl(item['사진'+i]);if(u)photosData.push(u);}}
@@ -1029,6 +1129,7 @@ function openForm(type,item=null,prefillName=''){
   if(item?.별점)updateStarDisplay10('f-별점',item.별점);
   renderHeroPreview();renderPhotoPreviews();
   setTimeout(()=>document.querySelectorAll('.ftarea').forEach(autoResize),0);
+  if(draft)restoreDraft(draft,type);
   document.getElementById('form-overlay').classList.add('open');
 }
 
@@ -1116,7 +1217,7 @@ async function saveRecord(){
       const row=[fv('f-제목'),fv('f-메모'),fv('f-해시태그'),heroUrl,'',getDateVal('날짜')];
       curFormItem?._row?await updateRow(SHEETS.todo,curFormItem._row,row):await appendRow(SHEETS.todo,row);
     }
-    toast('저장됐어요 ✓');closeFormDirect();await loadAll();
+    clearDraft(type);toast('저장됐어요 ✓');closeFormDirect();await loadAll();
   }catch(e){toast('저장 실패: '+e.message);console.error(e);}
   showLoading(false);
 }
