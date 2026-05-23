@@ -84,7 +84,7 @@ body{overflow:hidden}
 .page.active{display:block}
 
 /* HOME */
-.home-wrap{padding:40px var(--page-padding) 80px;max-width:1000px;margin:0 auto}
+.home-wrap{padding:40px var(--page-padding) 80px}
 .home-dday{text-align:center;padding:48px 20px;margin-bottom:36px}
 .home-dday-label{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
 .home-dday-num{font-family:var(--font-display);font-size:72px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-2px}
@@ -107,7 +107,7 @@ body{overflow:hidden}
 .page-action-btn{background:var(--accent);color:#1a1816;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);white-space:nowrap;flex-shrink:0}
 
 /* MATZIP */
-.matzip-inner{padding:0 var(--page-padding) 100px;max-width:1400px;margin:0 auto}
+.matzip-inner{padding:0 var(--page-padding) 100px}
 
 /* CRITERIA (토글) */
 .criteria-section{border-bottom:0.5px solid var(--border);margin-bottom:0}
@@ -180,7 +180,7 @@ body{overflow:hidden}
 .add-row-btn:hover{border-color:var(--accent);color:var(--accent)}
 
 /* GALLERY */
-.gallery-wrap{padding:20px var(--page-padding) 100px;max-width:1400px;margin:0 auto}
+.gallery-wrap{padding:20px var(--page-padding) 100px}
 .gallery-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .gallery-grid-2{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media(max-width:900px){.gallery-grid-4{grid-template-columns:repeat(3,1fr)}.gallery-grid-2{grid-template-columns:repeat(2,1fr)}}
@@ -224,7 +224,7 @@ body{overflow:hidden}
 .fav-section-title{font-size:13px;font-weight:600;color:var(--text3);padding:12px 0 8px;text-transform:uppercase;letter-spacing:.06em}
 
 /* TODO */
-.todo-wrap{padding:20px var(--page-padding) 100px;max-width:900px;margin:0 auto}
+.todo-wrap{padding:20px var(--page-padding) 100px}
 .todo-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .todo-filter{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--text3);font-family:var(--font-body);transition:all .15s}
 .todo-filter.active{background:var(--accent);color:#1a1816;border-color:var(--accent)}
@@ -245,7 +245,7 @@ body{overflow:hidden}
 .todo-action-btn:hover{color:var(--text)}
 
 /* PHOTO TAB */
-.photo-grid-wrap{padding:20px var(--page-padding) 100px;max-width:1400px;margin:0 auto}
+.photo-grid-wrap{padding:20px var(--page-padding) 100px}
 .photo-grid{display:flex;gap:8px;align-items:flex-start}
 .photo-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .photo-item{border-radius:10px;overflow:hidden;cursor:pointer;position:relative;background:var(--bg3);display:block}
@@ -271,7 +271,7 @@ body{overflow:hidden}
 .photo-item.selected .photo-check::after{content:'✓';font-weight:700}
 
 /* SETTINGS */
-.settings-wrap{padding:28px var(--page-padding) 100px;max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.settings-wrap{padding:28px var(--page-padding) 100px;display:flex;flex-direction:column;gap:24px}
 .settings-section{background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;padding:20px}
 .settings-section-title{font-size:14px;font-weight:600;margin-bottom:4px}
 .settings-section-desc{font-size:12px;color:var(--text3);margin-bottom:12px}
