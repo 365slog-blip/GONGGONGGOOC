@@ -232,6 +232,7 @@ async function rotateHero(){
   if(!heroImgData)return;
   const img=document.querySelector('#hero-preview-wrap img');
   if(img){img.classList.add('img-spinning');}
+  await new Promise(r=>setTimeout(r,300));
   heroImgData=await rotateImage(heroImgData);
   renderHeroPreview();
 }
@@ -239,6 +240,7 @@ async function rotatePhoto(i){
   if(!photosData[i])return;
   const imgs=document.querySelectorAll('.ipreview img');
   if(imgs[i]){imgs[i].classList.add('img-spinning');}
+  await new Promise(r=>setTimeout(r,300));
   photosData[i]=await rotateImage(photosData[i]);
   renderPhotoPreviews();
 }
@@ -1394,7 +1396,7 @@ function fg(key,type,ph,val=''){return`<div class="fg"><label class="flabel">${p
 function fga(key,ph,val=''){return`<div class="fg"><label class="flabel">${ph}</label><textarea class="finput ftarea" id="f-${key}" placeholder="${ph}" oninput="autoResize(this)">${val||''}</textarea></div>`;}
 function fgsel(key,opts,val=''){return`<div class="fg"><label class="flabel">${key}</label><select class="finput" id="f-${key}">${opts.map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;}
 function fgstar(key,label,val=''){return`<div class="fg"><label class="flabel">${label}</label><div style="display:flex;align-items:center;gap:12px"><input class="finput" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" style="width:80px" oninput="updateStarDisplay10('f-${key}',this.value)"><div class="star-visual" id="sd-f-${key}">${val?numToStars(parseFloat(val)/2):'<span class="star empty">☆☆☆☆☆</span>'}</div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">0.5 단위 (최대 10점)</div></div>`;}
-function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt="">`:`<div class="hero-ph">📷<span>대표 사진 선택</span></div>`}</div></div>`;}
+function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt=""><button class="hero-rot-btn" onclick="event.stopPropagation();rotateHero()" title="90° 회전">↻</button>`:`<div class="hero-ph">📷<span>대표 사진 선택</span></div>`}</div></div>`;}
 function fphotos(){return`<div class="fg"><label class="flabel">사진 (최대 15장)</label><div class="img-drop" onclick="document.getElementById('photos-file').click()"><div class="img-drop-icon">📷</div><div class="img-drop-label">탭해서 사진 선택</div></div><div class="img-preview-grid" id="photos-preview"></div></div>`;}
 function updateStarDisplay(id,val){const el=document.getElementById('sd-'+id);if(el)el.innerHTML=numToStars(parseFloat(val));}
 function updateStarDisplay10(id,val){const el=document.getElementById('sd-'+id);if(el)el.innerHTML=numToStars(parseFloat(val)/2);}
