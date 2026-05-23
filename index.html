@@ -217,7 +217,12 @@
       <div class="page-hdr">
         <div class="page-hdr-top">
           <div><div class="page-title">Photo Album</div><div class="page-sub">우리의 소중한 사진들</div></div>
-          <button class="page-action-btn" onclick="openForm('photo')">📋 날짜 지정 추가</button>
+          <button class="page-action-btn" id="photo-select-toggle" onclick="togglePhotoSelectMode()">☑ 선택</button>
+        </div>
+        <div class="photo-select-bar" id="photo-select-bar">
+          <button class="photo-sel-all-btn" onclick="selectAllPhotos()">전체 선택</button>
+          <span class="photo-sel-count" id="photo-sel-count">0장 선택</span>
+          <button class="photo-sel-del-btn" onclick="bulkDeletePhotos()">삭제</button>
         </div>
       </div>
       <div class="photo-grid-wrap"><div class="photo-grid" id="photo-grid"></div></div>

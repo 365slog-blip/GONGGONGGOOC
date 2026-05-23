@@ -21,6 +21,8 @@ let criteriaOpen=false;
 let cultureFilter='전체';
 let cultureSearch='';
 let _pendingDraft=null;
+let photoSelectMode=false;
+const photoSelected=new Set();
 // date form state
 let dayEntries=[],hasEndDate=false,tripType='';
 // culture form state
@@ -546,9 +548,22 @@ function renderCulture(){
 function renderPhoto(){
   const grid=document.getElementById('photo-grid');
   const sorted=[...db.photo].sort((a,b)=>sortByDate(b.날짜,a.날짜));
-  const addCard=`<div class="photo-item photo-add-card" onclick="document.getElementById('photo-tab-file').click()"><div class="photo-add-icon">＋</div></div>`;
   const items=sorted.map(item=>({item,url:getPhotoUrl(item)})).filter(({url})=>url);
   const n=window.innerWidth>=900?5:window.innerWidth>=600?3:2;
+  if(photoSelectMode){
+    if(!items.length){grid.innerHTML=`<div class="photo-col" style="flex:unset;width:100%"><div style="padding:40px;text-align:center;color:var(--text3)">사진이 없어요</div></div>`;return;}
+    const cols=Array.from({length:n},()=>[]);
+    items.forEach(({item,url},i)=>{
+      const sel=photoSelected.has(item._row);
+      cols[i%n].push(`<div class="photo-item${sel?' selected':''}" data-row="${item._row}" onclick="togglePhotoSelectItem(${item._row})">
+        <img src="${url}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'">
+        <div class="photo-check"></div>
+      </div>`);
+    });
+    grid.innerHTML=cols.map(c=>`<div class="photo-col">${c.join('')}</div>`).join('');
+    return;
+  }
+  const addCard=`<div class="photo-item photo-add-card" onclick="document.getElementById('photo-tab-file').click()"><div class="photo-add-icon">＋</div></div>`;
   if(!items.length){grid.innerHTML=`<div class="photo-col" style="flex:unset;width:100%">${addCard}</div>`;return;}
   const cols=Array.from({length:n},()=>[]);
   cols[0].push(addCard);
@@ -559,6 +574,50 @@ function renderPhoto(){
     </div>`);
   });
   grid.innerHTML=cols.map(c=>`<div class="photo-col">${c.join('')}</div>`).join('');
+}
+function togglePhotoSelectMode(){
+  photoSelectMode=!photoSelectMode;
+  photoSelected.clear();
+  document.getElementById('photo-select-toggle').textContent=photoSelectMode?'✕ 취소':'☑ 선택';
+  document.getElementById('photo-select-bar').classList.toggle('active',photoSelectMode);
+  document.getElementById('photo-sel-count').textContent='0장 선택';
+  renderPhoto();
+}
+function togglePhotoSelectItem(row){
+  if(photoSelected.has(row))photoSelected.delete(row);
+  else photoSelected.add(row);
+  document.getElementById('photo-sel-count').textContent=`${photoSelected.size}장 선택`;
+  const el=document.querySelector(`.photo-item[data-row="${row}"]`);
+  if(el)el.classList.toggle('selected',photoSelected.has(row));
+}
+function selectAllPhotos(){
+  const all=document.querySelectorAll('.photo-item[data-row]');
+  const allSelected=photoSelected.size===all.length&&all.length>0;
+  if(allSelected){
+    photoSelected.clear();
+    all.forEach(el=>el.classList.remove('selected'));
+  } else {
+    all.forEach(el=>{photoSelected.add(Number(el.dataset.row));el.classList.add('selected');});
+  }
+  document.getElementById('photo-sel-count').textContent=`${photoSelected.size}장 선택`;
+}
+async function bulkDeletePhotos(){
+  if(!photoSelected.size){toast('선택된 사진이 없어요');return;}
+  const n=photoSelected.size;
+  if(!confirm(`선택한 ${n}장을 삭제할까요?`))return;
+  showLoading(true);
+  const rows=[...photoSelected].sort((a,b)=>b-a);
+  for(const row of rows){
+    try{await deleteSheetRow(SHEETS.photo,row);}
+    catch(e){console.error('삭제 실패:',e);}
+  }
+  photoSelectMode=false;
+  photoSelected.clear();
+  document.getElementById('photo-select-toggle').textContent='☑ 선택';
+  document.getElementById('photo-select-bar').classList.remove('active');
+  toast(`${n}장 삭제 완료`);
+  await loadAll();
+  showLoading(false);
 }
 async function onPhotoTabFile(e){
   const files=Array.from(e.target.files).slice(0,15);
