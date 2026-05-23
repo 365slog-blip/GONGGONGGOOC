@@ -230,11 +230,15 @@ async function rotateImage(dataUrl){
 }
 async function rotateHero(){
   if(!heroImgData)return;
+  const img=document.querySelector('#hero-preview-wrap img');
+  if(img){img.classList.add('img-spinning');}
   heroImgData=await rotateImage(heroImgData);
   renderHeroPreview();
 }
 async function rotatePhoto(i){
   if(!photosData[i])return;
+  const imgs=document.querySelectorAll('.ipreview img');
+  if(imgs[i]){imgs[i].classList.add('img-spinning');}
   photosData[i]=await rotateImage(photosData[i]);
   renderPhotoPreviews();
 }
