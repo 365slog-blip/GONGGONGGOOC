@@ -540,11 +540,14 @@ function renderPhoto(){
   const sorted=[...db.photo].sort((a,b)=>sortByDate(b.날짜,a.날짜));
   const addCard=`<div class="photo-item photo-add-card" onclick="document.getElementById('photo-tab-file').click()"><div class="photo-add-icon">＋</div></div>`;
   if(!sorted.length){grid.innerHTML=addCard;return;}
-  grid.innerHTML=addCard+sorted.map(item=>`
-    <div class="photo-item" onclick="openLbox('${item.대표이미지}')">
-      <img src="${item.대표이미지}" alt="" loading="lazy" onerror="this.style.display='none'">
+  grid.innerHTML=addCard+sorted.map(item=>{
+    const url=getPhotoUrl(item);
+    if(!url)return'';
+    return`<div class="photo-item" onclick="openLbox('${url}')">
+      <img src="${url}" alt="" loading="lazy" onerror="this.style.display='none'">
       <button class="photo-item-del" onclick="event.stopPropagation();confirmDelete('photo',${item._row})">✕</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 async function onPhotoTabFile(e){
   const files=Array.from(e.target.files);
@@ -1242,12 +1245,25 @@ function getItemImageUrls(type,rowIdx){
   const item=(db[type]||[]).find(i=>i._row===rowIdx);
   if(!item)return[];
   const urls=[];
+  if(type==='photo'){
+    const url=getPhotoUrl(item);
+    if(url)urls.push(url);
+    return urls;
+  }
   if(item.대표이미지)urls.push(item.대표이미지);
   for(let i=1;i<=15;i++){if(item['사진'+i])urls.push(item['사진'+i]);}
   return urls;
 }
 
 // ═══ UTILS ═══
+function getPhotoUrl(item){
+  // 신규 데이터: A열(대표이미지)에 URL이 저장됨
+  const a=normalizeImgUrl(item.대표이미지||'');
+  if(a.startsWith('https://'))return a;
+  // 구 데이터: URL이 B열(제목)에 잘못 저장된 경우 fallback
+  const b=normalizeImgUrl(item.제목||'');
+  return b.startsWith('https://')?b:'';
+}
 function normalizeImgUrl(url){
   if(!url)return'';
   if(url.includes('lh3.googleusercontent.com'))return url;
@@ -1264,7 +1280,7 @@ function imgOrPh(src,ratio,icon){
 function emptyState(icon,txt){return`<div class="empty-state" style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3)"><div style="font-size:40px;margin-bottom:10px">${icon}</div><div>${txt}</div></div>`;}
 function sortByDate(d1,d2){return(new Date(d1)||0)-(new Date(d2)||0);}
 function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function openLbox(src){document.getElementById('lbox-img').src=src;document.getElementById('lbox').classList.add('open');}
+function openLbox(src){if(!src)return;document.getElementById('lbox-img').src=src;document.getElementById('lbox').classList.add('open');}
 function showLoading(show){document.getElementById('loading-overlay').classList.toggle('show',show);}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2500);}
 
