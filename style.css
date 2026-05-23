@@ -53,7 +53,7 @@ body{overflow:hidden}
 .sidebar-item:active{background:var(--bg4)}
 
 /* NAVBAR */
-.navbar{display:flex;align-items:center;justify-content:space-between;padding:52px 20px 12px;background:var(--bg);border-bottom:0.5px solid var(--border);flex-shrink:0;gap:8px}
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:52px 10% 12px;background:var(--bg);border-bottom:0.5px solid var(--border);flex-shrink:0;gap:8px}
 .navbar-left{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .hamburger-btn{display:none;background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;padding:6px;border-radius:8px;line-height:1;transition:all .15s}
 .hamburger-btn:hover{background:var(--bg3);color:var(--text)}
@@ -122,8 +122,12 @@ body{overflow:hidden}
 .criteria-textarea{width:100%;background:transparent;border:none;outline:none;font-size:13px;color:var(--text2);font-family:var(--font-body);resize:none;line-height:1.7;min-height:60px;overflow:hidden}
 .criteria-btn{background:var(--accent);color:#1a1816;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body);white-space:nowrap}
 
+/* MATZIP 2-COLUMN LAYOUT */
+.matzip-body{display:grid;grid-template-columns:300px 1fr;gap:0 32px;align-items:start;padding-top:16px}
+.ranking-section{padding:0;border-bottom:none;position:sticky;top:0}
+.list-section{padding:0 0 100px}
+
 /* RANKING */
-.ranking-section{padding:16px 0;border-bottom:0.5px solid var(--border)}
 .section-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
 .rank-list{display:flex;flex-direction:column;gap:6px}
 .rank-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;border:0.5px solid var(--border);background:var(--bg2)}
@@ -177,8 +181,6 @@ body{overflow:hidden}
 @media(max-width:640px){
   .gallery-grid-4{grid-template-columns:repeat(2,1fr)}
   .gallery-grid-2{grid-template-columns:repeat(1,1fr)}
-  .page-hdr{padding:20px 16px 14px}
-  .home-wrap,.gallery-wrap,.matzip-inner,.photo-grid-wrap{padding-left:16px;padding-right:16px}
 }
 .gcard{background:var(--card);border-radius:14px;overflow:hidden;cursor:pointer;border:0.5px solid var(--border);transition:all .2s;position:relative}
 .gcard:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15)}
@@ -414,4 +416,10 @@ input[type=file]{display:none}
   .navbar-tabs{display:none}
   .navbar{padding:52px 16px 12px}
   .refresh-btn{display:none}
+  .page-hdr{padding:20px 16px 14px}
+  .home-wrap,.gallery-wrap,.matzip-inner,.photo-grid-wrap{padding-left:16px;padding-right:16px}
+  .photo-select-bar{padding-left:16px;padding-right:16px}
+  .matzip-body{grid-template-columns:1fr}
+  .ranking-section{padding:16px 0;border-bottom:0.5px solid var(--border)}
+  .list-section{padding:16px 0 100px}
 }
