@@ -241,9 +241,9 @@ body{overflow:hidden}
 .photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 @media(max-width:900px){.photo-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.photo-grid{grid-template-columns:repeat(2,1fr)}}
-.photo-item{aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;position:relative}
-.photo-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
-.photo-item:hover img{transform:scale(1.04)}
+.photo-item{aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;position:relative;background:var(--bg3)}
+.photo-item img{width:100%;height:100%;object-fit:contain;display:block}
+
 .photo-item-del{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
 .photo-item:hover .photo-item-del{display:flex}
 .photo-add-card{background:var(--bg3);border:1.5px dashed var(--border2);display:flex;align-items:center;justify-content:center;transition:all .2s;cursor:pointer}
