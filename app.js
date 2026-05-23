@@ -550,19 +550,37 @@ function renderPhoto(){
   }).join('');
 }
 async function onPhotoTabFile(e){
-  const files=Array.from(e.target.files);
+  const files=Array.from(e.target.files).slice(0,15);
   if(!files.length)return;
   e.target.value='';
-  showLoading(true);
   const today=new Date().toISOString().slice(0,10);
-  try{
-    await Promise.all(files.slice(0,15).map(async f=>{
-      const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=ev=>res(ev.target.result);r.readAsDataURL(f);});
-      const url=await uploadToDrive(dataUrl,'etc');
-      if(url)await appendRow(SHEETS.photo,[url,'',today,'']);
-    }));
-    toast(`사진 ${files.length}장 추가됐어요 ✓`);await loadAll();
-  }catch(err){toast('업로드 실패: '+err.message);}
+  const total=files.length;
+  let uploaded=0;
+  showLoading(true);
+  toast(`업로드 중... 0/${total}`);
+
+  // 1단계: Drive 업로드 병렬 처리 (개별 실패는 건너뜀)
+  const results=await Promise.allSettled(files.map(async f=>{
+    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=ev=>res(ev.target.result);r.readAsDataURL(f);});
+    const url=await uploadToDrive(dataUrl,'etc');
+    if(!url)throw new Error('drive upload failed');
+    toast(`업로드 중... ${++uploaded}/${total}`);
+    return url;
+  }));
+
+  // 2단계: 성공한 URL만 Sheets에 순차 저장 (동시 저장 시 충돌 방지)
+  const urls=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
+  const failCount=total-urls.length;
+  for(const url of urls){
+    try{await appendRow(SHEETS.photo,[url,'',today,'']);}
+    catch(err){console.error('시트 저장 실패:',err);}
+  }
+
+  // 3단계: 결과 안내
+  if(failCount===0)toast(`${total}장 모두 업로드 완료 ✓`);
+  else toast(`${total}장 중 ${urls.length}장 업로드 완료 (${failCount}장 실패)`);
+
+  await loadAll();
   showLoading(false);
 }
 
