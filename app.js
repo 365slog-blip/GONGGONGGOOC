@@ -671,7 +671,9 @@ function renderCultureGrid(){
 function renderCulture(){
   const fb=document.getElementById('culture-filter-bar');
   if(fb){
-    const types=['전체',...new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean))];
+    const CULTURE_FIXED=['영화','OTT','공연','전시','문화생활'];
+    const fromData=new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean));
+    const types=['전체',...CULTURE_FIXED,...[...fromData].filter(t=>!CULTURE_FIXED.includes(t))];
     fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
       +`<input class="filter-search" type="text" placeholder="검색..." oninput="if(!event.isComposing)setCultureSearch(this.value)" oncompositionend="setCultureSearch(this.value)">`;
     fb.querySelector('.filter-search').value=cultureSearch;
