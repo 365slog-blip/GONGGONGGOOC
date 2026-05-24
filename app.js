@@ -7,7 +7,7 @@ const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapi
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
 const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
-const APP_VERSION='v1.3.0';
+const APP_VERSION='v1.4.0';
 
 // ═══ STATE ═══
 let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
@@ -260,6 +260,19 @@ async function rotatePhoto(i){
   await new Promise(r=>setTimeout(r,300));
   photosData[i]=await rotateImage(await urlToDataUrl(photosData[i]));
   renderPhotoPreviews();
+}
+
+// ═══ HEIC 변환 + 파일→dataURL ═══
+async function fileToDataUrl(file){
+  const isHeic=/\.hei[cf]$/i.test(file.name)||/^image\/hei[cf]/i.test(file.type);
+  if(isHeic&&window.heic2any){
+    try{
+      const blob=await heic2any({blob:file,toType:'image/jpeg',quality:0.92});
+      const out=Array.isArray(blob)?blob[0]:blob;
+      return await new Promise(r=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(out);});
+    }catch(e){console.warn('heic2any 변환 실패',e);}
+  }
+  return new Promise(r=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(file);});
 }
 
 // ═══ EXIF 회전 보정 ═══
@@ -785,8 +798,7 @@ async function onPhotoTabFile(e){
 
   // 1단계: Drive 업로드 병렬 처리 (개별 실패는 건너뜀)
   const results=await Promise.allSettled(files.map(async f=>{
-    const raw=await new Promise(res=>{const r=new FileReader();r.onload=ev=>res(ev.target.result);r.readAsDataURL(f);});
-    const dataUrl=await fixOrientation(raw);
+    const dataUrl=await fixOrientation(await fileToDataUrl(f));
     const url=await uploadToDrive(dataUrl,'etc');
     if(!url)throw new Error('drive upload failed');
     toast(`업로드 중... ${++uploaded}/${total}`);
@@ -1448,17 +1460,15 @@ function renderPhotoPreviews(){
 function removePhoto(i){photosData.splice(i,1);renderPhotoPreviews();}
 function onHeroFile(e){
   const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=async ev=>{heroImgData=await fixOrientation(ev.target.result);renderHeroPreview();};
-  r.readAsDataURL(f);e.target.value='';
+  e.target.value='';
+  (async()=>{heroImgData=await fixOrientation(await fileToDataUrl(f));renderHeroPreview();})();
 }
 function onPhotosFile(e){
-  Array.from(e.target.files).slice(0,15-photosData.length).forEach(f=>{
-    const r=new FileReader();
-    r.onload=async ev=>{photosData.push(await fixOrientation(ev.target.result));renderPhotoPreviews();};
-    r.readAsDataURL(f);
-  });
+  const files=Array.from(e.target.files).slice(0,15-photosData.length);
   e.target.value='';
+  files.forEach(f=>{
+    (async()=>{photosData.push(await fixOrientation(await fileToDataUrl(f)));renderPhotoPreviews();})();
+  });
 }
 
 // ═══ SAVE ═══
