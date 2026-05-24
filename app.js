@@ -7,7 +7,7 @@ const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapi
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
 const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
-const APP_VERSION='v1.1.0';
+const APP_VERSION='v1.2.0';
 
 // ═══ STATE ═══
 let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
@@ -20,6 +20,7 @@ let todoFilter='전체';
 let criteriaOpen=false;
 let cultureFilter='전체';
 let cultureSearch='';
+let dateSearch='';
 let _pendingDraft=null;
 let photoSelectMode=false;
 const photoSelected=new Set();
@@ -599,12 +600,26 @@ function renderGourmet(){
 }
 
 // ═══ DATE / TRAVEL ═══
+function setDateSearch(val){dateSearch=val;renderDate();}
 function renderDate(){
+  const fb=document.getElementById('date-filter-bar');
+  if(fb){
+    const existingInput=fb.querySelector('.filter-search');
+    const hadFocus=existingInput&&document.activeElement===existingInput;
+    const cursorPos=hadFocus?existingInput.selectionStart:null;
+    fb.innerHTML=`<input class="filter-search" type="text" placeholder="장소, 키워드 검색..." value="${esc(dateSearch)}" oninput="if(!event.isComposing)setDateSearch(this.value)" oncompositionend="setDateSearch(this.value)">`;
+    if(hadFocus){const inp=fb.querySelector('.filter-search');if(inp){inp.focus();try{inp.setSelectionRange(cursorPos,cursorPos);}catch(e){}}}
+  }
   const grid=document.getElementById('date-grid');
-  const sorted=[...db.date].sort((a,b)=>{
+  let list=[...db.date].sort((a,b)=>{
     const da=a.시작날짜||a.날짜||'',db2=b.시작날짜||b.날짜||'';
     return sortByDate(db2,da);
   });
+  if(dateSearch){
+    const q=dateSearch.toLowerCase();
+    list=list.filter(i=>(i.장소||'').toLowerCase().includes(q)||(i.한줄평||'').toLowerCase().includes(q)||(i['해시태그_위치']||'').toLowerCase().includes(q)||(i['해시태그_장소']||'').toLowerCase().includes(q)||(i['해시태그_기념일']||'').toLowerCase().includes(q));
+  }
+  const sorted=list;
   if(!sorted.length){grid.innerHTML=emptyState('📍','여행 기록을 추가해보세요!');return;}
   grid.innerHTML=sorted.map(item=>{
     const faved=isFaved('date',item._row);
@@ -634,7 +649,7 @@ function renderCulture(){
     const hadFocus=existingInput&&document.activeElement===existingInput;
     const cursorPos=hadFocus?existingInput.selectionStart:null;
     fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
-      +`<input class="filter-search" type="text" placeholder="검색..." value="${esc(cultureSearch)}" oninput="setCultureSearch(this.value)">`;
+      +`<input class="filter-search" type="text" placeholder="검색..." value="${esc(cultureSearch)}" oninput="if(!event.isComposing)setCultureSearch(this.value)" oncompositionend="setCultureSearch(this.value)">`;
     if(hadFocus){const inp=fb.querySelector('.filter-search');if(inp){inp.focus();try{inp.setSelectionRange(cursorPos,cursorPos);}catch(e){}}}
   }
   const grid=document.getElementById('culture-grid');
@@ -1223,7 +1238,7 @@ function toggleCultureType(type,el){
   const curEtc=document.getElementById('cf-기타')?.value||'';
   renderCultureExtraFields();
   setTimeout(()=>{
-    const isMovie=cultureTypes.has('영화');
+    const isMovie=cultureTypes.has('영화')||cultureTypes.has('OTT');
     if(document.getElementById('cf-장르'))document.getElementById('cf-장르').value=curGenre;
     if(isMovie){
       if(document.getElementById('cf-국가'))document.getElementById('cf-국가').value=curNation;
@@ -1240,8 +1255,8 @@ function toggleCultureType(type,el){
 }
 function renderCultureExtraFields(){
   const c=document.getElementById('culture-extra-fields');if(!c)return;
-  const isMovie=cultureTypes.has('영화');
-  const hasNonMovie=[...cultureTypes].some(t=>t!=='영화');
+  const isMovie=cultureTypes.has('영화')||cultureTypes.has('OTT');
+  const hasNonMovie=[...cultureTypes].some(t=>t!=='영화'&&t!=='OTT');
   if(isMovie){
     const hOpts='<option value="">시</option>'+Array.from({length:24},(_,i)=>`<option value="${String(i).padStart(2,'0')}">${i}시</option>`).join('');
     const mOpts='<option value="">분</option>'+Array.from({length:12},(_,i)=>`<option value="${String(i*5).padStart(2,'0')}">${String(i*5).padStart(2,'0')}분</option>`).join('');
@@ -1321,6 +1336,7 @@ function openForm(type,item=null,prefillName=''){
     html+=`<div class="fg"><label class="flabel">해시태그 (중복 선택 가능)</label>
       <div class="culture-type-wrap">
         <button type="button" class="culture-type-btn" data-type="영화" onclick="toggleCultureType('영화',this)">🎬 영화</button>
+        <button type="button" class="culture-type-btn" data-type="OTT" onclick="toggleCultureType('OTT',this)">📺 OTT</button>
         <button type="button" class="culture-type-btn" data-type="공연" onclick="toggleCultureType('공연',this)">🎭 공연</button>
         <button type="button" class="culture-type-btn" data-type="전시" onclick="toggleCultureType('전시',this)">🎨 전시</button>
         <button type="button" class="culture-type-btn" data-type="문화생활" onclick="toggleCultureType('문화생활',this)">✨ 문화생활</button>
@@ -1477,7 +1493,7 @@ async function saveRecord(){
       curFormItem?._row?await updateRow(SHEETS.date,curFormItem._row,row):await appendRow(SHEETS.date,row);
     }else if(type==='culture'){
       const hashType=[...cultureTypes].join(',');
-      const isMovie=cultureTypes.has('영화');
+      const isMovie=cultureTypes.has('영화')||cultureTypes.has('OTT');
       const hashGenre=document.getElementById('cf-장르')?.value?.trim()||'';
       const hashLoc=isMovie?(document.getElementById('cf-국가')?.value?.trim()||''):(document.getElementById('cf-위치')?.value?.trim()||'');
       const hashOther=isMovie?(document.getElementById('cf-감독')?.value?.trim()||''):(document.getElementById('cf-기타')?.value?.trim()||'');
