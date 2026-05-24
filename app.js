@@ -600,17 +600,10 @@ function renderGourmet(){
 }
 
 // ═══ DATE / TRAVEL ═══
-function setDateSearch(val){dateSearch=val;renderDate();}
-function renderDate(){
-  const fb=document.getElementById('date-filter-bar');
-  if(fb){
-    const existingInput=fb.querySelector('.filter-search');
-    const hadFocus=existingInput&&document.activeElement===existingInput;
-    const cursorPos=hadFocus?existingInput.selectionStart:null;
-    fb.innerHTML=`<input class="filter-search" type="text" placeholder="장소, 키워드 검색..." value="${esc(dateSearch)}" oninput="if(!event.isComposing)setDateSearch(this.value)" oncompositionend="setDateSearch(this.value)">`;
-    if(hadFocus){const inp=fb.querySelector('.filter-search');if(inp){inp.focus();try{inp.setSelectionRange(cursorPos,cursorPos);}catch(e){}}}
-  }
+function setDateSearch(val){dateSearch=val;renderDateGrid();}
+function renderDateGrid(){
   const grid=document.getElementById('date-grid');
+  if(!grid)return;
   let list=[...db.date].sort((a,b)=>{
     const da=a.시작날짜||a.날짜||'',db2=b.시작날짜||b.날짜||'';
     return sortByDate(db2,da);
@@ -619,9 +612,8 @@ function renderDate(){
     const q=dateSearch.toLowerCase();
     list=list.filter(i=>(i.장소||'').toLowerCase().includes(q)||(i.한줄평||'').toLowerCase().includes(q)||(i['해시태그_위치']||'').toLowerCase().includes(q)||(i['해시태그_장소']||'').toLowerCase().includes(q)||(i['해시태그_기념일']||'').toLowerCase().includes(q));
   }
-  const sorted=list;
-  if(!sorted.length){grid.innerHTML=emptyState('📍','여행 기록을 추가해보세요!');return;}
-  grid.innerHTML=sorted.map(item=>{
+  if(!list.length){grid.innerHTML=emptyState('📍','여행 기록을 추가해보세요!');return;}
+  grid.innerHTML=list.map(item=>{
     const faved=isFaved('date',item._row);
     const dateStr=item.시작날짜||item.날짜||'';
     const guibn=item.구분||'';
@@ -636,23 +628,21 @@ function renderDate(){
     </div>`;
   }).join('');
 }
+function renderDate(){
+  const fb=document.getElementById('date-filter-bar');
+  if(fb){
+    fb.innerHTML=`<input class="filter-search" type="text" placeholder="장소, 키워드 검색..." oninput="if(!event.isComposing)setDateSearch(this.value)" oncompositionend="setDateSearch(this.value)">`;
+    fb.querySelector('.filter-search').value=dateSearch;
+  }
+  renderDateGrid();
+}
 
 // ═══ CULTURE ═══
 function setCultureFilter(f){cultureFilter=f;renderCulture();}
-function setCultureSearch(val){cultureSearch=val;renderCulture();}
-function renderCulture(){
-  // filter bar
-  const fb=document.getElementById('culture-filter-bar');
-  if(fb){
-    const types=['전체',...new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean))];
-    const existingInput=fb.querySelector('.filter-search');
-    const hadFocus=existingInput&&document.activeElement===existingInput;
-    const cursorPos=hadFocus?existingInput.selectionStart:null;
-    fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
-      +`<input class="filter-search" type="text" placeholder="검색..." value="${esc(cultureSearch)}" oninput="if(!event.isComposing)setCultureSearch(this.value)" oncompositionend="setCultureSearch(this.value)">`;
-    if(hadFocus){const inp=fb.querySelector('.filter-search');if(inp){inp.focus();try{inp.setSelectionRange(cursorPos,cursorPos);}catch(e){}}}
-  }
+function setCultureSearch(val){cultureSearch=val;renderCultureGrid();}
+function renderCultureGrid(){
   const grid=document.getElementById('culture-grid');
+  if(!grid)return;
   let list=cultureFilter==='전체'?[...db.culture]:[...db.culture].filter(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim()).includes(cultureFilter));
   if(cultureSearch){
     const q=cultureSearch.toLowerCase();
@@ -677,6 +667,16 @@ function renderCulture(){
       </div>
     </div>`;
   }).join('');
+}
+function renderCulture(){
+  const fb=document.getElementById('culture-filter-bar');
+  if(fb){
+    const types=['전체',...new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean))];
+    fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
+      +`<input class="filter-search" type="text" placeholder="검색..." oninput="if(!event.isComposing)setCultureSearch(this.value)" oncompositionend="setCultureSearch(this.value)">`;
+    fb.querySelector('.filter-search').value=cultureSearch;
+  }
+  renderCultureGrid();
 }
 
 // ═══ PHOTO (그리드 직접 표시, + 카드) ═══
