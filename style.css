@@ -25,7 +25,7 @@ body{overflow:hidden}
 .screen.hidden{display:none}
 .heart-logo{font-size:56px;animation:hb 2.4s ease-in-out infinite}
 @keyframes hb{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.08)}70%{transform:scale(1)}}
-.screen-title{font-family:var(--font-display);font-size:26px;font-weight:500}
+.screen-title{font-family:var(--font-body);font-size:26px;font-weight:500}
 .screen-sub{font-size:13px;color:var(--text3)}
 .google-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#3c3c3c;border:none;border-radius:14px;padding:14px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);box-shadow:0 2px 12px rgba(0,0,0,.15);width:260px;justify-content:center;transition:box-shadow .2s}
 .google-btn:hover{box-shadow:0 4px 20px rgba(0,0,0,.25)}
@@ -287,6 +287,7 @@ body{overflow:hidden}
 @keyframes popIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .popup-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:0.5px solid var(--border)}
 .popup-title{font-family:var(--font-display);font-size:19px;font-weight:500}
+#form-title{font-family:var(--font-body)}
 .popup-hdr-btns{display:flex;gap:8px;align-items:center}
 .popup-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:22px;padding:2px;line-height:1}
 .popup-close:hover{color:var(--text)}

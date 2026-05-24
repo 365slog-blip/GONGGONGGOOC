@@ -7,7 +7,7 @@ const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapi
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
 const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
-const APP_VERSION='v1.2.0';
+const APP_VERSION='v1.3.0';
 
 // ═══ STATE ═══
 let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
@@ -631,7 +631,7 @@ function renderDateGrid(){
 function renderDate(){
   const fb=document.getElementById('date-filter-bar');
   if(fb){
-    fb.innerHTML=`<input class="filter-search" type="text" placeholder="장소, 키워드 검색..." oninput="if(!event.isComposing)setDateSearch(this.value)" oncompositionend="setDateSearch(this.value)">`;
+    fb.innerHTML=`<input class="filter-search" type="text" placeholder="장소, 키워드 검색..." oninput="setDateSearch(this.value)">`;
     fb.querySelector('.filter-search').value=dateSearch;
   }
   renderDateGrid();
@@ -675,7 +675,7 @@ function renderCulture(){
     const fromData=new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean));
     const types=['전체',...CULTURE_FIXED,...[...fromData].filter(t=>!CULTURE_FIXED.includes(t))];
     fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
-      +`<input class="filter-search" type="text" placeholder="검색..." oninput="if(!event.isComposing)setCultureSearch(this.value)" oncompositionend="setCultureSearch(this.value)">`;
+      +`<input class="filter-search" type="text" placeholder="검색..." oninput="setCultureSearch(this.value)">`;
     fb.querySelector('.filter-search').value=cultureSearch;
   }
   renderCultureGrid();
@@ -1416,6 +1416,7 @@ function openForm(type,item=null,prefillName=''){
   renderHeroPreview();renderPhotoPreviews();
   setTimeout(()=>document.querySelectorAll('.ftarea').forEach(autoResize),0);
   if(draft)restoreDraft(draft,type);
+  document.getElementById('form-body').scrollTop=0;
   document.getElementById('form-overlay').classList.add('open');
 }
 
