@@ -28,7 +28,7 @@
     <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285f4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34a853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#fbbc05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#ea4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.3z"/></svg>
     Google 계정으로 시작하기
   </button>
-  <div class="app-version">v1.4.1</div>
+  <div class="app-version">v1.5.0</div>
 </div>
 
 <!-- PIN -->
@@ -71,6 +71,7 @@
     <div class="sidebar-item" onclick="goPage('gourmet')">✨ 고오급</div>
     <div class="sidebar-item" onclick="goPage('date')">📍 여행</div>
     <div class="sidebar-item" onclick="goPage('culture')">🎬 문화생활</div>
+    <div class="sidebar-item" onclick="goPage('worldcup')">🏆 월드컵</div>
     <div class="sidebar-item" onclick="goPage('photo')">🖼️ 사진</div>
     <div class="sidebar-item" onclick="goPage('fav')">❤️ 즐겨찾기</div>
     <div class="sidebar-item" onclick="goPage('todo')">📝 투두</div>
@@ -88,6 +89,7 @@
       <button class="ntab" id="nt-gourmet" onclick="goPage('gourmet')">✨ 고오급</button>
       <button class="ntab" id="nt-date" onclick="goPage('date')">📍 여행</button>
       <button class="ntab" id="nt-culture" onclick="goPage('culture')">🎬 문화생활</button>
+      <button class="ntab" id="nt-worldcup" onclick="goPage('worldcup')">🏆 월드컵</button>
       <button class="ntab" id="nt-photo" onclick="goPage('photo')">🖼️ 사진</button>
       <button class="ntab" id="nt-fav" onclick="goPage('fav')">❤️ 즐겨찾기</button>
       <button class="ntab" id="nt-todo" onclick="goPage('todo')">📝 투두</button>
@@ -125,6 +127,7 @@
           <div class="home-cat" onclick="goPage('photo')"><div class="home-cat-icon">🖼️</div><div class="home-cat-name">사진</div><div class="home-cat-sub">Photo Album</div></div>
           <div class="home-cat" onclick="goPage('fav')"><div class="home-cat-icon">❤️</div><div class="home-cat-name">즐겨찾기</div><div class="home-cat-sub">Favorites</div></div>
           <div class="home-cat" onclick="goPage('todo')"><div class="home-cat-icon">📝</div><div class="home-cat-name">투두리스트</div><div class="home-cat-sub">To-Do &amp; Memo</div></div>
+          <div class="home-cat" onclick="goPage('worldcup')"><div class="home-cat-icon">🏆</div><div class="home-cat-name">월드컵</div><div class="home-cat-sub">Ideal Type Worldcup</div></div>
         </div>
       </div>
     </div>
@@ -254,6 +257,17 @@
       </div>
     </div>
 
+    <!-- WORLDCUP -->
+    <div class="page" id="page-worldcup">
+      <div class="page-hdr">
+        <div class="page-hdr-top">
+          <div><div class="page-title">Ideal Type Worldcup</div><div class="page-sub">이상형 월드컵</div></div>
+          <button class="page-action-btn" onclick="openWcForm()">＋ 만들기</button>
+        </div>
+      </div>
+      <div class="wc-grid-wrap"><div class="wc-grid" id="wc-grid"></div></div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="page" id="page-settings">
       <div class="page-hdr">
@@ -279,7 +293,7 @@
           <div class="settings-section-title">계정</div>
           <button class="settings-logout-btn" onclick="doLogout()">로그아웃</button>
         </div>
-        <div class="settings-version">버전 v1.4.1</div>
+        <div class="settings-version">버전 v1.5.0</div>
       </div>
     </div>
   </div>
@@ -336,6 +350,48 @@
         <button class="confirm-ok" id="draft-restore-btn" style="background:var(--accent);color:#1a1816">복원하기</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- WORLDCUP FORM POPUP -->
+<div class="popup-overlay" id="wc-form-overlay" onclick="if(event.target===this)closeWcForm()">
+  <div class="popup form-popup" onclick="event.stopPropagation()">
+    <div class="popup-hdr">
+      <div class="popup-title" id="wc-form-title">새 월드컵 만들기</div>
+      <button class="popup-close" onclick="closeWcForm()">✕</button>
+    </div>
+    <div class="popup-body"><div class="form-body-inner" id="wc-form-body"></div></div>
+  </div>
+</div>
+
+<!-- WORLDCUP DETAIL POPUP -->
+<div class="popup-overlay" id="wc-detail-overlay" onclick="if(event.target===this)closeWcDetail()">
+  <div class="popup" onclick="event.stopPropagation()">
+    <div class="popup-hdr">
+      <div class="popup-title" id="wc-detail-title"></div>
+      <div class="popup-hdr-btns">
+        <button class="popup-action-btn" onclick="editWcContent()">수정</button>
+        <button class="popup-action-btn danger" onclick="deleteWcContent()">삭제</button>
+        <button class="popup-close" onclick="closeWcDetail()">✕</button>
+      </div>
+    </div>
+    <div class="popup-body" id="wc-detail-body"></div>
+  </div>
+</div>
+
+<!-- WORLDCUP GAME (fullscreen) -->
+<div id="wc-game-overlay" class="wc-game-overlay">
+  <div id="wc-game-inner"></div>
+</div>
+
+<!-- WORLDCUP RESULT POPUP -->
+<div class="popup-overlay wc-result-overlay" id="wc-result-overlay" onclick="if(event.target===this)closeWcResult()">
+  <div class="popup" onclick="event.stopPropagation()">
+    <div class="popup-hdr">
+      <div class="popup-title">결과 발표 🏆</div>
+      <button class="popup-close" onclick="closeWcResult()">✕</button>
+    </div>
+    <div class="popup-body" id="wc-result-body"></div>
   </div>
 </div>
 

@@ -5,12 +5,12 @@ const API_KEY='AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
 const CLIENT_ID='616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleusercontent.com';
 const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
-const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
+const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정',wcList:'월드컵_목록',wcResult:'월드컵_결과'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
-const APP_VERSION='v1.4.1';
+const APP_VERSION='v1.5.0';
 
 // ═══ STATE ═══
-let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
+let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[],wcList:[],wcResult:[]};
 let isLight=false,authed=false,pinVal='';
 let tokenClient,gapiLoaded=false,gisLoaded=false;
 let curFormType=null,curFormItem=null,heroImgData=null,photosData=[];
@@ -343,7 +343,7 @@ async function uploadToDrive(base64,folderKey='etc'){
 
 // ═══ RENDER ALL ═══
 function renderAll(){
-  renderMatzipList();renderGourmet();renderDate();renderCulture();renderPhoto();
+  renderMatzipList();renderGourmet();renderDate();renderCulture();renderPhoto();renderWorldcup();
   loadCriteriaFromSheet();renderTicker();
   if(document.getElementById('page-todo')?.classList.contains('active'))renderTodo();
   if(document.getElementById('page-fav')?.classList.contains('active'))renderFavorites();
@@ -1587,6 +1587,339 @@ function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').repla
 function openLbox(src){if(!src)return;document.getElementById('lbox-img').src=src;document.getElementById('lbox').classList.add('open');}
 function showLoading(show){document.getElementById('loading-overlay').classList.toggle('show',show);}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2500);}
+
+// ═══ WORLDCUP ═══
+let wcDetailId=null,wcFormId=null,wcFormItems=[],wcGame=null;
+
+function wcGetContents(){
+  const map=new Map();
+  for(const row of db.wcList){
+    const id=row['컨텐츠ID'];if(!id)continue;
+    if(!map.has(id))map.set(id,{id,title:row['컨텐츠제목']||'',items:[]});
+    map.get(id).items.push({name:row['이름']||'',img:normalizeImgUrl(row['사진URL']||''),_row:row._row});
+  }
+  return[...map.values()];
+}
+function wcLatestResult(cid,participant){
+  const r=db.wcResult.filter(x=>x['컨텐츠ID']===cid&&x['참가자']===participant);
+  return r.length?r.sort((a,b)=>new Date(b['날짜'])-new Date(a['날짜']))[0]:null;
+}
+
+function renderWorldcup(){
+  const grid=document.getElementById('wc-grid');if(!grid)return;
+  const contents=wcGetContents();
+  if(!contents.length){grid.innerHTML=emptyState('🏆','월드컵 컨텐츠를 만들어보세요!');return;}
+  const participants=['공주','하이니','함께'];
+  grid.innerHTML=contents.map(c=>{
+    const n=c.items.length;
+    const pHtml=participants.map(p=>{
+      const res=wcLatestResult(c.id,p);
+      if(!res)return`<div class="wc-p-slot"><div class="wc-p-label">${p}</div><div class="wc-p-empty">-</div></div>`;
+      const img=res['1등사진']?`<img src="${esc(res['1등사진'])}" class="wc-p-img" alt="" loading="lazy">`:
+        `<div class="wc-p-ph">?</div>`;
+      return`<div class="wc-p-slot"><div class="wc-p-label">${p}</div>${img}<div class="wc-p-name">${esc(res['1등이름'])}</div></div>`;
+    }).join('');
+    const recent=db.wcResult.filter(r=>r['컨텐츠ID']===c.id).sort((a,b)=>new Date(b['날짜'])-new Date(a['날짜']))[0];
+    const runner=[recent?.['2등이름'],recent?.['3등이름'],recent?.['4등이름']].filter(Boolean);
+    const runnerHtml=runner.map(name=>{
+      const it=c.items.find(i=>i.name===name);
+      return it?.img?`<img src="${esc(it.img)}" class="wc-runner-img" alt="" loading="lazy">`:
+        `<div class="wc-runner-ph">?</div>`;
+    }).join('');
+    return`<div class="wc-card" onclick="openWcDetail('${esc(c.id)}')">
+      <div class="wc-card-hdr"><div class="wc-card-title">${esc(c.title)}</div><div class="wc-card-meta">${n}개 항목 · ${n}강 월드컵</div></div>
+      <div class="wc-card-participants">${pHtml}</div>
+      ${runner.length?`<div class="wc-card-runner"><span class="wc-runner-label">2~4위</span><div class="wc-runner-imgs">${runnerHtml}</div></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ─── DETAIL ───
+function openWcDetail(cid){
+  wcDetailId=cid;
+  const c=wcGetContents().find(x=>x.id===cid);if(!c)return;
+  document.getElementById('wc-detail-title').textContent=c.title;
+  const participants=['공주','하이니','함께'];
+  document.getElementById('wc-detail-body').innerHTML=
+    `<div class="wc-d-meta">${c.items.length}개 항목 · ${c.items.length}강 월드컵</div>`+
+    participants.map(p=>{
+      const res=wcLatestResult(cid,p);
+      let winnerHtml=`<div class="wc-d-no-result">미진행</div>`;
+      if(res){
+        const img=res['1등사진']?`<img src="${esc(res['1등사진'])}" class="wc-d-winner-img" alt="">`:
+          `<div class="wc-d-winner-ph">?</div>`;
+        winnerHtml=`<div class="wc-d-winner">${img}<span>${esc(res['1등이름'])}</span></div>`;
+      }
+      return`<div class="wc-d-row">
+        <div class="wc-d-p-wrap"><div class="wc-d-pname">${p}</div>${winnerHtml}</div>
+        <button class="wc-start-btn" onclick="event.stopPropagation();startWcGame('${esc(cid)}','${p}')">게임 시작</button>
+      </div>`;
+    }).join('');
+  document.getElementById('wc-detail-overlay').classList.add('open');
+}
+function closeWcDetail(){document.getElementById('wc-detail-overlay').classList.remove('open');wcDetailId=null;}
+function editWcContent(){const cid=wcDetailId;closeWcDetail();openWcForm(cid);}
+function deleteWcContent(){
+  const cid=wcDetailId;if(!cid)return;
+  const c=wcGetContents().find(x=>x.id===cid);if(!c)return;
+  showConfirm(async()=>{
+    showLoading(true);
+    try{
+      const listRows=db.wcList.filter(r=>r['컨텐츠ID']===cid).map(r=>r._row).sort((a,b)=>b-a);
+      for(const row of listRows){await deleteSheetRow(SHEETS.wcList,row);await new Promise(r=>setTimeout(r,150));}
+      const resRows=db.wcResult.filter(r=>r['컨텐츠ID']===cid).map(r=>r._row).sort((a,b)=>b-a);
+      for(const row of resRows){await deleteSheetRow(SHEETS.wcResult,row);await new Promise(r=>setTimeout(r,150));}
+      closeWcDetail();toast('삭제됐어요 ✓');await loadAll();
+    }catch(e){toast('삭제 실패: '+e.message);}
+    showLoading(false);
+  },`"${c.title}" 월드컵과 모든 결과가 삭제됩니다.`);
+}
+
+// ─── FORM ───
+function openWcForm(cid=null){
+  wcFormId=cid;wcFormItems=[];
+  const c=cid?wcGetContents().find(x=>x.id===cid):null;
+  const draftKey='wc_draft'+(cid?'_'+cid:'');
+  const initItems=c?c.items.map(i=>({name:i.name,imgData:i.img})):[{name:'',imgData:''}];
+  const raw=localStorage.getItem(draftKey);
+  if(raw){
+    try{
+      const d=JSON.parse(raw);
+      showDraftRestorePrompt(
+        ()=>{wcFormItems=d.items||[];_openWcFormPopup(cid,d.title||'');},
+        ()=>{localStorage.removeItem(draftKey);wcFormItems=initItems;_openWcFormPopup(cid,'');}
+      );return;
+    }catch(e){localStorage.removeItem(draftKey);}
+  }
+  wcFormItems=initItems;_openWcFormPopup(cid,'');
+}
+function _openWcFormPopup(cid,draftTitle){
+  document.getElementById('wc-form-title').textContent=cid?'월드컵 수정':'새 월드컵 만들기';
+  renderWcForm();
+  document.getElementById('wc-form-overlay').classList.add('open');
+  if(draftTitle)setTimeout(()=>{const el=document.getElementById('wc-f-title');if(el)el.value=draftTitle;},0);
+}
+function closeWcForm(){document.getElementById('wc-form-overlay').classList.remove('open');wcFormId=null;wcFormItems=[];}
+function renderWcForm(){
+  const body=document.getElementById('wc-form-body');if(!body)return;
+  const existingTitle=wcFormId?wcGetContents().find(x=>x.id===wcFormId)?.title||'':'';
+  let html=`<div class="fg"><label class="flabel">컨텐츠 제목</label><input class="finput" id="wc-f-title" type="text" placeholder="예: 최애 음식" value="${esc(existingTitle)}" autocomplete="off" oninput="_wcSyncDraft()"></div>`;
+  html+=`<div class="fg"><label class="flabel">항목 <span style="color:var(--text3);font-weight:400">${wcFormItems.length}개</span></label>`;
+  html+=`<div id="wc-items-list">`;
+  wcFormItems.forEach((item,i)=>{
+    const prev=item.imgData?`<img src="${esc(item.imgData)}" class="wc-item-thumb" alt="" onerror="this.style.display='none'">`:
+      `<div class="wc-item-thumb-ph">📷</div>`;
+    html+=`<div class="wc-item-row" id="wc-irow-${i}">
+      <div class="wc-item-thumb-wrap" onclick="document.getElementById('wc-ifile-${i}').click()">
+        ${prev}<input type="file" id="wc-ifile-${i}" accept="image/*" style="display:none" onchange="onWcItemFile(${i},this)">
+      </div>
+      <input class="finput wc-item-name-input" id="wc-iname-${i}" type="text" placeholder="이름" value="${esc(item.name)}" oninput="wcFormItems[${i}].name=this.value;_wcSyncDraft()" autocomplete="off">
+      <button class="wc-item-del-btn" onclick="removeWcFormItem(${i})">✕</button>
+    </div>`;
+  });
+  html+=`</div><button class="wc-add-item-btn" onclick="addWcFormItem()">＋ 항목 추가</button></div>`;
+  html+=`<div class="form-footer">
+    <button class="form-cancel-btn" onclick="_wcSyncDraft();toast('임시저장됐어요')">임시저장</button>
+    <button class="form-submit-btn" onclick="saveWcForm()">저장하기</button>
+  </div>`;
+  body.innerHTML=html;
+}
+function _wcSyncDraft(){
+  try{
+    const title=document.getElementById('wc-f-title')?.value||'';
+    wcFormItems.forEach((_,i)=>{const el=document.getElementById('wc-iname-'+i);if(el)wcFormItems[i].name=el.value;});
+    localStorage.setItem('wc_draft'+(wcFormId?'_'+wcFormId:''),JSON.stringify({title,items:wcFormItems}));
+  }catch(e){}
+}
+function addWcFormItem(){
+  wcFormItems.push({name:'',imgData:''});renderWcForm();
+  setTimeout(()=>document.getElementById('wc-items-list')?.lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function removeWcFormItem(i){wcFormItems.splice(i,1);renderWcForm();_wcSyncDraft();}
+function onWcItemFile(i,input){
+  const f=input.files[0];if(!f)return;input.value='';
+  (async()=>{
+    const data=await fixOrientation(await fileToDataUrl(f));
+    wcFormItems[i].imgData=data;
+    const wrap=document.getElementById('wc-irow-'+i)?.querySelector('.wc-item-thumb-wrap');
+    if(wrap){const ph=wrap.querySelector('.wc-item-thumb-ph');const img=wrap.querySelector('.wc-item-thumb');
+      if(ph)ph.outerHTML=`<img src="${data}" class="wc-item-thumb" alt="">`;else if(img)img.src=data;}
+    _wcSyncDraft();
+  })();
+}
+async function saveWcForm(){
+  const title=document.getElementById('wc-f-title')?.value?.trim()||'';
+  if(!title){toast('제목을 입력해주세요');return;}
+  wcFormItems.forEach((_,i)=>{const el=document.getElementById('wc-iname-'+i);if(el)wcFormItems[i].name=el.value.trim();});
+  const valid=wcFormItems.filter(i=>i.name||i.imgData);
+  if(valid.length<2){toast('항목을 2개 이상 추가해주세요');return;}
+  showLoading(true);
+  try{
+    const cid=wcFormId||('wc_'+Date.now());
+    const uploaded=[];
+    for(const item of valid){
+      let url=item.imgData;
+      if(url&&url.startsWith('data:'))url=await uploadToDrive(url,'etc');
+      uploaded.push({name:item.name,img:url||''});
+    }
+    if(wcFormId){
+      const old=db.wcList.filter(r=>r['컨텐츠ID']===wcFormId).map(r=>r._row).sort((a,b)=>b-a);
+      for(const row of old){await deleteSheetRow(SHEETS.wcList,row);await new Promise(r=>setTimeout(r,150));}
+    }
+    for(const item of uploaded){await appendRow(SHEETS.wcList,[cid,title,item.name,item.img]);await new Promise(r=>setTimeout(r,100));}
+    localStorage.removeItem('wc_draft'+(wcFormId?'_'+wcFormId:''));
+    toast('저장됐어요 ✓');closeWcForm();await loadAll();
+  }catch(e){toast('저장 실패: '+e.message);console.error(e);}
+  showLoading(false);
+}
+
+// ─── GAME ───
+function wcShuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function wcBuildMatches(items){const m=[];for(let i=0;i<items.length;i+=2)m.push([items[i],i+1<items.length?items[i+1]:null]);return m;}
+function wcSaveState(){if(wcGame)localStorage.setItem('wc_g_'+wcGame.cid+'_'+wcGame.participant,JSON.stringify(wcGame));}
+function wcClearState(cid,p){localStorage.removeItem('wc_g_'+cid+'_'+p);}
+
+function startWcGame(cid,participant){
+  const raw=localStorage.getItem('wc_g_'+cid+'_'+participant);
+  if(raw){
+    try{
+      const state=JSON.parse(raw);
+      showDraftRestorePrompt(
+        ()=>{wcGame=state;closeWcDetail();renderWcGameScreen();document.getElementById('wc-game-overlay').classList.add('open');},
+        ()=>{wcClearState(cid,participant);closeWcDetail();_initWcGame(cid,participant);}
+      );
+      // 팝업 텍스트 게임 재개용으로 교체
+      const ov=document.getElementById('draft-restore-overlay');
+      ov.querySelector('.confirm-icon').textContent='🏆';
+      ov.querySelector('.confirm-msg').innerHTML='이어서 진행하시겠어요?<br><span style="font-size:13px;color:var(--text3)">이전에 진행하던 게임이 있어요.</span>';
+      document.getElementById('draft-restore-btn').textContent='이어서 하기';
+      document.getElementById('draft-discard-btn').textContent='처음부터';
+      // 닫힐 때 원문 복원
+      const origRestore=()=>{
+        ov.querySelector('.confirm-icon').textContent='📝';
+        ov.querySelector('.confirm-msg').innerHTML='임시저장된 내용이 있어요.<br><span style="font-size:13px;color:var(--text3)">이전에 작성하던 내용을 복원할까요?</span>';
+        document.getElementById('draft-restore-btn').textContent='복원하기';
+        document.getElementById('draft-discard-btn').textContent='새로 작성';
+      };
+      const rBtn=document.getElementById('draft-restore-btn');
+      const dBtn=document.getElementById('draft-discard-btn');
+      const origRClick=rBtn.onclick,origDClick=dBtn.onclick;
+      rBtn.onclick=()=>{origRestore();origRClick&&origRClick.call(this);};
+      dBtn.onclick=()=>{origRestore();origDClick&&origDClick.call(this);};
+      return;
+    }catch(e){localStorage.removeItem('wc_g_'+cid+'_'+participant);}
+  }
+  closeWcDetail();_initWcGame(cid,participant);
+}
+function _initWcGame(cid,participant){
+  const c=wcGetContents().find(x=>x.id===cid);if(!c){toast('컨텐츠를 찾을 수 없어요');return;}
+  const shuffled=wcShuffle(c.items);
+  wcGame={cid,contentTitle:c.title,participant,roundItems:shuffled,matches:wcBuildMatches(shuffled),matchIdx:0,winners:[],roundLosersHistory:[],curLosers:[]};
+  wcSaveState();renderWcGameScreen();
+  document.getElementById('wc-game-overlay').classList.add('open');
+}
+function wcRoundLabel(n){if(n===2)return'결승';if(n<=4)return'4강';return n+'강';}
+function renderWcGameScreen(){
+  const g=wcGame;if(!g)return;
+  const wrap=document.getElementById('wc-game-inner');if(!wrap)return;
+  const {roundItems,matches,matchIdx}=g;
+  const n=roundItems.length,totalM=matches.length;
+  const lostSoFar=g.roundLosersHistory.reduce((s,r)=>s+r.length,0)+g.curLosers.length;
+  const totalItems=g.roundItems.length+lostSoFar+g.winners.length;
+  const pct=Math.round(lostSoFar/Math.max(1,totalItems-1)*100);
+  const match=matches[matchIdx];if(!match)return;
+  const[left,right]=match;
+  const slot=(item,idx)=>{
+    if(!item)return`<div class="wc-bye-slot" onclick="wcPick(${idx})"><div class="wc-bye-text">부전승</div></div>`;
+    const img=item.img?`<img src="${esc(item.img)}" class="wc-slot-img" alt="" loading="lazy">`:
+      `<div class="wc-slot-img-ph">?</div>`;
+    return`<div class="wc-slot" onclick="wcPick(${idx})">${img}<div class="wc-slot-name">${esc(item.name)}</div></div>`;
+  };
+  wrap.innerHTML=`
+    <div class="wc-gh">
+      <button class="wc-close-btn" onclick="wcGameClose()">✕</button>
+      <div class="wc-gh-info">
+        <div class="wc-gh-title">${esc(g.contentTitle)}</div>
+        <div class="wc-gh-round">${wcRoundLabel(n)} ${matchIdx+1}/${totalM} · ${esc(g.participant)}</div>
+      </div>
+    </div>
+    <div class="wc-prog-wrap"><div class="wc-prog-bar" style="width:${pct}%"></div></div>
+    <div class="wc-arena">
+      ${slot(left,0)}
+      <div class="wc-vs-badge">VS</div>
+      ${slot(right,1)}
+    </div>`;
+}
+function wcPick(side){
+  if(!wcGame)return;
+  const match=wcGame.matches[wcGame.matchIdx];if(!match)return;
+  const[left,right]=match;
+  const winner=side===0?left:right,loser=side===0?right:left;
+  if(winner)wcGame.winners.push(winner);
+  if(loser)wcGame.curLosers.push(loser);
+  wcGame.matchIdx++;
+  if(wcGame.matchIdx>=wcGame.matches.length){
+    wcGame.roundLosersHistory.unshift([...wcGame.curLosers]);
+    wcGame.curLosers=[];
+    if(wcGame.winners.length<=1){
+      wcGame.result=wcGame.winners[0]||null;
+      wcSaveState();
+      document.getElementById('wc-game-overlay').classList.remove('open');
+      showWcResult();return;
+    }
+    wcGame.roundItems=wcGame.winners;
+    wcGame.matches=wcBuildMatches(wcShuffle(wcGame.roundItems));
+    wcGame.matchIdx=0;wcGame.winners=[];
+  }
+  wcSaveState();renderWcGameScreen();
+}
+function wcGameClose(){document.getElementById('wc-game-overlay').classList.remove('open');}
+
+// ─── RESULT ───
+function showWcResult(){
+  const g=wcGame;if(!g||!g.result)return;
+  const h=g.roundLosersHistory;
+  const place2=h[0]?.filter(Boolean)[0]||null;
+  const places34=(h[1]||[]).filter(Boolean).slice(0,2);
+  const w=g.result;
+  const bigImg=w.img?`<img src="${esc(w.img)}" class="wc-res-big-img" alt="">`:
+    `<div class="wc-res-big-ph">?</div>`;
+  const others=[place2,...places34].filter(Boolean);
+  const othersHtml=others.map(it=>`<div class="wc-res-other">${it.img?
+    `<img src="${esc(it.img)}" class="wc-res-other-img" alt="">`:
+    `<div class="wc-res-other-ph">?</div>`}<div class="wc-res-other-name">${esc(it.name)}</div></div>`).join('');
+  document.getElementById('wc-result-body').innerHTML=`
+    <div class="wc-res-first">
+      <div class="wc-res-crown">🏆</div>
+      ${bigImg}
+      <div class="wc-res-first-name">${esc(w.name)}</div>
+    </div>
+    ${others.length?`<div class="wc-res-others"><div class="wc-res-others-lbl">2 · 3 · 4위</div><div class="wc-res-others-wrap">${othersHtml}</div></div>`:''}
+    <div class="wc-res-btns">
+      <button class="wc-res-btn" onclick="saveWcResult()">💾 저장</button>
+      <button class="wc-res-btn" onclick="wcRetry()">🔄 다시하기</button>
+      <button class="wc-res-btn" onclick="closeWcResult()">✕ 닫기</button>
+    </div>
+    <div id="wc-saved-msg" style="display:none;text-align:center;font-size:13px;color:var(--text3);padding:4px 0 0">저장됐어요 ✓</div>`;
+  document.getElementById('wc-result-overlay').classList.add('open');
+}
+async function saveWcResult(){
+  const g=wcGame;if(!g||!g.result)return;
+  showLoading(true);
+  try{
+    const h=g.roundLosersHistory;
+    const place2=h[0]?.filter(Boolean)[0]||null;
+    const places34=(h[1]||[]).filter(Boolean).slice(0,2);
+    const date=new Date(new Date().getTime()+9*3600000).toISOString().slice(0,10);
+    await appendRow(SHEETS.wcResult,[g.cid,g.contentTitle,g.participant,g.result.name||'',g.result.img||'',place2?.name||'',places34[0]?.name||'',places34[1]?.name||'',date]);
+    wcClearState(g.cid,g.participant);
+    const msg=document.getElementById('wc-saved-msg');if(msg)msg.style.display='block';
+    toast('저장됐어요 ✓');await loadAll();
+  }catch(e){toast('저장 실패: '+e.message);}
+  showLoading(false);
+}
+function wcRetry(){const{cid,participant}=wcGame;closeWcResult();wcClearState(cid,participant);_initWcGame(cid,participant);}
+function closeWcResult(){document.getElementById('wc-result-overlay').classList.remove('open');wcGame=null;}
 
 // START
 initGapi();
