@@ -7,7 +7,7 @@ const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapi
 const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
 const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
-const APP_VERSION='v1.4.0';
+const APP_VERSION='v1.4.1';
 
 // ═══ STATE ═══
 let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[]};
@@ -380,10 +380,10 @@ function starsAndNum10(score){
 function renderMatzipList(){
   const sorted=[...db.matzip].filter(i=>getTotal(i)>0).sort((a,b)=>getTotal(b)-getTotal(a));
   const groups=[];let rank=1,i=0;
-  while(i<sorted.length&&groups.length<10){
+  while(i<sorted.length&&rank<=10){
     const score=getTotal(sorted[i]);
     const grp=sorted.filter(x=>getTotal(x)===score);
-    if(groups.length+grp.length<=10||groups.length<10)groups.push({rank,items:grp,score});
+    groups.push({rank,items:grp,score});
     i+=grp.length;rank+=grp.length;
   }
   const medals=['🥇','🥈','🥉'];
@@ -684,7 +684,7 @@ function renderCultureGrid(){
 function renderCulture(){
   const fb=document.getElementById('culture-filter-bar');
   if(fb){
-    const CULTURE_FIXED=['영화','OTT','공연','전시','문화생활'];
+    const CULTURE_FIXED=['영화','OTT','공연','전시','문화생활','시리즈'];
     const fromData=new Set(db.culture.flatMap(i=>(i['해시태그_종류']||'').split(',').map(t=>t.trim())).filter(Boolean));
     const types=['전체',...CULTURE_FIXED,...[...fromData].filter(t=>!CULTURE_FIXED.includes(t))];
     fb.innerHTML=types.map(t=>`<button class="filter-chip${cultureFilter===t?' active':''}" onclick="setCultureFilter('${t}')">${t}</button>`).join('')
@@ -1354,6 +1354,7 @@ function openForm(type,item=null,prefillName=''){
         <button type="button" class="culture-type-btn" data-type="공연" onclick="toggleCultureType('공연',this)">🎭 공연</button>
         <button type="button" class="culture-type-btn" data-type="전시" onclick="toggleCultureType('전시',this)">🎨 전시</button>
         <button type="button" class="culture-type-btn" data-type="문화생활" onclick="toggleCultureType('문화생활',this)">✨ 문화생활</button>
+        <button type="button" class="culture-type-btn" data-type="시리즈" onclick="toggleCultureType('시리즈',this)">📚 시리즈</button>
       </div>
       <div id="culture-extra-fields"></div>
     </div>`;
