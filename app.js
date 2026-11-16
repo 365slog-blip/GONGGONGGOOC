@@ -1,18 +1,11 @@
 // ═══ CONFIG ═══
-const PIN='1009';
-const SHEET_ID='1zmvSHTIKPIvuTdgyi4UnHDxqyuhBI_7IAyckAkxqXA8';
-const API_KEY='AIzaSyBUtEVNLyx4LBp4L8mZixN8_3Io71haDlM';
-const CLIENT_ID='616148935874-0b5ssnkeg245jl2phfqovlfg28scbqq3.apps.googleusercontent.com';
-const SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
-const FOLDERS={matzip:'1X-tsQk9KMmQ1nUb7o8znLxDCOP-FZdpZ',date:'1gdf92XHQkk8UFXuTCJf_yRWtnJTAb288',culture:'1awOVwW5FF2JCDSIlk7NwtyD104ObJjlE',etc:'1whLBtJjtE5OQu8ydEGvOwRzbh4NJWN2C'};
 const SHEETS={matzip:'맛집 기본',gourmet:'맛집 상세',date:'데이트_상세',culture:'영화',criteria:'별점가이드',favorites:'즐겨찾기',todo:'투두리스트',photo:'사진첩',settings:'설정',wcList:'월드컵_목록',wcResult:'월드컵_결과'};
 const STAR_OPTS=['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
 const APP_VERSION='v1.5.0';
 
 // ═══ STATE ═══
 let db={matzip:[],gourmet:[],date:[],culture:[],criteria:[],favorites:[],todo:[],photo:[],settings:[],wcList:[],wcResult:[]};
-let isLight=false,authed=false,pinVal='';
-let tokenClient,gapiLoaded=false,gisLoaded=false;
+let isLight=false,authed=false;
 let curFormType=null,curFormItem=null,heroImgData=null,photosData=[];
 let curDetailType=null,curDetailItem=null;
 let newRowActive=false;
@@ -30,55 +23,44 @@ let dayEntries=[],hasEndDate=false,tripType='';
 let cultureTypes=new Set();
 
 // ═══ LOGIN ═══
-function doGoogleLogin(){
-  if(!tokenClient){toast('잠시만 기다려주세요...');return;}
-  tokenClient.requestAccessToken({prompt:'consent'});
+async function requestApp(path, options = {}) {
+  const response = await fetch('/api' + path, { ...options, credentials: 'same-origin' });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || '잠시 후 다시 시도해 주세요.');
+  return data;
 }
-function initGapi(){
-  const s1=document.createElement('script');s1.src='https://apis.google.com/js/api.js';
-  s1.onload=()=>gapi.load('client',async()=>{
-    await gapi.client.init({apiKey:API_KEY,discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4']});
-    gapiLoaded=true;checkAuto();
-  });document.body.appendChild(s1);
-  const s2=document.createElement('script');s2.src='https://accounts.google.com/gsi/client';
-  s2.onload=()=>{
-    tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,
-      callback:r=>{if(!r.error){authed=true;showPinScreen();}}});
-    gisLoaded=true;checkAuto();
-  };document.body.appendChild(s2);
-}
-function checkAuto(){
-  if(!gapiLoaded||!gisLoaded)return;
-  if(gapi.client.getToken()){authed=true;showPinScreen();}
-}
-function showPinScreen(){
+function showApp({role}) {
+  authed = true;
+  document.body.classList.toggle('read-only', role === 'reader');
   document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('pin-screen').classList.remove('hidden');
-  pinVal='';updatePinDots();
+  startApp();
 }
-function doLogout(){
-  const token=gapi.client.getToken();
-  if(token){try{google.accounts.oauth2.revoke(token.access_token,()=>{});}catch(e){}}
-  gapi.client.setToken(null);
-  authed=false;
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').classList.remove('hidden');
+async function checkSession() {
+  try { showApp(await requestApp('/session')); } catch {}
 }
-
-// ═══ PIN ═══
-function pinKey(k){
-  if(pinVal.length>=4)return;
-  pinVal+=k;updatePinDots();
-  if(pinVal.length===4){
-    const correctPin=localStorage.getItem('gonggong_pin')||PIN;
-    setTimeout(()=>{
-      if(pinVal===correctPin){document.getElementById('pin-screen').classList.add('hidden');startApp();}
-      else{document.getElementById('pin-err').textContent='비밀번호가 틀렸어요 💔';pinVal='';updatePinDots();setTimeout(()=>document.getElementById('pin-err').textContent='',1500);}
-    },100);
-  }
+document.getElementById('login-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = form.querySelector('button');
+  const error = document.getElementById('login-error');
+  button.disabled = true;
+  error.textContent = '';
+  try {
+    const data = await requestApp('/login', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: form.username.value, password: form.password.value}),
+    });
+    form.reset();
+    showApp(data);
+  } catch (e) { error.textContent = e.message; }
+  finally { button.disabled = false; }
+});
+async function doLogout() {
+  try {
+    await requestApp('/logout', {method: 'POST'});
+    location.reload();
+  } catch (error) { toast(error.message); }
 }
-function pinDel(){pinVal=pinVal.slice(0,-1);updatePinDots();}
-function updatePinDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('filled',i<pinVal.length);}
 
 // ═══ APP START ═══
 function startApp(){
@@ -182,50 +164,49 @@ async function loadAll(){
   catch(e){toast('로드 실패: '+e.message);console.error(e);}
   showLoading(false);
 }
-async function loadSheet(key,name){
-  try{
-    const res=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:name});
-    const rows=res.result.values||[];
-    if(!rows.length){db[key]=[];return;}
-    const hdrs=rows[0];
-    db[key]=rows.slice(1).filter(r=>r.some(c=>c&&c.trim())).map((r,i)=>{const o={_row:i+2};hdrs.forEach((h,j)=>o[h]=r[j]||'');return o;});
-  }catch(e){console.log('load err:',name,e);db[key]=[];}
+function recordsPath(name, id) {
+  return '/records/' + encodeURIComponent(name) + (id ? '/' + id : '');
 }
-async function appendRow(name,vals){
-  return gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId:SHEET_ID,range:name,valueInputOption:'USER_ENTERED',resource:{values:[vals]}});
+async function loadSheet(key, name) {
+  db[key] = await requestApp(recordsPath(name));
 }
-async function updateRow(name,row,vals){
-  const range=`${name}!A${row}:ZZ${row}`;
-  return gapi.client.sheets.spreadsheets.values.update({
-    spreadsheetId:SHEET_ID,range,valueInputOption:'USER_ENTERED',resource:{values:[vals]}});
+function recordId(name, row) {
+  const key = Object.keys(SHEETS).find(key => SHEETS[key] === name);
+  const id = db[key]?.find(record => record._row === row)?._id;
+  if (!id) throw new Error('기록을 새로고침한 뒤 다시 시도해 주세요.');
+  return id;
 }
-async function deleteSheetRow(name,row){
-  try{
-    const sid=await getSheetId(name);
-    await gapi.client.sheets.spreadsheets.batchUpdate({spreadsheetId:SHEET_ID,
-      resource:{requests:[{deleteDimension:{range:{sheetId:sid,dimension:'ROWS',startIndex:row-1,endIndex:row}}}]}});
-  }catch(e){throw new Error('삭제 실패: '+e.message);}
+function writeRecord(name, method, values, id) {
+  return requestApp(recordsPath(name, id), {
+    method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({values}),
+  });
 }
-async function getSheetId(name){
-  const res=await gapi.client.sheets.spreadsheets.get({spreadsheetId:SHEET_ID});
-  return res.result.sheets.find(s=>s.properties.title===name)?.properties.sheetId??0;
+function appendRow(name, values) {
+  return writeRecord(name, 'POST', values);
+}
+function updateRow(name, row, values) {
+  return writeRecord(name, 'PATCH', values, recordId(name, row));
+}
+function deleteSheetRow(name, row) {
+  return requestApp(recordsPath(name, recordId(name, row)), {method: 'DELETE'});
+}
+function upsertNamedRow(key, label, value) {
+  const current = db[key].find(item => item.구분 === label);
+  return current ? updateRow(SHEETS[key], current._row, [label, value]) : appendRow(SHEETS[key], [label, value]);
 }
 
 // ═══ 이미지 회전 (90° 시계방향) ═══
-async function urlToDataUrl(url){
-  if(!url||url.startsWith('data:'))return url;
-  try{
-    const m=url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
-    if(m){
-      const token=gapi.client.getToken()?.access_token;
-      if(token){
-        const res=await fetch(`https://www.googleapis.com/drive/v3/files/${m[1]}?alt=media`,{headers:{Authorization:'Bearer '+token}});
-        if(res.ok){const blob=await res.blob();return await new Promise(r=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(blob);});}
-      }
-    }
-  }catch(e){}
-  return url;
+async function urlToDataUrl(url) {
+  if (!url || url.startsWith('data:')) return url;
+  const response = await fetch(url, {credentials: 'same-origin'});
+  if (!response.ok) throw new Error('사진을 불러오지 못했어요.');
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 async function rotateImage(dataUrl){
   return new Promise(resolve=>{
@@ -321,24 +302,31 @@ async function fixOrientation(dataUrl){
   });
 }
 
-// ═══ DRIVE UPLOAD ═══
-async function uploadToDrive(base64,folderKey='etc'){
-  if(!base64||!base64.startsWith('data:'))return base64||'';
-  try{
-    const blob=await fetch(base64).then(r=>r.blob());
-    const folderId=FOLDERS[folderKey]||FOLDERS.etc;
-    const meta={name:'img_'+Date.now()+'.jpg',mimeType:'image/jpeg',parents:[folderId]};
-    const form=new FormData();
-    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
-    form.append('file',blob);
-    const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
-      {method:'POST',headers:{Authorization:'Bearer '+gapi.client.getToken().access_token},body:form});
-    const {id}=await res.json();
-    await fetch(`https://www.googleapis.com/drive/v3/files/${id}/permissions`,
-      {method:'POST',headers:{Authorization:'Bearer '+gapi.client.getToken().access_token,'Content-Type':'application/json'},
-       body:JSON.stringify({role:'reader',type:'anyone'})});
-    return `https://lh3.googleusercontent.com/d/${id}=s1000`;
-  }catch(e){console.error('upload fail:',e);return '';}
+async function uploadPhoto(dataUrl) {
+  if (!dataUrl?.startsWith('data:')) return dataUrl || '';
+  let blob = await fetch(dataUrl).then(response => response.blob());
+  if (blob.size >= 4900000 || !['image/jpeg','image/png','image/gif','image/webp'].includes(blob.type)) {
+    const bitmap = await createImageBitmap(blob);
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      for (const size of [2400, 1800, 1200]) {
+        const scale = Math.min(1, size / Math.max(bitmap.width, bitmap.height));
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.87));
+        if (blob?.size < 4900000) break;
+      }
+    } finally { bitmap.close(); }
+  }
+  if (!blob || blob.size >= 4900000) throw new Error('사진을 5MB 미만으로 줄여 주세요.');
+  const { upload } = await requestApp('/photos', {
+    method: 'POST', headers: {'Content-Type': blob.type}, body: blob,
+  });
+  return upload;
 }
 
 // ═══ RENDER ALL ═══
@@ -398,7 +386,7 @@ function renderMatzipList(){
     const firstCount=cardGroups[0]?.items.length||0;
     if(rc){rc.innerHTML=cardGroups.flatMap(g=>g.items.map(item=>{
       const solo=g.rank===1&&firstCount===1;
-      return`<div class="rank-card${solo?' rank-card-first':''}" onclick="openMatzipDetail('${esc(item.가게명)}')">
+      return`<div class="rank-card${solo?' rank-card-first':''}" onclick="openMatzipDetail(${jsArg(item.가게명)})">
         <div class="rank-card-medal">${g.rank<=3?medals[g.rank-1]:g.rank}</div>
         <div class="rank-card-name">${esc(item.가게명)}</div>
         <div class="rank-card-loc">${esc(item.장소)}</div>
@@ -411,7 +399,7 @@ function renderMatzipList(){
     if(rl){rl.innerHTML=listGroups.flatMap(g=>g.items.map(item=>`
       <div class="rank-row">
         <div class="rank-badge">${g.rank}</div>
-        <div style="flex:1;min-width:0"><div class="rank-name" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</div><div class="rank-loc">${esc(item.장소)}</div></div>
+        <div style="flex:1;min-width:0"><div class="rank-name" onclick="openMatzipDetail(${jsArg(item.가게명)})">${esc(item.가게명)}</div><div class="rank-loc">${esc(item.장소)}</div></div>
         <div class="rank-score">${numToStars(g.score/2)} <small style="color:var(--text2);margin-left:4px">${g.score.toFixed(1)} / 10</small></div>
       </div>`)).join('');}
   }
@@ -423,7 +411,7 @@ function renderMatzipList(){
     if(total>=10)hl='hl-20';else if(total>=9.5)hl='hl-19';else if(total>=9)hl='hl-18';else if(total>=8.5)hl='hl-17';else if(total>=8)hl='hl-16';
     return`<tr class="list-row ${hl}" id="mrow-${item._row}">
       <td style="color:var(--text3);font-size:13px">${idx+1}</td>
-      <td><button class="list-name-btn" onclick="openMatzipDetail('${esc(item.가게명)}')">${esc(item.가게명)}</button></td>
+      <td><button class="list-name-btn" onclick="openMatzipDetail(${jsArg(item.가게명)})">${esc(item.가게명)}</button></td>
       <td style="color:var(--text2);white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis">${esc(item.장소)}</td>
       <td class="stars-cell">${starsAndNum(item.공슐랭)}</td>
       <td class="stars-cell">${starsAndNum(item.하슐랭)}</td>
@@ -584,9 +572,8 @@ async function saveCriteriaToSheet(){
   try{
     const gVal=document.getElementById('criteria-gong').value;
     const hVal=document.getElementById('criteria-ha').value;
-    await gapi.client.sheets.spreadsheets.values.clear({spreadsheetId:SHEET_ID,range:SHEETS.criteria+'!A2:B100'});
-    await appendRow(SHEETS.criteria,['공슐랭',gVal]);
-    await appendRow(SHEETS.criteria,['하슐랭',hVal]);
+    await upsertNamedRow('criteria','공슐랭',gVal);
+    await upsertNamedRow('criteria','하슐랭',hVal);
     toast('가이드 저장됐어요 ✓');await loadSheet('criteria',SHEETS.criteria);
   }catch(e){toast('저장 실패: '+e.message);}
   showLoading(false);
@@ -600,7 +587,7 @@ function renderGourmet(){
   grid.innerHTML=sorted.map(item=>{
     const faved=isFaved('gourmet',item._row);
     return`<div class="gcard">
-      <button class="fav-btn" onclick="event.stopPropagation();toggleFav('gourmet',${item._row},'${esc(item.가게명)}','${esc(item.대표이미지)}')">${faved?'❤️':'🤍'}</button>
+      <button class="fav-btn" onclick="event.stopPropagation();toggleFav('gourmet',${item._row},${jsArg(item.가게명)},${jsArg(item.대표이미지)})">${faved?'❤️':'🤍'}</button>
       <div onclick="showDetailPopup(db.gourmet.find(i=>i._row===${item._row}),'gourmet')">${imgOrPh(item.대표이미지,'4/3','🍽️')}</div>
       <div class="gcard-body" onclick="showDetailPopup(db.gourmet.find(i=>i._row===${item._row}),'gourmet')">
         <div class="gcard-name">${esc(item.가게명)}</div>
@@ -631,7 +618,7 @@ function renderDateGrid(){
     const dateStr=item.시작날짜||item.날짜||'';
     const guibn=item.구분||'';
     return`<div class="gcard">
-      <button class="fav-btn" onclick="event.stopPropagation();toggleFav('date',${item._row},'${esc(item.장소)}','${esc(item.대표이미지)}')">${faved?'❤️':'🤍'}</button>
+      <button class="fav-btn" onclick="event.stopPropagation();toggleFav('date',${item._row},${jsArg(item.장소)},${jsArg(item.대표이미지)})">${faved?'❤️':'🤍'}</button>
       <div onclick="showDetailPopup(db.date.find(i=>i._row===${item._row}),'date')">${imgOrPh(item.대표이미지,'4/3','📸')}</div>
       <div class="gcard-body" onclick="showDetailPopup(db.date.find(i=>i._row===${item._row}),'date')">
         <div class="gcard-name">${esc(item.장소)}</div>
@@ -668,7 +655,7 @@ function renderCultureGrid(){
     const imgEl=item.대표이미지?`<img src="${item.대표이미지}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML='<div class=movie-poster-ph>🎬</div>'">`:`<div class="movie-poster-ph">🎬</div>`;
     const tags=[item['해시태그_종류'],item['해시태그_장르']].filter(Boolean).join(' · ');
     return`<div class="movie-card" onclick="showDetailPopup(db.culture.find(i=>i._row===${item._row}),'culture')">
-      <button class="fav-btn" style="top:6px;right:6px;z-index:3" onclick="event.stopPropagation();toggleFav('culture',${item._row},'${esc(item.영화명)}','${esc(item.대표이미지)}')">${faved?'❤️':'🤍'}</button>
+      <button class="fav-btn" style="top:6px;right:6px;z-index:3" onclick="event.stopPropagation();toggleFav('culture',${item._row},${jsArg(item.영화명)},${jsArg(item.대표이미지)})">${faved?'❤️':'🤍'}</button>
       <div class="movie-poster-wrap">${imgEl}</div>
       <div class="movie-info">
         <div>
@@ -799,7 +786,7 @@ async function onPhotoTabFile(e){
   // 1단계: Drive 업로드 병렬 처리 (개별 실패는 건너뜀)
   const results=await Promise.allSettled(files.map(async f=>{
     const dataUrl=await fixOrientation(await fileToDataUrl(f));
-    const url=await uploadToDrive(dataUrl,'etc');
+    const url=await uploadPhoto(dataUrl);
     if(!url)throw new Error('drive upload failed');
     toast(`업로드 중... ${++uploaded}/${total}`);
     return url;
@@ -852,8 +839,8 @@ function renderFavorites(){
     if(!items.length)return;
     html+=`<div class="fav-section-title">${labels[type]||type}</div><div class="gallery-grid-4">`;
     html+=items.map(f=>`
-      <div class="gcard" onclick="openFavDetail('${f.타입}',${f.ID})">
-        <button class="fav-btn" onclick="event.stopPropagation();toggleFav('${f.타입}',${f.ID},'${esc(f['가게명또는제목'])}','${esc(f.대표이미지)}')">❤️</button>
+      <div class="gcard" onclick="openFavDetail(${jsArg(f.타입)},${Number(f.ID)})">
+        <button class="fav-btn" onclick="event.stopPropagation();toggleFav(${jsArg(f.타입)},${Number(f.ID)},${jsArg(f['가게명또는제목'])},${jsArg(f.대표이미지)})">❤️</button>
         ${imgOrPh(f.대표이미지,'4/3','⭐')}
         <div class="gcard-body"><div class="gcard-name">${esc(f['가게명또는제목'])}</div><div class="gcard-sub">${esc(f.날짜)}</div></div>
       </div>`).join('');
@@ -929,22 +916,11 @@ function renderSettings(){
   const el=document.getElementById('settings-ticker');
   if(el)el.value=tickerRow?.내용||'';
 }
-function savePin(){
-  const np=(document.getElementById('settings-new-pin')?.value||'').trim();
-  const cp=(document.getElementById('settings-confirm-pin')?.value||'').trim();
-  if(!np||np.length!==4||!/^\d{4}$/.test(np)){toast('4자리 숫자를 입력해주세요');return;}
-  if(np!==cp){toast('PIN이 일치하지 않아요 💔');return;}
-  localStorage.setItem('gonggong_pin',np);
-  toast('PIN이 변경됐어요 ✓');
-  document.getElementById('settings-new-pin').value='';
-  document.getElementById('settings-confirm-pin').value='';
-}
 async function saveTicker(){
   const text=document.getElementById('settings-ticker')?.value||'';
   showLoading(true);
   try{
-    await gapi.client.sheets.spreadsheets.values.clear({spreadsheetId:SHEET_ID,range:SHEETS.settings+'!A2:B100'});
-    await appendRow(SHEETS.settings,['ticker',text]);
+    await upsertNamedRow('settings','ticker',text);
     toast('저장됐어요 ✓');
     await loadSheet('settings',SHEETS.settings);
     renderTicker();
@@ -1081,11 +1057,9 @@ function deleteFromDetail(){
   const type=curDetailType,item=curDetailItem;
   showConfirm(async()=>{
     showLoading(true);
-    const imgUrls=getItemImageUrls(type,item._row);
     try{await deleteSheetRow(SHEETS[type],item._row);await deleteFavsFor(type,item._row);closeDetailDirect();toast('삭제됐어요');await loadAll();}
     catch(e){toast('삭제 실패: '+e.message);showLoading(false);return;}
     showLoading(false);
-    if(imgUrls.length)deleteDriveFiles(imgUrls);
   });
 }
 function openMatzipDetail(name){
@@ -1124,18 +1098,15 @@ function confirmDelete(type,rowIdx){
   const extraMsg=linkedGourmet.length?`고오급 탭 기록 ${linkedGourmet.length}개도 함께 삭제됩니다.`:'';
   showConfirm(async()=>{
     showLoading(true);
-    const imgUrls=getItemImageUrls(type,rowIdx);
     try{
       await deleteSheetRow(SHEETS[type],rowIdx);await deleteFavsFor(type,rowIdx);
       for(const g of [...linkedGourmet].sort((a,b)=>b._row-a._row)){
-        const gImgs=getItemImageUrls('gourmet',g._row);
-        try{await deleteSheetRow(SHEETS.gourmet,g._row);await deleteFavsFor('gourmet',g._row);if(gImgs.length)deleteDriveFiles(gImgs);}
+        try{await deleteSheetRow(SHEETS.gourmet,g._row);await deleteFavsFor('gourmet',g._row);}
         catch(e){console.warn('고오급 삭제 실패:',e);}
       }
       toast('삭제됐어요');await loadAll();
     }catch(e){toast('삭제 실패: '+e.message);showLoading(false);return;}
     showLoading(false);
-    if(imgUrls.length)deleteDriveFiles(imgUrls);
   },extraMsg);
 }
 
@@ -1441,17 +1412,17 @@ function selectTripType(type,el){
 
 function closeFormDirect(){document.getElementById('form-overlay').classList.remove('open');heroImgData=null;photosData=[];}
 function fg(key,type,ph,val=''){return`<div class="fg"><label class="flabel">${ph||key}</label><input class="finput" id="f-${key}" type="${type}" placeholder="${ph||''}" value="${esc(val||'')}" autocomplete="off"></div>`;}
-function fga(key,ph,val=''){return`<div class="fg"><label class="flabel">${ph}</label><textarea class="finput ftarea" id="f-${key}" placeholder="${ph}" oninput="autoResize(this)">${val||''}</textarea></div>`;}
+function fga(key,ph,val=''){return`<div class="fg"><label class="flabel">${ph}</label><textarea class="finput ftarea" id="f-${key}" placeholder="${ph}" oninput="autoResize(this)">${esc(val||'')}</textarea></div>`;}
 function fgsel(key,opts,val=''){return`<div class="fg"><label class="flabel">${key}</label><select class="finput" id="f-${key}">${opts.map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;}
-function fgstar(key,label,val=''){return`<div class="fg"><label class="flabel">${label}</label><div style="display:flex;align-items:center;gap:12px"><input class="finput" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${val||''}" placeholder="0~10" style="width:80px" oninput="updateStarDisplay10('f-${key}',this.value)"><div class="star-visual" id="sd-f-${key}">${val?numToStars(parseFloat(val)/2):'<span class="star empty">☆☆☆☆☆</span>'}</div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">0.5 단위 (최대 10점)</div></div>`;}
-function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview-img" src="${heroImgData}" alt=""><button class="hero-rot-btn" onclick="event.stopPropagation();rotateHero()" title="90° 회전">↻</button>`:`<div class="hero-ph">📷<span>대표 사진 선택</span></div>`}</div></div>`;}
+function fgstar(key,label,val=''){return`<div class="fg"><label class="flabel">${label}</label><div style="display:flex;align-items:center;gap:12px"><input class="finput" id="f-${key}" type="number" min="0" max="10" step="0.5" value="${esc(val||'')}" placeholder="0~10" style="width:80px" oninput="updateStarDisplay10('f-${key}',this.value)"><div class="star-visual" id="sd-f-${key}">${val?numToStars(parseFloat(val)/2):'<span class="star empty">☆☆☆☆☆</span>'}</div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">0.5 단위 (최대 10점)</div></div>`;}
+function fhero(){return`<div class="fg"><label class="flabel">대표 사진</label><div id="hero-preview-wrap" onclick="document.getElementById('hero-file').click()" style="cursor:pointer">${heroImgData?`<img class="hero-preview-img" src="${esc(heroImgData)}" alt=""><button class="hero-rot-btn" onclick="event.stopPropagation();rotateHero()" title="90° 회전">↻</button>`:`<div class="hero-ph">📷<span>대표 사진 선택</span></div>`}</div></div>`;}
 function fphotos(){return`<div class="fg"><label class="flabel">사진 (최대 15장)</label><div class="img-drop" onclick="document.getElementById('photos-file').click()"><div class="img-drop-icon">📷</div><div class="img-drop-label">탭해서 사진 선택</div></div><div class="img-preview-grid" id="photos-preview"></div></div>`;}
 function updateStarDisplay(id,val){const el=document.getElementById('sd-'+id);if(el)el.innerHTML=numToStars(parseFloat(val));}
 function updateStarDisplay10(id,val){const el=document.getElementById('sd-'+id);if(el)el.innerHTML=numToStars(parseFloat(val)/2);}
 function renderHeroPreview(){
   const wrap=document.getElementById('hero-preview-wrap');if(!wrap)return;
   wrap.innerHTML=heroImgData
-    ?`<img class="hero-preview-img" src="${heroImgData}" alt=""><button class="hero-rot-btn" onclick="event.stopPropagation();rotateHero()" title="90° 회전">↻</button>`
+    ?`<img class="hero-preview-img" src="${esc(heroImgData)}" alt=""><button class="hero-rot-btn" onclick="event.stopPropagation();rotateHero()" title="90° 회전">↻</button>`
     :`<div class="hero-ph">📷<span>대표 사진 선택</span></div>`;
 }
 function renderPhotoPreviews(){
@@ -1487,11 +1458,10 @@ async function saveRecord(){
       toast(curFormItem?'수정됐어요 ✓':'등록됐어요 ✓');closeFormDirect();await loadAll();
       showLoading(false);return;
     }
-    const fk=type==='gourmet'?'matzip':type==='date'?'date':type==='culture'?'culture':'etc';
-    let heroUrl=heroImgData?.startsWith('data:')?await uploadToDrive(heroImgData,fk):(heroImgData||'');
+    let heroUrl=heroImgData?.startsWith('data:')?await uploadPhoto(heroImgData):(heroImgData||'');
     const photoUrls=[];
     for(const p of photosData){
-      if(p.startsWith('data:')){const u=await uploadToDrive(p,fk);if(u)photoUrls.push(u);}
+      if(p.startsWith('data:')){const u=await uploadPhoto(p);if(u)photoUrls.push(u);}
       else if(p)photoUrls.push(p);
     }
     while(photoUrls.length<15)photoUrls.push('');
@@ -1519,7 +1489,7 @@ async function saveRecord(){
       curFormItem?._row?await updateRow(SHEETS.culture,curFormItem._row,row):await appendRow(SHEETS.culture,row);
     }else if(type==='photo'){
       const all=[heroUrl,...photosData].filter(Boolean);
-      for(const p of all){const u=p.startsWith('data:')?await uploadToDrive(p,'etc'):p;if(u)await appendRow(SHEETS.photo,[u,fv('f-메모'),getDateVal('날짜'),'']);}
+      for(const p of all){const u=p.startsWith('data:')?await uploadPhoto(p):p;if(u)await appendRow(SHEETS.photo,[u,fv('f-메모'),getDateVal('날짜'),'']);}
     }else if(type==='todo'){
       const row=[fv('f-제목'),fv('f-메모'),fv('f-해시태그'),heroUrl,'',getDateVal('날짜')];
       curFormItem?._row?await updateRow(SHEETS.todo,curFormItem._row,row):await appendRow(SHEETS.todo,row);
@@ -1529,52 +1499,12 @@ async function saveRecord(){
   showLoading(false);
 }
 
-// ═══ DRIVE DELETE ═══
-function extractDriveId(url){
-  if(!url)return null;
-  const m=url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
-  return m?m[1]:null;
-}
-async function deleteDriveFiles(urls){
-  const token=gapi.client.getToken()?.access_token;
-  if(!token)return;
-  const ids=[...new Set(urls.map(extractDriveId).filter(Boolean))];
-  await Promise.allSettled(ids.map(id=>
-    fetch(`https://www.googleapis.com/drive/v3/files/${id}`,
-      {method:'DELETE',headers:{Authorization:'Bearer '+token}})
-    .catch(e=>console.warn('Drive delete fail:',id,e))
-  ));
-}
-function getItemImageUrls(type,rowIdx){
-  const item=(db[type]||[]).find(i=>i._row===rowIdx);
-  if(!item)return[];
-  const urls=[];
-  if(type==='photo'){
-    const url=getPhotoUrl(item);
-    if(url)urls.push(url);
-    return urls;
-  }
-  if(item.대표이미지)urls.push(item.대표이미지);
-  for(let i=1;i<=15;i++){if(item['사진'+i])urls.push(item['사진'+i]);}
-  return urls;
-}
-
 // ═══ UTILS ═══
-function getPhotoUrl(item){
-  // 신규 데이터: A열(대표이미지)에 URL이 저장됨
-  const a=normalizeImgUrl(item.대표이미지||'');
-  if(a.startsWith('https://'))return a;
-  // 구 데이터: URL이 B열(제목)에 잘못 저장된 경우 fallback
-  const b=normalizeImgUrl(item.제목||'');
-  return b.startsWith('https://')?b:'';
+function getPhotoUrl(item) {
+  return normalizeImgUrl(item.대표이미지) || normalizeImgUrl(item.제목);
 }
-function normalizeImgUrl(url){
-  if(!url)return'';
-  if(url.includes('lh3.googleusercontent.com'))return url;
-  let m=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if(!m)m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if(m)return'https://lh3.googleusercontent.com/d/'+m[1];
-  return url;
+function normalizeImgUrl(url) {
+  return typeof url === 'string' && (url.startsWith('/api/media/') || url.startsWith('data:image/')) ? url : '';
 }
 function imgOrPh(src,ratio,icon){
   const s=normalizeImgUrl(src);
@@ -1583,6 +1513,7 @@ function imgOrPh(src,ratio,icon){
 }
 function emptyState(icon,txt){return`<div class="empty-state" style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3)"><div style="font-size:40px;margin-bottom:10px">${icon}</div><div>${txt}</div></div>`;}
 function sortByDate(d1,d2){return(new Date(d1)||0)-(new Date(d2)||0);}
+function jsArg(value){return esc(JSON.stringify(String(value??'')));}
 function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function openLbox(src){if(!src)return;document.getElementById('lbox-img').src=src;document.getElementById('lbox').classList.add('open');}
 function showLoading(show){document.getElementById('loading-overlay').classList.toggle('show',show);}
@@ -1626,7 +1557,7 @@ function renderWorldcup(){
       return it?.img?`<img src="${esc(it.img)}" class="wc-runner-img" alt="" loading="lazy">`:
         `<div class="wc-runner-ph">?</div>`;
     }).join('');
-    return`<div class="wc-card" onclick="openWcDetail('${esc(c.id)}')">
+    return`<div class="wc-card" onclick="openWcDetail(${jsArg(c.id)})">
       <div class="wc-card-hdr"><div class="wc-card-title">${esc(c.title)}</div><div class="wc-card-meta">${n}개 항목 · ${n}강 월드컵</div></div>
       <div class="wc-card-participants">${pHtml}</div>
       ${runner.length?`<div class="wc-card-runner"><span class="wc-runner-label">2~4위</span><div class="wc-runner-imgs">${runnerHtml}</div></div>`:''}
@@ -1652,7 +1583,7 @@ function openWcDetail(cid){
       }
       return`<div class="wc-d-row">
         <div class="wc-d-p-wrap"><div class="wc-d-pname">${p}</div>${winnerHtml}</div>
-        <button class="wc-start-btn" onclick="event.stopPropagation();startWcGame('${esc(cid)}','${p}')">게임 시작</button>
+        <button class="wc-start-btn" onclick="event.stopPropagation();startWcGame(${jsArg(cid)},'${p}')">게임 시작</button>
       </div>`;
     }).join('');
   document.getElementById('wc-detail-overlay').classList.add('open');
@@ -1759,14 +1690,16 @@ async function saveWcForm(){
     const uploaded=[];
     for(const item of valid){
       let url=item.imgData;
-      if(url&&url.startsWith('data:'))url=await uploadToDrive(url,'etc');
+      if(url)url=await uploadPhoto(await urlToDataUrl(url));
       uploaded.push({name:item.name,img:url||''});
     }
-    if(wcFormId){
-      const old=db.wcList.filter(r=>r['컨텐츠ID']===wcFormId).map(r=>r._row).sort((a,b)=>b-a);
-      for(const row of old){await deleteSheetRow(SHEETS.wcList,row);await new Promise(r=>setTimeout(r,150));}
+    const old=wcFormId ? db.wcList.filter(r=>r['컨텐츠ID']===wcFormId) : [];
+    for(const [i,item] of uploaded.entries()){
+      const values=[cid,title,item.name,item.img];
+      if(old[i]) await updateRow(SHEETS.wcList,old[i]._row,values);
+      else await appendRow(SHEETS.wcList,values);
     }
-    for(const item of uploaded){await appendRow(SHEETS.wcList,[cid,title,item.name,item.img]);await new Promise(r=>setTimeout(r,100));}
+    for(const item of old.slice(uploaded.length)) await deleteSheetRow(SHEETS.wcList,item._row);
     localStorage.removeItem('wc_draft'+(wcFormId?'_'+wcFormId:''));
     toast('저장됐어요 ✓');closeWcForm();await loadAll();
   }catch(e){toast('저장 실패: '+e.message);console.error(e);}
@@ -1922,4 +1855,4 @@ function wcRetry(){const{cid,participant}=wcGame;closeWcResult();wcClearState(ci
 function closeWcResult(){document.getElementById('wc-result-overlay').classList.remove('open');wcGame=null;}
 
 // START
-initGapi();
+checkSession();
