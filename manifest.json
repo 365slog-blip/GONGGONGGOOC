@@ -4,8 +4,8 @@
   "display": "standalone",
   "background_color": "#0d0d0d",
   "theme_color": "#0d0d0d",
-  "start_url": "/GONGGONGGOOC/",
-  "scope": "/GONGGONGGOOC/",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "icon.svg",
