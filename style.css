@@ -8,7 +8,7 @@
   --card:#161616;
   --h20:#1e1510;--h19:#1a190c;--h18:#0f1a0f;--h17:#0f1219;--h16:#1a0f14;
   --font-display:'Playfair Display',serif;
-  --font-body:'Noto Sans KR',sans-serif;
+  --font-body:system-ui,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   --page-padding:10vw;
 }
 .light{
@@ -27,8 +27,8 @@ body{overflow:hidden}
 @keyframes hb{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.08)}70%{transform:scale(1)}}
 .screen-title{font-family:var(--font-body);font-size:26px;font-weight:500}
 .screen-sub{font-size:13px;color:var(--text3)}
-.google-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#3c3c3c;border:none;border-radius:14px;padding:14px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);box-shadow:0 2px 12px rgba(0,0,0,.15);width:260px;justify-content:center;transition:box-shadow .2s}
-.google-btn:hover{box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.login-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#3c3c3c;border:none;border-radius:14px;padding:14px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);box-shadow:0 2px 12px rgba(0,0,0,.15);width:260px;justify-content:center;transition:box-shadow .2s}
+.login-btn:hover{box-shadow:0 4px 20px rgba(0,0,0,.25)}
 .app-version{font-size:11px;color:var(--text3);margin-top:4px}
 .pin-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;width:260px}
 .pin-dots{display:flex;gap:14px}
@@ -526,3 +526,10 @@ input[type=file]{display:none}
   .wc-res-big-img,.wc-res-big-ph{width:120px;height:120px}
   .wc-arena{padding:10px 10px 16px}
 }
+
+.login-form{display:grid;gap:8px;width:min(280px,calc(100vw - 48px));text-align:left}
+.login-form label{font-size:13px;color:var(--text2)}
+.login-form .login-btn{justify-content:center;margin-top:4px}
+.login-error{color:#fb8383;font-size:13px}
+.login-error:empty{display:none}
+.read-only :is([onclick*="save"],[onclick*="delete"],[onclick*="Delete"],[onclick*="openForm"],[onclick*="toggleFav"],[onclick*="toggleTodoDone"],[onclick*="openWcForm"],[onclick*="editWc"],[onclick*="inlineEdit"],[onclick*="addNewRow"],#photo-select-toggle){display:none!important}
